@@ -112,3 +112,25 @@ Each shot = one visual scene OR one key argument
 - **口播**: "<...>"
 - **字幕**: <...>
 ```
+
+## File Output
+
+After generating the script, save it to a file.
+
+### Directory
+`scripts/` (relative to project root `/Users/yasin/code/media/`)
+- Auto-create if it doesn't exist
+
+### File Naming
+Format: `YYYY-MM-DD-<slug>.md`
+
+### Slug Generation Rules
+- Chinese: Extract 2-4 key characters (e.g., "ChatGPT推理能力" → `chatgpt推理`)
+- English: kebab-case, max 30 characters
+- Mixed: Preserve Chinese, kebab-case English parts
+- If file exists, append numeric suffix (e.g., `-2.md`, `-3.md`)
+
+### Example
+`scripts/2026-04-20-chatgpt-o3推理.md`
+
+ALWAYS use the Write tool to save the file. Report the file path to the user after saving.
