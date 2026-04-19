@@ -134,3 +134,33 @@ Format: `YYYY-MM-DD-<slug>.md`
 `scripts/2026-04-20-chatgpt-o3推理.md`
 
 ALWAYS use the Write tool to save the file. Report the file path to the user after saving.
+
+## Error Handling
+
+### Empty or Vague Input
+If the idea is too generic (e.g., "AI", "科技"), ask the user to provide more detail:
+```
+这个想法有点太宽泛了。能具体一点吗？比如：
+- 你想介绍哪个 AI 工具或功能？
+- 这是教程、资讯还是观点类内容？
+- 有没有具体的场景或案例？
+```
+
+### Script Too Long
+If generated script exceeds 600 characters:
+- Merge or remove secondary core content shots
+- NEVER remove hook, pain point, or CTA shots
+- Tighten the spoken content while preserving structure
+
+### Invalid Angle Selection
+If user provides invalid input (e.g., "4", random text):
+- Re-prompt with the original 3 angle options
+- Accept both numbers (1, 2, 3) and custom angle text
+- If custom text is very long (>30 chars), extract core angle and confirm
+
+### Long Custom Angle
+If user provides a long custom angle:
+```
+你输入的角度描述比较长。我理解的核心是：<extracted 2-4 words>
+这样理解对吗？如果不对，请用更简短的语言重新描述。
+```
