@@ -342,8 +342,26 @@ def generate_tts(text, speaker=None):
     return b"".join(audio_chunks)
 
 
-def generate_split_mode(text_file, output_dir, speaker):
-    """Generate separate audio files for each line of text."""
+def generate_split_mode(
+    text_file: str,
+    output_dir: str,
+    speaker: str,
+    fine_grained: bool = True,
+) -> list[dict[str, Union[str, int, float]]]:
+    """
+    Generate separate audio files for each line of text.
+
+    Args:
+        text_file: Path to voiceover text file
+        output_dir: Directory to save audio files
+        speaker: Speaker voice ID
+        fine_grained: If True, split long lines into sentences and generate per-sentence audio
+
+    Returns:
+        List of segment dicts with metadata. Failed segments are skipped; video_time
+        only advances for successful segments, ensuring manifest timestamps match
+        generated audio files.
+    """
     # Read and parse text file
     try:
         with open(text_file, "r", encoding="utf-8") as f:
@@ -362,32 +380,124 @@ def generate_split_mode(text_file, output_dir, speaker):
     # Create output directory
     os.makedirs(output_dir, exist_ok=True)
 
-    # Generate audio for each line
-    audio_files = []
+    # Generate audio for each line (and sub-segment if fine_grained)
+    all_segments = []
     all_audio_data = []
+    shot_index = 0
+    video_time = 0  # Cumulative time for subtitle timing
 
-    for i, line in enumerate(lines, 1):
+    for line_idx, line in enumerate(lines, 1):
         if not line.strip():
             continue
 
-        try:
-            print(f"[{i}/{len(lines)}] Generating: {line[:30]}...")
-            audio_data = generate_tts(line.strip(), speaker)
+        shot_index += 1
+        shot_start_time = video_time
 
-            # Save individual file
-            filename = f"voiceover-{i:02d}.mp3"
-            filepath = os.path.join(output_dir, filename)
-            with open(filepath, "wb") as f:
-                f.write(audio_data)
+        if fine_grained:
+            # Split into sentences
+            sub_segments = split_text_into_sentences(line)
 
-            audio_files.append((filename, len(audio_data), line))
-            all_audio_data.append(audio_data)
+            for sub_idx, (sub_text, char_count) in enumerate(sub_segments):
+                segment_index = len(all_segments) + 1
 
-            print(f"  OK {filename} ({len(audio_data)} bytes)")
+                try:
+                    print(f"[{segment_index}] Generating: {sub_text[:30]}...")
+                    audio_data = generate_tts(sub_text.strip(), speaker)
 
-        except Exception as e:
-            print(f"  ERROR: {e}")
-            continue
+                    # Get actual duration
+                    temp_filename = f"temp_{segment_index}.mp3"
+                    temp_filepath = os.path.join(output_dir, temp_filename)
+                    with open(temp_filepath, "wb") as f:
+                        f.write(audio_data)
+
+                    duration = get_audio_duration(temp_filepath)
+
+                    # Fallback to character-based estimation if ffprobe failed
+                    if duration is None:
+                        duration = len(sub_text) / 4.5
+                        print(f"  ⚠ Using fallback duration: {duration:.2f}s")
+
+                    # Rename to permanent file
+                    filename = f"voiceover-{segment_index:02d}.mp3"
+                    filepath = os.path.join(output_dir, filename)
+                    os.rename(temp_filepath, filepath)
+
+                    # Calculate subtitle timing (relative to video start)
+                    segment_start = video_time
+                    segment_end = video_time + duration
+
+                    all_segments.append({
+                        'index': segment_index,
+                        'shot': shot_index,
+                        'sub_index': sub_idx + 1,
+                        'file': filename,
+                        'size_bytes': len(audio_data),
+                        'text': sub_text,
+                        'duration_seconds': round(duration, 2),
+                        'start': round(segment_start, 2),
+                        'end': round(segment_end, 2)
+                    })
+                    all_audio_data.append(audio_data)
+
+                    # Update cumulative time
+                    video_time += duration
+
+                    print(f"  OK {filename} ({len(audio_data)} bytes, {duration:.2f}s)")
+
+                except Exception as e:
+                    print(f"  ERROR: {e}")
+                    continue
+
+        else:
+            # Original behavior: one audio file per line
+            try:
+                print(f"[{line_idx}/{len(lines)}] Generating: {line[:30]}...")
+                audio_data = generate_tts(line.strip(), speaker)
+
+                filename = f"voiceover-{line_idx:02d}.mp3"
+                filepath = os.path.join(output_dir, filename)
+
+                # Save to temp file first to get duration
+                temp_filepath = os.path.join(output_dir, f"temp_{line_idx}.mp3")
+                with open(temp_filepath, "wb") as f:
+                    f.write(audio_data)
+
+                duration = get_audio_duration(temp_filepath)
+
+                # Fallback to character-based estimation
+                if duration is None:
+                    duration = len(line) / 4.5
+                    print(f"  ⚠ Using fallback duration: {duration:.2f}s")
+
+                os.rename(temp_filepath, filepath)
+
+                # Calculate timing
+                segment_start = video_time
+                segment_end = video_time + duration
+                video_time += duration
+
+                all_segments.append({
+                    'index': line_idx,
+                    'shot': line_idx,
+                    'sub_index': 0,
+                    'file': filename,
+                    'size_bytes': len(audio_data),
+                    'text': line,
+                    'duration_seconds': round(duration, 2),
+                    'start': round(segment_start, 2),
+                    'end': round(segment_end, 2)
+                })
+                all_audio_data.append(audio_data)
+
+                print(f"  OK {filename} ({len(audio_data)} bytes, {duration:.2f}s)")
+
+            except Exception as e:
+                print(f"  ERROR: {e}")
+                continue
+
+    if not all_segments:
+        print("Error: No audio segments generated")
+        sys.exit(1)
 
     # Generate combined file
     if all_audio_data:
@@ -396,26 +506,20 @@ def generate_split_mode(text_file, output_dir, speaker):
             f.write(b"".join(all_audio_data))
         print(f"\nOK Combined audio saved: voiceover-full.mp3")
 
-    # Generate manifest file
+    # Generate enhanced manifest file
     manifest_path = os.path.join(output_dir, "voiceover-manifest.json")
     manifest = {
-        "total_segments": len(audio_files),
+        "total_segments": len(all_segments),
         "speaker": speaker,
-        "segments": [
-            {
-                "index": i + 1,
-                "file": filename,
-                "size_bytes": size,
-                "text": text
-            }
-            for i, (filename, size, text) in enumerate(audio_files)
-        ]
+        "total_duration_seconds": round(video_time, 2),
+        "segments": all_segments
     }
+
     with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(manifest, f, ensure_ascii=False, indent=2)
     print(f"OK Manifest saved: voiceover-manifest.json")
 
-    return audio_files
+    return all_segments
 
 
 def generate_single_mode(text_file, output_file, speaker):
@@ -463,21 +567,22 @@ def main():
     if len(sys.argv) < 3:
         print("Usage:")
         print("  Single file: python generate_voiceover.py <text_file> <output_file> [speaker]")
-        print("  Split mode:  python generate_voiceover.py split <text_file> <output_dir> [speaker]")
+        print("  Split mode:  python generate_voiceover.py split <text_file> <output_dir> [speaker] [--no-fine]")
         print(f"\nDefault speaker: {DEFAULT_SPEAKER}")
+        print("  --no-fine: Disable sentence-level splitting (one file per line)")
         sys.exit(1)
 
     mode = sys.argv[1]
 
     if mode == "split":
-        # Split mode: generate separate files for each line
         if len(sys.argv) < 4:
-            print("Usage: python generate_voiceover.py split <text_file> <output_dir> [speaker]")
+            print("Usage: python generate_voiceover.py split <text_file> <output_dir> [speaker] [--no-fine]")
             sys.exit(1)
         text_file = sys.argv[2]
         output_dir = sys.argv[3]
-        speaker = sys.argv[4] if len(sys.argv) > 4 else DEFAULT_SPEAKER
-        generate_split_mode(text_file, output_dir, speaker)
+        speaker = sys.argv[4] if len(sys.argv) > 4 and not sys.argv[4].startswith('--') else DEFAULT_SPEAKER
+        fine_grained = '--no-fine' not in sys.argv
+        generate_split_mode(text_file, output_dir, speaker, fine_grained)
     else:
         # Single file mode
         text_file = sys.argv[1]
