@@ -15,7 +15,7 @@ import base64
 import json
 import re
 import subprocess
-from typing import Optional
+from typing import Optional, Union
 
 try:
     import requests
@@ -26,6 +26,9 @@ except ImportError:
 # API Configuration
 API_URL = "https://openspeech.bytedance.com/api/v3/tts/unidirectional"
 RESOURCE_ID = "seed-tts-2.0"  # For TTS 2.0 voices
+
+# Maximum segment length before using weak punctuation for splitting
+MAX_SEGMENT_LENGTH = 40
 
 # Default speaker
 DEFAULT_SPEAKER = "zh_male_liufei_uranus_bigtts"
@@ -161,13 +164,13 @@ def parse_voiceover_text(content):
     return result
 
 
-def split_text_into_sentences(text):
+def split_text_into_sentences(text: str) -> list[tuple[str, int]]:
     """
     Split Chinese text into sentences by punctuation.
 
     Rules:
-    - Split by 。！？...（strong stops)
-    - Also split by ，；:（weak stops) for longer segments
+    - Split by 。！？（strong stops)
+    - Also split by ，；、（weak stops) for longer segments
     - Preserve quotes and parentheses
 
     Args:
@@ -176,6 +179,8 @@ def split_text_into_sentences(text):
     Returns:
         list of tuples: [(sentence_text, char_count), ...]
     """
+    import re
+
     # First, try strong punctuation (sentence boundaries)
     strong_pattern = r'([^。！？\n]+[。！？]?)'
     sentences = re.split(strong_pattern, text)
@@ -186,9 +191,10 @@ def split_text_into_sentences(text):
         s = s.strip()
         if not s:
             continue
-        # Check if this segment is still too long (>40 chars)
-        if len(s) > 40:
-            # Split by weak punctuation (comma, semicolon, colon)
+        # Check if this segment is still too long
+        if len(s) > MAX_SEGMENT_LENGTH:
+            # Split by weak punctuation (comma, semicolon, pause mark)
+            # Using capturing group so delimiters are included in result
             weak_parts = re.split(r'([，；、])', s)
             current = ""
             for part in weak_parts:
@@ -208,7 +214,10 @@ def split_text_into_sentences(text):
     return [(s, len(s)) for s in result if s.strip()]
 
 
-def calculate_subtitle_timing(sub_segments, total_duration):
+def calculate_subtitle_timing(
+    sub_segments: list[tuple[str, int]],
+    total_duration: float
+) -> list[dict[str, Union[float, str]]]:
     """
     Calculate timing for each subtitle segment proportionally to character count.
 
@@ -217,7 +226,7 @@ def calculate_subtitle_timing(sub_segments, total_duration):
         total_duration: Total audio duration in seconds
 
     Returns:
-        List of dicts with start, end, text keys
+        List of dicts with start, end, text, duration keys
     """
     if not sub_segments:
         return []
@@ -236,6 +245,10 @@ def calculate_subtitle_timing(sub_segments, total_duration):
             'duration': round(duration, 2)
         })
         current_time += duration
+
+    # Fix floating-point drift: ensure last segment ends exactly at total_duration
+    if result:
+        result[-1]['end'] = round(total_duration, 2)
 
     return result
 
