@@ -161,6 +161,85 @@ def parse_voiceover_text(content):
     return result
 
 
+def split_text_into_sentences(text):
+    """
+    Split Chinese text into sentences by punctuation.
+
+    Rules:
+    - Split by 。！？...（strong stops)
+    - Also split by ，；:（weak stops) for longer segments
+    - Preserve quotes and parentheses
+
+    Args:
+        text: Input text string
+
+    Returns:
+        list of tuples: [(sentence_text, char_count), ...]
+    """
+    # First, try strong punctuation (sentence boundaries)
+    strong_pattern = r'([^。！？\n]+[。！？]?)'
+    sentences = re.split(strong_pattern, text)
+
+    # Filter out empty strings and rejoin with what was captured
+    result = []
+    for s in sentences:
+        s = s.strip()
+        if not s:
+            continue
+        # Check if this segment is still too long (>40 chars)
+        if len(s) > 40:
+            # Split by weak punctuation (comma, semicolon, colon)
+            weak_parts = re.split(r'([，；、])', s)
+            current = ""
+            for part in weak_parts:
+                if part in '，；、':
+                    current += part
+                    if current:
+                        result.append(current)
+                        current = ""
+                else:
+                    current += part
+            if current:
+                result.append(current)
+        else:
+            result.append(s)
+
+    # Return as list of (text, length) tuples
+    return [(s, len(s)) for s in result if s.strip()]
+
+
+def calculate_subtitle_timing(sub_segments, total_duration):
+    """
+    Calculate timing for each subtitle segment proportionally to character count.
+
+    Args:
+        sub_segments: List of (text, char_count) tuples
+        total_duration: Total audio duration in seconds
+
+    Returns:
+        List of dicts with start, end, text keys
+    """
+    if not sub_segments:
+        return []
+
+    total_chars = sum(count for _, count in sub_segments)
+    result = []
+    current_time = 0
+
+    for text, count in sub_segments:
+        # Proportional duration
+        duration = (count / total_chars) * total_duration if total_chars > 0 else total_duration
+        result.append({
+            'text': text,
+            'start': round(current_time, 2),
+            'end': round(current_time + duration, 2),
+            'duration': round(duration, 2)
+        })
+        current_time += duration
+
+    return result
+
+
 def generate_tts(text, speaker=None):
     """
     Generate TTS audio using Volcano Ark API.
