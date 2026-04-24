@@ -15,6 +15,7 @@ import base64
 import json
 import re
 import subprocess
+from typing import Optional
 
 try:
     import requests
@@ -30,7 +31,7 @@ RESOURCE_ID = "seed-tts-2.0"  # For TTS 2.0 voices
 DEFAULT_SPEAKER = "zh_male_liufei_uranus_bigtts"
 
 
-def get_audio_duration(audio_file_path):
+def get_audio_duration(audio_file_path: str) -> Optional[float]:
     """
     Get the actual duration of an audio file using ffprobe.
 
@@ -38,7 +39,7 @@ def get_audio_duration(audio_file_path):
         audio_file_path: Path to the audio file
 
     Returns:
-        float: Duration in seconds, or None if detection fails
+        Duration in seconds, or None if detection fails
     """
     try:
         cmd = [
@@ -51,6 +52,9 @@ def get_audio_duration(audio_file_path):
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         duration = float(result.stdout.strip())
         return duration
+    except FileNotFoundError:
+        print(f"  Warning: ffprobe not found. Is ffmpeg installed?")
+        return None
     except subprocess.CalledProcessError as e:
         print(f"  Warning: Could not get duration for {audio_file_path}: {e}")
         return None
