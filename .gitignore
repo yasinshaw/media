@@ -10,6 +10,10 @@ node_modules/
 .DS_Store
 Thumbs.db
 
+# Python
+__pycache__/
+*.pyc
+
 # IDE
 .vscode/
 .idea/
