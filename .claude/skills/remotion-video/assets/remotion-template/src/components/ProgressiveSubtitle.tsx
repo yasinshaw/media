@@ -1,7 +1,9 @@
 import React from 'react'
 import { AbsoluteFill, useCurrentFrame, interpolate } from 'remotion'
+import { cleanSubtitleText } from './subtitle-utils'
+import { SAFE_AREA, SUBTITLE, LAYOUT } from './constants'
 
-interface SubtitleSegment {
+export interface SubtitleSegment {
   text: string
   start: number // Start time relative to video start (seconds)
   end: number // End time relative to video start (seconds)
@@ -18,7 +20,7 @@ export const ProgressiveSubtitle: React.FC<ProgressiveSubtitleProps> = ({
   videoOffset = 0,
 }) => {
   const frame = useCurrentFrame()
-  const fps = 30
+  const fps = LAYOUT.FPS
 
   // Calculate current time relative to VIDEO start (not shot start)
   // This matches the timing in manifest (which is also relative to video start)
@@ -34,9 +36,8 @@ export const ProgressiveSubtitle: React.FC<ProgressiveSubtitleProps> = ({
     return null
   }
 
-  // Calculate fade-in progress (6 frames = 0.2s)
   const timeIntoSegment = currentTime - activeSegment.start
-  const fadeInDuration = 0.2 // seconds
+  const fadeInDuration = SUBTITLE.FADE_DURATION / fps
   const fadeInProgress = Math.min(timeIntoSegment / fadeInDuration, 1)
 
   // For very short segments, adjust opacity curve
@@ -50,27 +51,27 @@ export const ProgressiveSubtitle: React.FC<ProgressiveSubtitleProps> = ({
       <div
         style={{
           position: 'absolute',
-          bottom: 240,
+          bottom: SAFE_AREA.SUBTITLE_BOTTOM,
           left: 0,
           right: 0,
           display: 'flex',
           justifyContent: 'center',
-          padding: '0 60px',
+          padding: `0 ${SUBTITLE.SIDE_PADDING}px`,
           opacity,
         }}
       >
         <span
           style={{
             color: '#FFFFFF',
-            fontSize: 46,
+            fontSize: SUBTITLE.FONT_SIZE,
             fontWeight: 'bold',
             textAlign: 'center',
-            lineHeight: 1.4,
+            lineHeight: SUBTITLE.LINE_HEIGHT,
             letterSpacing: '1px',
             textShadow: '2px 2px 6px rgba(0,0,0,0.95), 0 0 16px rgba(0,0,0,0.6)',
           }}
         >
-          {activeSegment.text}
+          {cleanSubtitleText(activeSegment.text)}
         </span>
       </div>
     </AbsoluteFill>

@@ -1,0 +1,7 @@
+export { Shot1 } from './Shot1'
+export { Shot2 } from './Shot2'
+export { Shot3 } from './Shot3'
+export { Shot4 } from './Shot4'
+export { Shot5 } from './Shot5'
+export { Shot6 } from './Shot6'
+export { Shot7 } from './Shot7'

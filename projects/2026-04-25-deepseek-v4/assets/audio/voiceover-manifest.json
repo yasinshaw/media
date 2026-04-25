@@ -1,0 +1,271 @@
+{
+  "total_segments": 24,
+  "speaker": "zh_male_liufei_uranus_bigtts",
+  "total_duration_seconds": 97.44,
+  "segments": [
+    {
+      "index": 1,
+      "shot": 1,
+      "sub_index": 1,
+      "file": "voiceover-01.mp3",
+      "size_bytes": 32301,
+      "text": "DeepSeek V4来了，这次国产AI真的追上来了。",
+      "duration_seconds": 4.03,
+      "start": 0,
+      "end": 4.03
+    },
+    {
+      "index": 2,
+      "shot": 2,
+      "sub_index": 1,
+      "file": "voiceover-02.mp3",
+      "size_bytes": 40557,
+      "text": "之前大家总觉得国产模型差一截，要么性能不够，要么太贵。",
+      "duration_seconds": 5.06,
+      "start": 4.03,
+      "end": 9.1
+    },
+    {
+      "index": 3,
+      "shot": 2,
+      "sub_index": 2,
+      "file": "voiceover-03.mp3",
+      "size_bytes": 53229,
+      "text": "但这次V4，性能逼近GPT-5.5，价格只要人家的六分之一。",
+      "duration_seconds": 6.65,
+      "start": 9.1,
+      "end": 15.74
+    },
+    {
+      "index": 4,
+      "shot": 3,
+      "sub_index": 1,
+      "file": "voiceover-04.mp3",
+      "size_bytes": 43629,
+      "text": "V4 Pro总共1.6万亿参数，是目前最大的开源模型。",
+      "duration_seconds": 5.45,
+      "start": 15.74,
+      "end": 21.19
+    },
+    {
+      "index": 5,
+      "shot": 3,
+      "sub_index": 2,
+      "file": "voiceover-05.mp3",
+      "size_bytes": 50349,
+      "text": "但它用MoE架构，每次推理只激活490亿，既大又省。",
+      "duration_seconds": 6.29,
+      "start": 21.19,
+      "end": 27.48
+    },
+    {
+      "index": 6,
+      "shot": 3,
+      "sub_index": 3,
+      "file": "voiceover-06.mp3",
+      "size_bytes": 48429,
+      "text": "而且它原生支持100万token上下文，一整本三体扔进去都能一次读完。",
+      "duration_seconds": 6.05,
+      "start": 27.48,
+      "end": 33.53
+    },
+    {
+      "index": 7,
+      "shot": 4,
+      "sub_index": 1,
+      "file": "voiceover-07.mp3",
+      "size_bytes": 11757,
+      "text": "跟国内选手比，",
+      "duration_seconds": 1.46,
+      "start": 33.53,
+      "end": 34.99
+    },
+    {
+      "index": 8,
+      "shot": 4,
+      "sub_index": 2,
+      "file": "voiceover-08.mp3",
+      "size_bytes": 25965,
+      "text": "代码实战Kimi K2.5目前最强，",
+      "duration_seconds": 3.24,
+      "start": 34.99,
+      "end": 38.23
+    },
+    {
+      "index": 9,
+      "shot": 4,
+      "sub_index": 3,
+      "file": "voiceover-09.mp3",
+      "size_bytes": 29229,
+      "text": "SWE-Bench拿了76.8%。",
+      "duration_seconds": 3.65,
+      "start": 38.23,
+      "end": 41.88
+    },
+    {
+      "index": 10,
+      "shot": 4,
+      "sub_index": 4,
+      "file": "voiceover-10.mp3",
+      "size_bytes": 48237,
+      "text": "但V4也有自己的王牌：编程HumanEval从上一代62.8飙到76.8，",
+      "duration_seconds": 6.02,
+      "start": 41.88,
+      "end": 47.9
+    },
+    {
+      "index": 11,
+      "shot": 4,
+      "sub_index": 5,
+      "file": "voiceover-11.mp3",
+      "size_bytes": 16365,
+      "text": "追平一线水平，",
+      "duration_seconds": 2.04,
+      "start": 47.9,
+      "end": 49.94
+    },
+    {
+      "index": 12,
+      "shot": 4,
+      "sub_index": 6,
+      "file": "voiceover-12.mp3",
+      "size_bytes": 29037,
+      "text": "而且数学推理领域领先国产同侪。",
+      "duration_seconds": 3.62,
+      "start": 49.94,
+      "end": 53.57
+    },
+    {
+      "index": 13,
+      "shot": 5,
+      "sub_index": 1,
+      "file": "voiceover-13.mp3",
+      "size_bytes": 16365,
+      "text": "放到国际上更亮眼。",
+      "duration_seconds": 2.04,
+      "start": 53.57,
+      "end": 55.61
+    },
+    {
+      "index": 14,
+      "shot": 5,
+      "sub_index": 2,
+      "file": "voiceover-14.mp3",
+      "size_bytes": 48429,
+      "text": "BrowseComp测试83.4%，直接超过Claude Opus 4.7。",
+      "duration_seconds": 6.05,
+      "start": 55.61,
+      "end": 61.66
+    },
+    {
+      "index": 15,
+      "shot": 5,
+      "sub_index": 3,
+      "file": "voiceover-15.mp3",
+      "size_bytes": 24621,
+      "text": "数学推理连GPT-5都被超越了。",
+      "duration_seconds": 3.07,
+      "start": 61.66,
+      "end": 64.73
+    },
+    {
+      "index": 16,
+      "shot": 5,
+      "sub_index": 4,
+      "file": "voiceover-16.mp3",
+      "size_bytes": 32301,
+      "text": "简单说，搜索和数学，已经站到世界第一梯队。",
+      "duration_seconds": 4.03,
+      "start": 64.73,
+      "end": 68.76
+    },
+    {
+      "index": 17,
+      "shot": 6,
+      "sub_index": 1,
+      "file": "voiceover-17.mp3",
+      "size_bytes": 18285,
+      "text": "价格才是最大亮点。",
+      "duration_seconds": 2.28,
+      "start": 68.76,
+      "end": 71.04
+    },
+    {
+      "index": 18,
+      "shot": 6,
+      "sub_index": 2,
+      "file": "voiceover-18.mp3",
+      "size_bytes": 34029,
+      "text": "V4 Flash每百万token只要0.14美元，",
+      "duration_seconds": 4.25,
+      "start": 71.04,
+      "end": 75.29
+    },
+    {
+      "index": 19,
+      "shot": 6,
+      "sub_index": 3,
+      "file": "voiceover-19.mp3",
+      "size_bytes": 21357,
+      "text": "比GPT-5.4 Nano还便宜，",
+      "duration_seconds": 2.66,
+      "start": 75.29,
+      "end": 77.95
+    },
+    {
+      "index": 20,
+      "shot": 6,
+      "sub_index": 4,
+      "file": "voiceover-20.mp3",
+      "size_bytes": 21357,
+      "text": "比Claude Haiku便宜7倍。",
+      "duration_seconds": 2.66,
+      "start": 77.95,
+      "end": 80.62
+    },
+    {
+      "index": 21,
+      "shot": 6,
+      "sub_index": 5,
+      "file": "voiceover-21.mp3",
+      "size_bytes": 37293,
+      "text": "Pro版也只要1.74美元，竞品都是十美元起步。",
+      "duration_seconds": 4.66,
+      "start": 80.62,
+      "end": 85.27
+    },
+    {
+      "index": 22,
+      "shot": 7,
+      "sub_index": 1,
+      "file": "voiceover-22.mp3",
+      "size_bytes": 34221,
+      "text": "开源、最大、最便宜，数学推理领先。",
+      "duration_seconds": 4.27,
+      "start": 85.27,
+      "end": 89.54
+    },
+    {
+      "index": 23,
+      "shot": 7,
+      "sub_index": 2,
+      "file": "voiceover-23.mp3",
+      "size_bytes": 37293,
+      "text": "DeepSeek V4正在重新定义AI的性价比天花板。",
+      "duration_seconds": 4.66,
+      "start": 89.54,
+      "end": 94.2
+    },
+    {
+      "index": 24,
+      "shot": 7,
+      "sub_index": 3,
+      "file": "voiceover-24.mp3",
+      "size_bytes": 25965,
+      "text": "关注我，第一时间解读最新AI动态。",
+      "duration_seconds": 3.24,
+      "start": 94.2,
+      "end": 97.44
+    }
+  ]
+}

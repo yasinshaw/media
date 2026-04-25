@@ -1,0 +1,260 @@
+{
+  "total_segments": 23,
+  "speaker": "zh_male_liufei_uranus_bigtts",
+  "total_duration_seconds": 76.34,
+  "segments": [
+    {
+      "index": 1,
+      "shot": 1,
+      "sub_index": 1,
+      "file": "voiceover-01.mp3",
+      "size_bytes": 16365,
+      "text": "GPT-5.5来了！",
+      "duration_seconds": 2.04,
+      "start": 0,
+      "end": 2.04
+    },
+    {
+      "index": 2,
+      "shot": 1,
+      "sub_index": 2,
+      "file": "voiceover-02.mp3",
+      "size_bytes": 29229,
+      "text": "多项基准领先，但有一个项目它输了。",
+      "duration_seconds": 3.65,
+      "start": 2.04,
+      "end": 5.69
+    },
+    {
+      "index": 3,
+      "shot": 2,
+      "sub_index": 1,
+      "file": "voiceover-03.mp3",
+      "size_bytes": 18093,
+      "text": "你还在用GPT-5.4吗？",
+      "duration_seconds": 2.26,
+      "start": 5.69,
+      "end": 7.94
+    },
+    {
+      "index": 4,
+      "shot": 2,
+      "sub_index": 2,
+      "file": "voiceover-04.mp3",
+      "size_bytes": 50157,
+      "text": "推理能力提升8%，代码能力提升9%，计算机操作提升5%。",
+      "duration_seconds": 6.26,
+      "start": 7.94,
+      "end": 14.21
+    },
+    {
+      "index": 5,
+      "shot": 2,
+      "sub_index": 3,
+      "file": "voiceover-05.mp3",
+      "size_bytes": 11757,
+      "text": "差距已经拉开了。",
+      "duration_seconds": 1.46,
+      "start": 14.21,
+      "end": 15.67
+    },
+    {
+      "index": 6,
+      "shot": 3,
+      "sub_index": 1,
+      "file": "voiceover-06.mp3",
+      "size_bytes": 11757,
+      "text": "来看硬核数据。",
+      "duration_seconds": 1.46,
+      "start": 15.67,
+      "end": 17.14
+    },
+    {
+      "index": 7,
+      "shot": 3,
+      "sub_index": 2,
+      "file": "voiceover-07.mp3",
+      "size_bytes": 48237,
+      "text": "编码测试82.7%，远超Claude Opus的69.4%。",
+      "duration_seconds": 6.02,
+      "start": 17.14,
+      "end": 23.16
+    },
+    {
+      "index": 8,
+      "shot": 3,
+      "sub_index": 3,
+      "file": "voiceover-08.mp3",
+      "size_bytes": 38637,
+      "text": "数学推理51.7%，高难数学35.4%。",
+      "duration_seconds": 4.82,
+      "start": 23.16,
+      "end": 27.98
+    },
+    {
+      "index": 9,
+      "shot": 3,
+      "sub_index": 4,
+      "file": "voiceover-09.mp3",
+      "size_bytes": 35565,
+      "text": "网络安全81.8%，Claude只有73.1%。",
+      "duration_seconds": 4.44,
+      "start": 27.98,
+      "end": 32.42
+    },
+    {
+      "index": 10,
+      "shot": 4,
+      "sub_index": 1,
+      "file": "voiceover-10.mp3",
+      "size_bytes": 29229,
+      "text": "GPT-5.5最大的升级在Agent能力。",
+      "duration_seconds": 3.65,
+      "start": 32.42,
+      "end": 36.07
+    },
+    {
+      "index": 11,
+      "shot": 4,
+      "sub_index": 2,
+      "file": "voiceover-11.mp3",
+      "size_bytes": 59757,
+      "text": "它能自主完成复杂任务，跨多个工具协作，从写代码、做研究到分析数据，一条龙搞定。",
+      "duration_seconds": 7.46,
+      "start": 36.07,
+      "end": 43.54
+    },
+    {
+      "index": 12,
+      "shot": 5,
+      "sub_index": 1,
+      "file": "voiceover-12.mp3",
+      "size_bytes": 22701,
+      "text": "速度和GPT-5.4一样快，",
+      "duration_seconds": 2.83,
+      "start": 43.54,
+      "end": 46.37
+    },
+    {
+      "index": 13,
+      "shot": 5,
+      "sub_index": 2,
+      "file": "voiceover-13.mp3",
+      "size_bytes": 18093,
+      "text": "但token效率更高，",
+      "duration_seconds": 2.26,
+      "start": 46.37,
+      "end": 48.62
+    },
+    {
+      "index": 14,
+      "shot": 5,
+      "sub_index": 3,
+      "file": "voiceover-14.mp3",
+      "size_bytes": 18093,
+      "text": "完成任务更省token，",
+      "duration_seconds": 2.26,
+      "start": 48.62,
+      "end": 50.88
+    },
+    {
+      "index": 15,
+      "shot": 5,
+      "sub_index": 4,
+      "file": "voiceover-15.mp3",
+      "size_bytes": 11757,
+      "text": "性价比直接拉满。",
+      "duration_seconds": 1.46,
+      "start": 50.88,
+      "end": 52.34
+    },
+    {
+      "index": 16,
+      "shot": 6,
+      "sub_index": 1,
+      "file": "voiceover-16.mp3",
+      "size_bytes": 21357,
+      "text": "但GPT-5.5并非无敌。",
+      "duration_seconds": 2.66,
+      "start": 52.34,
+      "end": 55.01
+    },
+    {
+      "index": 17,
+      "shot": 6,
+      "sub_index": 2,
+      "file": "voiceover-17.mp3",
+      "size_bytes": 22701,
+      "text": "BrowseComp网页浏览测试，",
+      "duration_seconds": 2.83,
+      "start": 55.01,
+      "end": 57.84
+    },
+    {
+      "index": 18,
+      "shot": 6,
+      "sub_index": 3,
+      "file": "voiceover-18.mp3",
+      "size_bytes": 27693,
+      "text": "Gemini 3.1 Pro拿到85.9%，",
+      "duration_seconds": 3.46,
+      "start": 57.84,
+      "end": 61.3
+    },
+    {
+      "index": 19,
+      "shot": 6,
+      "sub_index": 4,
+      "file": "voiceover-19.mp3",
+      "size_bytes": 27693,
+      "text": "反超了GPT-5.5的84.4%。",
+      "duration_seconds": 3.46,
+      "start": 61.3,
+      "end": 64.75
+    },
+    {
+      "index": 20,
+      "shot": 6,
+      "sub_index": 5,
+      "file": "voiceover-20.mp3",
+      "size_bytes": 22893,
+      "text": "所以选AI工具，别只看综合分。",
+      "duration_seconds": 2.86,
+      "start": 64.75,
+      "end": 67.61
+    },
+    {
+      "index": 21,
+      "shot": 7,
+      "sub_index": 1,
+      "file": "voiceover-21.mp3",
+      "size_bytes": 25965,
+      "text": "想了解GPT-5.5怎么用最有效？",
+      "duration_seconds": 3.24,
+      "start": 67.61,
+      "end": 70.85
+    },
+    {
+      "index": 22,
+      "shot": 7,
+      "sub_index": 2,
+      "file": "voiceover-22.mp3",
+      "size_bytes": 19629,
+      "text": "关注我，下期出实战教程。",
+      "duration_seconds": 2.45,
+      "start": 70.85,
+      "end": 73.3
+    },
+    {
+      "index": 23,
+      "shot": 7,
+      "sub_index": 3,
+      "file": "voiceover-23.mp3",
+      "size_bytes": 24429,
+      "text": "觉得有用就点赞收藏，我们下期见。",
+      "duration_seconds": 3.05,
+      "start": 73.3,
+      "end": 76.34
+    }
+  ]
+}
