@@ -9,6 +9,19 @@ description: >
 
 You are a senior Remotion video reviewer who audits code for Douyin short videos. **After review, automatically apply fixes unless user declines.**
 
+## Remotion Best Practices
+
+**Before reviewing, invoke the `remotion-best-practices` skill** to load authoritative Remotion knowledge. Key rules to validate:
+
+- **CSS transitions/animations are FORBIDDEN** — must use `useCurrentFrame()` + `interpolate()`/`spring()`. See `rules/animations.md`.
+- **`fps` must come from `useVideoConfig()`**, never hardcoded. See `rules/animations.md`.
+- **All `<Sequence>` must have `premountFor={1 * fps}`.** See `rules/sequencing.md`.
+- **Spring configs should use named presets** (smooth/snappy/bouncy/heavy). See `rules/timing.md`.
+- **`TransitionSeries` for scene transitions** instead of custom wrappers. See `rules/transitions.md`.
+- **`interpolate` must include `{ extrapolateRight: 'clamp' }`.** See `rules/timing.md`.
+- **Audio paths must use `staticFile()`.** See `rules/audio.md`.
+- **Read relevant rules as needed** for detailed validation criteria.
+
 ## Workflow
 
 ### Step 1: Locate Project
@@ -26,7 +39,17 @@ Find project by slug or directory name in `projects/`. Parse `script.md` for exp
 - `/video-review gpt-image2-compare` — review only, no render
 - `/video-review gpt-image2-compare --render` — review and auto-render if pass
 
-### Step 2: Code Review
+### Step 2: Load Best Practices
+
+Invoke the `remotion-best-practices` skill. Read relevant rules based on what the code uses:
+- `rules/animations.md` — CSS transition detection
+- `rules/timing.md` — spring config validation, clamp check
+- `rules/sequencing.md` — premount check
+- `rules/transitions.md` — TransitionSeries validation
+- `rules/audio.md` — staticFile check, advanced audio
+- `rules/fonts.md` — font loading validation
+
+### Step 3: Code Review
 
 Read all Remotion source files for the project:
 - `remotion/src/projects/<slug>/composition.tsx`
@@ -42,7 +65,7 @@ Check against the Code Review Checklist below.
 - Check `zIndex` values — SVG lines should be behind connected elements
 - For circular layouts, verify math calculations are consistent between elements and lines
 
-### Step 3: Script-to-Code Consistency
+### Step 4: Script-to-Code Consistency
 
 Cross-reference script.md with Remotion code:
 - Shot count matches
@@ -50,11 +73,22 @@ Cross-reference script.md with Remotion code:
 - Subtitle text matches script 字幕
 - Visual direction (画面) mapped to correct component type
 
-### Step 4: Report & Auto-Fix
+### Step 4.5: Audio Integration Checks
+
+If the script contains `**BGM**` or `**音效**` annotations:
+
+- [ ] BGMAudio component present in composition (if `**BGM**` declared in script)
+- [ ] BGM volume in range 0.05–0.15
+- [ ] BGM asset file exists at `remotion/public/audio/bgm/<style>-<tempo>.mp3`
+- [ ] SFXLayer present in shots that have `**音效**` annotations
+- [ ] All referenced SFX files exist in `remotion/public/audio/sfx/`
+- [ ] SFX effects inside `<Sequence>` (not floating outside)
+
+### Step 5: Report & Auto-Fix
 
 Output structured review, then auto-fix issues.
 
-### Step 5: Render Video (Conditional — Only with --render flag)
+### Step 6: Render Video (Conditional — Only with --render flag)
 
 **Only execute this step if:**
 1. User provided `--render` flag, AND
@@ -81,7 +115,19 @@ After render completes:
 
 ## Code Review Checklist
 
-### 0. Layout Primitive Compliance (CRITICAL — most layout bugs originate here)
+### 0. Remotion Best Practices Compliance (CRITICAL — from remotion-best-practices skill)
+
+| Check | Detection | Severity | Auto-fix |
+|-------|-----------|----------|----------|
+| **CSS transitions/animations** | `transition:`, `animation:`, Tailwind `animate-*` classes | Critical | Remove CSS transition/animation, replace with `interpolate`/`spring` |
+| **Hardcoded fps instead of `useVideoConfig()`** | `fps: 30` literal in code (not from `useVideoConfig`) | Major | Replace with `const { fps } = useVideoConfig()` |
+| **Missing `premountFor` on `<Sequence>`** | `<Sequence from=... durationInFrames=...>` without `premountFor` | Major | Add `premountFor={1 * fps}` |
+| **Spring config magic numbers** | `spring({ config: { damping: 12, stiffness: 100 } })` without matching a named preset | Minor | Suggest closest preset (smooth/snappy/bouncy/heavy) |
+| **Custom transition wrappers** | `<FadeTransition>`, `<SlideTransition>` custom components wrapping content | Major | Replace with `TransitionSeries` from `@remotion/transitions` |
+| **`interpolate` without clamp** | `interpolate(...)` without `extrapolateRight: 'clamp'` | Minor | Add `{ extrapolateRight: 'clamp' }` |
+| **Missing `useVideoConfig` import** | File uses `spring()` but doesn't import `useVideoConfig` | Minor | Add `useVideoConfig` to import |
+
+### 1. Layout Primitive Compliance (CRITICAL — most layout bugs originate here)
 
 `/remotion-video` requires every shot to start from a Layout primitive (`CenteredStack`, `HubLayout`, `TwoColumnCompare`, `TimelineFlow`) unless explicitly justified. Hand-written `AbsoluteFill` with manual padding is the #1 source of misalignment, subtitle-zone overlap, and SVG drift.
 
@@ -96,7 +142,7 @@ After render completes:
 
 **Rule of thumb:** if a shot file imports `AbsoluteFill` directly from `'remotion'` AND does not import any layout primitive, flag for review.
 
-### 0.5 Manual-Positioning Discipline (when escape hatch is justified)
+### 1.5 Manual-Positioning Discipline (when escape hatch is justified)
 
 If a shot legitimately can't use a primitive, these rules from [remotion-video/references/manual-positioning.md](../remotion-video/references/manual-positioning.md) still apply:
 
@@ -108,7 +154,7 @@ If a shot legitimately can't use a primitive, these rules from [remotion-video/r
 | **Missing `extrapolateRight: 'clamp'`** | `interpolate(...)` calls without `clamp` | Minor | Add `{ extrapolateRight: 'clamp' }` |
 | **Boolean opacity transition** | `opacity:\s*\w+\s*\?\s*1\s*:\s*0` | Major | Replace with `interpolate` and overlapping ranges (see manual-positioning.md) |
 
-### 1. Douyin Format Compliance (CRITICAL)
+### 2. Douyin Format Compliance (CRITICAL)
 
 | Check | Requirement |
 |-------|-------------|
@@ -119,7 +165,7 @@ If a shot legitimately can't use a primitive, these rules from [remotion-video/r
 | Bottom safe area | 200px clear (Douyin UI overlay) |
 | Side safe areas | 40px each |
 
-### 2. Timing & Duration
+### 3. Timing & Duration
 
 | Check | Requirement |
 |-------|-------------|
@@ -130,7 +176,7 @@ If a shot legitimately can't use a primitive, these rules from [remotion-video/r
 
 Timing formula: `durationFrames = (endSeconds - startSeconds) × 30`
 
-### 3. Subtitle System
+### 4. Subtitle System
 
 | Check | Requirement |
 |-------|-------------|
@@ -144,7 +190,7 @@ Timing formula: `durationFrames = (endSeconds - startSeconds) × 30`
 | Fade in | 6 frames (0.2s at 30fps) |
 | HTML entities | `&gt;` for `>`, `&lt;` for `<` |
 
-### 4. Component Quality
+### 5. Component Quality
 
 | Check | Requirement |
 |-------|-------------|
@@ -154,7 +200,7 @@ Timing formula: `durationFrames = (endSeconds - startSeconds) × 30`
 | No inline magic numbers | Animations use named constants or reasonable defaults |
 | Extrapolation | `interpolate` calls include `{ extrapolateRight: 'clamp' }` |
 
-### 5. Animation Standards
+### 6. Animation Standards
 
 | Parameter | Recommended Range |
 |-----------|-------------------|
@@ -164,7 +210,7 @@ Timing formula: `durationFrames = (endSeconds - startSeconds) × 30`
 | Scale range | 0 → 1 |
 | Opacity range | 0 → 1 |
 
-### 5.1 Animation Smoothness (CRITICAL — Prevent Jump/Flicker)
+### 6.1 Animation Smoothness (CRITICAL — Prevent Jump/Flicker)
 
 **This section catches animation jump/flicker issues where elements transition abruptly.**
 
@@ -207,17 +253,55 @@ const secondOpacity = interpolate(progress, [0.30, 0.35, 0.62, 0.66], [0, 1, 1, 
 - If scale animates from 0, change to start from 0.7-0.8 for smoother entrance
 - Keep total transition window under 0.1 progress units for snappy feel
 
-### 6. Visual Consistency
+### 7. Visual Consistency
 
 | Check | Requirement |
 |-------|-------------|
-| Background | Consistent dark theme across shots (`#0a0a0a` or gradient) |
+| Background | Consistent dark theme across shots (`#0a0a0a` or gradient), OR AI-generated backgrounds for visual variety |
 | Typography | Font sizes follow scale (see remotion-video skill) |
 | Color palette | Consistent across shots (max 3-4 accent colors) |
 | Spacing | 30-50px gaps, 32-60px padding |
 | Border radius | 16-28px for modern look |
 
-### 7. Visual Alignment (CRITICAL — Common Misalignment Bugs)
+### 7.5 Visual Richness (NEW — quality gate for engaging videos)
+
+| Check | Requirement | Why |
+|-------|-------------|-----|
+| **TransitionSeries used** | Composition uses `TransitionSeries` from `@remotion/transitions` | Direct `<Sequence>` cuts = jarring, no polish |
+| **Transition variety** | At least 2 different transition types across shots | Same transition everywhere = monotonous |
+| **Light leak at key points** | `<LightLeak>` overlay at 1-2 major transitions (hook→pain, core→CTA) | Adds cinematic quality |
+| **Text effects on data shots** | Shots with numbers/stats use typewriter or word highlight | Plain text for data = flat, unengaging |
+| **AI background for hook** | Hook shot considers AI-generated background instead of plain gradient | First impression matters most |
+| **No all-same-background** | Not every shot uses the same `linear-gradient` | Visual fatigue |
+
+**Auto-fix rules for visual richness:**
+- **Missing TransitionSeries**: Replace `<AbsoluteFill>` + `<Sequence>` wrapping with `TransitionSeries` + `TransitionSeries.Sequence`
+- **All-same transition**: Vary transitions — use `fade` for gentle, `slide` for directional, `wipe` for dramatic
+- **No text effects on data shots**: Add typewriter animation for number reveals
+- **Hook shot plain gradient**: Suggest `ai背景图` type upgrade
+
+### 7.6 Light Leak Validation
+
+| Check | Requirement |
+|-------|-------------|
+| `@remotion/light-leaks` installed | Check `package.json` for dependency |
+| `<LightLeak>` used at key points | Between major scene changes (not every transition) |
+| `seed` varies | Different shots use different seed values for variety |
+| `hueShift` matches color scheme | Warm content → low hueShift, tech content → high hueShift (240) |
+
+### 7.7 Advanced Visual Effects Validation
+
+When the script specifies visual enhancement effects, verify correct implementation:
+
+| Effect | Package | Check |
+|--------|---------|-------|
+| 动态模糊 (motion blur) | `@remotion/motion-blur` | `<Trail>` has layers 3-8, lagInFrames 2-5; `<CameraMotionBlur>` has samples 5-10 |
+| 星芒放射 (starburst) | `@remotion/starburst` | `<Starburst>` has low opacity (0.15-0.35), used behind key content only |
+| 噪点纹理 (noise) | `@remotion/noise` | SVG feTurbulence overlay with low opacity (0.03-0.08), mixBlendMode: 'overlay' |
+| SVG 图形 | `@remotion/shapes` | Uses named components (Circle, Rect, Arrow, Pie), not raw SVG when shape suffices |
+| 动态图表 | built-in | Bar charts use staggered spring; line charts use `evolvePath` from `@remotion/paths` |
+
+### 8. Visual Alignment (CRITICAL — Common Misalignment Bugs)
 
 **This section catches visual misalignment issues where elements don't line up properly.**
 
@@ -303,7 +387,7 @@ const y = centerY + Math.sin(angle) * radius - 40  // Assumes 80px height!
 </div>
 ```
 
-### 8. Root Registration
+### 9. Root Registration
 
 ```tsx
 // Must be registered in root.tsx
@@ -357,6 +441,10 @@ Applied X fixes:
 ## Auto-Fix Rules
 
 **Auto-fix (apply directly):**
+- **Best practices: CSS `transition`/`animation` → remove, replace with `interpolate`/`spring`**
+- **Best practices: hardcoded `fps` literal → `const { fps } = useVideoConfig()`**
+- **Best practices: `<Sequence>` without `premountFor` → add `premountFor={1 * fps}`**
+- **Best practices: custom transition wrappers → `TransitionSeries` from `@remotion/transitions`**
 - **Layout: hand-written `padding: '120px 40px 200px'` → `<SafeArea>` wrapper**
 - **Layout: content `bottom: <420>` literal → `SAFE_AREA.CONTENT_BOTTOM` (or move to `footer` slot of primitive)**
 - **Layout: `left: x - <num>` / `top: y - <num>` centering → `transform: 'translate(-50%, -50%)'`**
