@@ -24,4 +24,4 @@ export { CTA } from './CTA'
 export { Demo } from './Demo'
 
 // === Constants ===
-export { SAFE_AREA, SUBTITLE, LAYOUT } from './constants'
+export { SAFE_AREA, SUBTITLE, LAYOUT, BGM, SFX, BGM_STYLE_MAP, SFX_FILE_MAP } from './constants'

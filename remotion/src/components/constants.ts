@@ -27,3 +27,38 @@ export const LAYOUT = {
   HEIGHT: 1920,
   FPS: 30,
 } as const
+
+export const BGM = {
+  DEFAULT_VOLUME: 0.08,
+  MIN_VOLUME: 0.01,
+  MAX_VOLUME: 0.20,
+  FADE_IN_SECONDS: 2,
+  FADE_OUT_SECONDS: 3,
+} as const
+
+export const SFX = {
+  VOLUME: 0.15,
+  DEFAULT_DELAYS: {
+    'whoosh-in': 0,
+    'whoosh': 0,
+    'impact': 1,
+    'text-pop': 0.5,
+    'outro': 0,
+  } as Record<string, number>,
+} as const
+
+export const BGM_STYLE_MAP: Record<string, string> = {
+  '科技电子': 'tech',
+  '轻松愉快': 'upbeat',
+  '紧张悬疑': 'tense',
+  '温馨抒情': 'warm',
+  '史诗大气': 'epic',
+} as const
+
+export const SFX_FILE_MAP: Record<string, string> = {
+  'whoosh-in': '/audio/sfx/whoosh-in.mp3',
+  'whoosh': '/audio/sfx/whoosh.mp3',
+  'impact': '/audio/sfx/impact.mp3',
+  'text-pop': '/audio/sfx/text-pop.mp3',
+  'outro': '/audio/sfx/outro.mp3',
+} as const
