@@ -1,5 +1,7 @@
 import React from 'react'
 import { AbsoluteFill, Sequence, Audio, staticFile } from 'remotion'
+import { BGMAudio } from '../../components'
+import { SFXLayer } from '../../components'
 import { Shot1 } from './shots/Shot1'
 import { Shot2 } from './shots/Shot2'
 import { Shot3 } from './shots/Shot3'
@@ -70,11 +72,15 @@ const durationInFrames = currentFrame
 export const DeepseekV4: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: '#0f172a' }}>
+      {/* Background music */}
+      <BGMAudio style="科技电子" tempo="medium" volume={0.08} />
+
       {/* Full audio for ProgressiveSubtitle timing */}
       <Audio src={staticFile('/audio/deepseek-v4/voiceover-full.mp3')} volume={1} />
 
       <Sequence from={shotFrames[0].from} durationInFrames={shotFrames[0].durationInFrames}>
         <Shot1 subtitleSegments={segments} videoOffset={shotData[0].startTime} />
+        <SFXLayer effects={[{ type: 'whoosh-in' }]} />
       </Sequence>
 
       <Sequence from={shotFrames[1].from} durationInFrames={shotFrames[1].durationInFrames}>
@@ -87,10 +93,12 @@ export const DeepseekV4: React.FC = () => {
 
       <Sequence from={shotFrames[3].from} durationInFrames={shotFrames[3].durationInFrames}>
         <Shot4 subtitleSegments={segments} videoOffset={shotData[3].startTime} />
+        <SFXLayer effects={[{ type: 'impact' }]} />
       </Sequence>
 
       <Sequence from={shotFrames[4].from} durationInFrames={shotFrames[4].durationInFrames}>
         <Shot5 subtitleSegments={segments} videoOffset={shotData[4].startTime} />
+        <SFXLayer effects={[{ type: 'impact' }]} />
       </Sequence>
 
       <Sequence from={shotFrames[5].from} durationInFrames={shotFrames[5].durationInFrames}>
@@ -99,6 +107,7 @@ export const DeepseekV4: React.FC = () => {
 
       <Sequence from={shotFrames[6].from} durationInFrames={shotFrames[6].durationInFrames}>
         <Shot7 subtitleSegments={segments} videoOffset={shotData[6].startTime} />
+        <SFXLayer effects={[{ type: 'outro' }]} />
       </Sequence>
     </AbsoluteFill>
   )
