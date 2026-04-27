@@ -25,6 +25,7 @@ export { Demo } from './Demo'
 
 // === Audio ===
 export { BGMAudio, type BGMAudioConfig } from './BGMAudio'
+export { SFXLayer, type SFXConfig } from './SFXLayer'
 
 // === Constants ===
 export { SAFE_AREA, SUBTITLE, LAYOUT, BGM, SFX, BGM_STYLE_MAP, SFX_FILE_MAP } from './constants'
