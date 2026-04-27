@@ -52,7 +52,7 @@ Format: `**BGM**: <style> | <tempo> | <volume>`
 
 Multiple effects per shot: `**音效**: impact, text-pop`
 
-Default: if `**音效**` is omitted, auto-add `whoosh` on transitions.
+Default: if `**音效**` is omitted, no auto-added sounds. Professional Douyin videos often avoid repetitive transition sounds — let `/video-script` explicitly decide when SFX adds value.
 
 ### Style mapping (Chinese → enum)
 
@@ -91,8 +91,9 @@ interface BGMAudioProps {
 ```
 
 Behavior:
-- Loads from `public/audio/bgm/<style>-<tempo>.mp3`
+- Loads via `staticFile('/audio/bgm/<style>-<tempo>.mp3')` (note: `staticFile()` paths omit `public/` prefix, matching existing codebase convention)
 - Uses `interpolate()` for fade in/out volume control
+- **Looping**: If BGM duration < video duration, use Remotion's `<Audio loop>` prop to loop seamlessly. BGM files should be chosen/edited for clean loop points.
 - Plays for entire composition duration
 
 ### SFXLayer component
@@ -103,7 +104,7 @@ interface SFXLayerProps {
 }
 
 interface SFXConfig {
-  type: 'whoosh-in' | 'whoosh' | 'impact' | 'text-pop' | 'outro'
+  type: string             // Curated values: 'whoosh-in' | 'whoosh' | 'impact' | 'text-pop' | 'outro'. Open string type allows future extensions without enum changes.
   delay?: number           // seconds after shot start, default varies by type
 }
 ```
@@ -115,7 +116,9 @@ Default delays by type:
 - `text-pop`: 0.5s
 - `outro`: 0s
 
-Fixed volume: 0.3, all effects < 1 second.
+Fixed volume: 0.15 (lowered from 0.3 to prevent clipping when overlapping with voiceover — Remotion mixes `<Audio>` sources additively). All effects < 1 second.
+
+**`premountFor` interaction**: When `SFXLayer` is inside a `<Sequence>` with `premountFor`, the effect's `delay` is relative to the Sequence's `from` frame, not the premount start. No special offset needed — `useCurrentFrame()` inside the Sequence returns frames relative to `from`.
 
 ### Composition integration
 
@@ -169,8 +172,8 @@ remotion/public/audio/
 - SFX: Pixabay Sound Effects / Freesound.org — short, clean effects
 
 **Runtime fallback** (in `/remotion-video`):
-- If `bgm/<style>-<tempo>.mp3` missing → search Pixabay → auto-download
-- Download fails → fallback to same-style `medium` tempo → warn user
+- If `bgm/<style>-<tempo>.mp3` missing → warn user and skip BGM (do NOT download at render time — network dependency and API rate limits make runtime downloads fragile)
+- Asset download should be a separate manual step or pre-build step, not embedded in the render pipeline
 
 ---
 
@@ -198,8 +201,9 @@ New Step 3.5 (between Check Voiceover Audio and Generate Components):
 
 1. Parse `**BGM**` from script → extract style/tempo/volume
 2. Check local asset exists (`public/audio/bgm/<style>-<tempo>.mp3`)
-3. If missing → search Pixabay → download → fallback + warn on failure
+3. If missing → warn user and skip BGM (no runtime download)
 4. Scan all shots' `**音效**` fields → build SFX config array
+5. Check all referenced SFX files exist in `public/audio/sfx/`
 
 Modified Step 6 (Generate Composition):
 - Add `<BGMAudio>` at composition top level
