@@ -23,5 +23,8 @@ export { SplitScreen } from './SplitScreen'
 export { CTA } from './CTA'
 export { Demo } from './Demo'
 
+// === Audio ===
+export { BGMAudio, type BGMAudioConfig } from './BGMAudio'
+
 // === Constants ===
 export { SAFE_AREA, SUBTITLE, LAYOUT, BGM, SFX, BGM_STYLE_MAP, SFX_FILE_MAP } from './constants'
