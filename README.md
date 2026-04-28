@@ -47,9 +47,21 @@ Designed for Douyin (TikTok China) vertical format (1080x1920, 30fps). Uses [Rem
 ```bash
 git clone https://github.com/yasinshaw/media.git
 cd media
-cp .env.example .env  # 填入你的 API 密钥
+cp .env.example .env  # 填入下方 API 密钥
 cd remotion && pnpm install
 ```
+
+**API 密钥配置：**
+
+复制 `.env.example` 为 `.env`，填入以下密钥：
+
+| 密钥 | 用途 | 获取方式 |
+|------|------|----------|
+| `VOLCARK_API_KEY` | AI 封面图生成（Seedream 5.0） | [火山方舟控制台](https://console.volcengine.com/ark) → API 密钥管理 |
+| `VOLC_TTS_API_KEY` | TTS 配音合成 | [火山引擎 TTS 控制台](https://console.volcengine.com/speech/service/8) → API 密钥管理 |
+| `TAVILY_API_KEY` | 联网调研搜索 | [Tavily](https://app.tavily.com/sign-in) 注册 → API Keys 页面 |
+
+> 只需配置你用到的功能对应的密钥。例如只生成脚本不需要配音和封面，只需 `TAVILY_API_KEY`。
 
 **制作第一个视频：**
 
@@ -208,9 +220,21 @@ Idea → Script → Review → Assets → Code → Review → Render → Publish
 ```bash
 git clone https://github.com/yasinshaw/media.git
 cd media
-cp .env.example .env  # Fill in your API keys
+cp .env.example .env  # Fill in API keys below
 cd remotion && pnpm install
 ```
+
+**API Keys:**
+
+Copy `.env.example` to `.env` and fill in the following keys:
+
+| Key | Purpose | How to get it |
+|-----|---------|---------------|
+| `VOLCARK_API_KEY` | AI cover image generation (Seedream 5.0) | [Volcano Ark Console](https://console.volcengine.com/ark) → API Key Management |
+| `VOLC_TTS_API_KEY` | TTS voiceover synthesis | [Volcano TTS Console](https://console.volcengine.com/speech/service/8) → API Key Management |
+| `TAVILY_API_KEY` | Web search for research | [Tavily](https://app.tavily.com/sign-in) → Sign up → API Keys |
+
+> Only configure the keys for features you need. For example, script generation alone only requires `TAVILY_API_KEY`.
 
 **Create Your First Video:**
 
