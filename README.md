@@ -12,6 +12,43 @@ Designed for Douyin (TikTok China) vertical format (1080x1920, 30fps). Uses [Rem
 
 ---
 
+## Showcase / 作品展示
+
+### 影视飓风 AI 工作流 (2026-04-28)
+
+拆解 1600 万粉影视飓风的 AI 工具链 — 从调研到成片，全程 AI 驱动。
+
+**封面：**
+
+<p>
+<img src="projects/2026-04-28-ying-shi-ju-feng-ai-workflow/assets/images/cover-landscape.png" width="400" alt="横版封面">
+&nbsp;
+<img src="projects/2026-04-28-ying-shi-ju-feng-ai-workflow/assets/images/cover-portrait.png" width="300" alt="竖版封面">
+</p>
+
+**配音：** [voiceover-full.mp3](projects/2026-04-28-ying-shi-ju-feng-ai-workflow/assets/audio/voiceover-full.mp3) (6 镜头完整配音)
+
+**渲染视频：** [ying-shi-ju-feng-ai-workflow.mp4](projects/2026-04-28-ying-shi-ju-feng-ai-workflow/output/ying-shi-ju-feng-ai-workflow.mp4) (1080×1920 竖屏 30fps, 5.4MB)
+
+<details>
+<summary>查看脚本与代码</summary>
+
+- [分镜脚本](projects/2026-04-28-ying-shi-ju-feng-ai-workflow/script.md) — 6 镜头，69 秒
+- [口播文案](projects/2026-04-28-ying-shi-ju-feng-ai-workflow/voiceover.md)
+- [调研文档](projects/2026-04-28-ying-shi-ju-feng-ai-workflow/research.md)
+- [审核报告](projects/2026-04-28-ying-shi-ju-feng-ai-workflow/review.md)
+- [Remotion 组合](remotion/src/projects/ying-shi-ju-feng-ai-workflow/composition.tsx) — 6 个镜头组件
+
+</details>
+
+### DeepSeek V4 (2026-04-25)
+
+| 成品 | 文件 | 说明 |
+|------|------|------|
+| 渲染视频 | `projects/2026-04-25-deepseek-v4/output/deepseek-v4.mp4` | 1080×1920 竖屏 30fps |
+
+---
+
 ## 中文
 
 ### 流水线概览
@@ -339,6 +376,15 @@ Auto-publishes to Douyin:
 ```
 media/
 ├── projects/                    # One directory per video / 每个视频一个目录
+│   ├── 2026-04-28-ying-shi-ju-feng-ai-workflow/
+│   │   ├── script.md            # Storyboard script / 分镜脚本
+│   │   ├── voiceover.md         # Extracted voiceover text / 口播文案
+│   │   ├── review.md            # Fact-check report / 审核报告
+│   │   ├── research.md          # Research notes & sources / 调研文档
+│   │   ├── assets/
+│   │   │   ├── images/          # AI-generated covers / AI 封面
+│   │   │   └── audio/           # TTS audio files / 配音文件
+│   │   └── output/              # Rendered MP4 / 渲染输出
 │   └── 2026-04-25-deepseek-v4/
 │       ├── script.md            # Storyboard script / 分镜脚本
 │       ├── voiceover.md         # Extracted voiceover text / 口播文案
