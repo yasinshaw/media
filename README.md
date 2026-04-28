@@ -47,6 +47,7 @@ Designed for Douyin (TikTok China) vertical format (1080x1920, 30fps). Uses [Rem
 ```bash
 git clone https://github.com/yasinshaw/media.git
 cd media
+cp .env.example .env  # 填入你的 API 密钥
 cd remotion && pnpm install
 ```
 
@@ -207,6 +208,7 @@ Idea → Script → Review → Assets → Code → Review → Render → Publish
 ```bash
 git clone https://github.com/yasinshaw/media.git
 cd media
+cp .env.example .env  # Fill in your API keys
 cd remotion && pnpm install
 ```
 
