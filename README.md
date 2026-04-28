@@ -26,9 +26,17 @@ Designed for Douyin (TikTok China) vertical format (1080x1920, 30fps). Uses [Rem
 <img src="projects/2026-04-28-ying-shi-ju-feng-ai-workflow/assets/images/cover-portrait.png" width="300" alt="竖版封面">
 </p>
 
-**配音：** [voiceover-full.mp3](projects/2026-04-28-ying-shi-ju-feng-ai-workflow/assets/audio/voiceover-full.mp3) (6 镜头完整配音)
+**配音：**
 
-**渲染视频：** [ying-shi-ju-feng-ai-workflow.mp4](projects/2026-04-28-ying-shi-ju-feng-ai-workflow/output/ying-shi-ju-feng-ai-workflow.mp4) (1080×1920 竖屏 30fps, 5.4MB)
+<audio controls>
+  <source src="projects/2026-04-28-ying-shi-ju-feng-ai-workflow/assets/audio/voiceover-full.mp3" type="audio/mpeg">
+</audio>
+
+**渲染视频：**
+
+<video controls width="360">
+  <source src="projects/2026-04-28-ying-shi-ju-feng-ai-workflow/output/ying-shi-ju-feng-ai-workflow.mp4" type="video/mp4">
+</video>
 
 <details>
 <summary>查看脚本与代码</summary>
