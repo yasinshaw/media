@@ -33,7 +33,7 @@ Compose BGM as an array of segments, one per shot role group. Each segment plays
 
 ### Auto-segmentation rule (modifies `remotion-video/SKILL.md`)
 
-Read each shot's `**角色**` field and group adjacent shots with the same role:
+Read each shot's `**角色**` field and group adjacent shots with the same **mapped BGM track** (not the same role — different roles can map to the same track and merge into one segment):
 
 | Shot role | Default BGM track |
 |-----------|-------------------|
@@ -88,7 +88,7 @@ interface BGMSegment {
 
 interface BGMAudioProps {
   segments: BGMSegment[]
-  voiceoverSegments?: VoiceoverSegment[]  // for ducking; comes from manifest
+  voiceoverSegments?: VoiceoverSegment[]  // for ducking; comes from manifest. Each segment has `{ start, end }` in SECONDS (not frames) — converted to frames inside computeBgmVolume via fps
   // The following all default to existing constants in constants.ts
   baseVolume?: number          // default BGM.DEFAULT_VOLUME (0.06)
   duckVolume?: number          // default BGM.DUCKED_VOLUME (0.02)
@@ -169,7 +169,7 @@ Rule application order (apply each rule, accumulate effects, deduplicate by `(na
 3. **Role-specific** (overrides transition for the shot's start): if role = `CTA`, replace any frame-0 effect with `reveal.mp3` at frame 0 + `success.mp3` at frame 1.0s
 4. **Data emphasis**: If role = `数据`, add `ding.mp3` at frame 0.5s
 5. **Typewriter emphasis**: If `**文字特效**: typewriter`, add `ding.mp3` at frame 0.3s and frame 1.5s (max 2 instances per shot to avoid noise)
-6. **Last shot only**: add `outro.mp3` at frame `(shotDuration - 1.0s)`
+6. **Last shot only**: add `outro.mp3` at frame `(shotDuration - 1.0s)`. If the last shot is also CTA, this means `reveal` (0s) + `success` (1s) + `outro` (shotDuration - 1s) all play; verify CTA shots are ≥ 3s long to avoid overlap (otherwise emit warning at composition-generation time and drop `success` to keep the finale clean)
 
 This produces the following behaviors:
 - Hook (first shot): `riser` only (no whoosh — first shot has no preceding transition)
@@ -278,6 +278,8 @@ Add a mandatory `**角色**` field per shot. Allowed values:
 | `CTA` | Call to action / closing |
 
 Make role inference part of script generation — the skill already understands these shot types implicitly; this just makes the classification explicit.
+
+**Cross-spec dependency**: The `**角色**` field is also consumed by `/asset-pack` (sibling spec `2026-04-30-asset-pack-skill-design.md`) to determine media-type preferences (video vs image) per shot. Both specs depend on this `video-script/SKILL.md` change; landing the change is a shared prerequisite.
 
 ### Modifications to `remotion-video/SKILL.md`
 
