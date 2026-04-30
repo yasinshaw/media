@@ -82,6 +82,7 @@ If a script lacks `**素材关键词**`, `/asset-pack` runs an LLM extraction pa
 
 ### Steps
 
+0. **Idempotency check**: If `assets/stock/manifest.json` exists and `--refresh` not set, print summary of existing manifest and exit early (no API calls, no downloads).
 1. **Locate script**: `projects/<YYYY-MM-DD-<slug>>/script.md`
 2. **Parse keywords**: For each shot, read `**素材关键词**` (or run LLM extraction fallback)
 3. **Determine media type per shot** (from `**角色**`):
@@ -103,7 +104,7 @@ If a script lacks `**素材关键词**`, `/asset-pack` runs an LLM extraction pa
 5. **Fallback chain on empty results**:
    - Tier 1: original keywords
    - Tier 2: drop adjectives/modifiers (keep nouns) — e.g., "ai robot, neural network" → "robot, network"
-   - Tier 3: Volcano Ark image generation with the original Chinese shot description
+   - Tier 3: Volcano Ark image generation. Prompt is built from the shot's `**画面**` field (the Chinese visual direction) — that's the field most aligned with desired imagery. If `**画面**` is missing, fall back to `**字幕**`, then to shot title. Translation to English is not required (Volcano Ark handles Chinese prompts).
 6. **Download in parallel**: All approved URLs downloaded concurrently to `assets/stock/`
 7. **Generate manifest**: `assets/stock/manifest.json`
 8. **Print summary**: Table of shot → media file → source → keywords used
@@ -188,7 +189,9 @@ When generating a shot, check if `manifest.json` has an entry for this shot inde
 
 ### Asset linking
 
-After `/remotion-video` generates the composition, link `projects/<slug>/assets/stock/` into `remotion/public/stock/<slug>/` so `staticFile()` resolves at render time:
+**Symlink ownership**: `/asset-pack` itself creates and refreshes the symlink at the end of its run, so re-renders work without invoking `/remotion-video`. `/remotion-video` also defensively re-creates it if missing (idempotent `ln -sf`).
+
+`/asset-pack` symlink command at end of run:
 
 ```bash
 mkdir -p remotion/public/stock

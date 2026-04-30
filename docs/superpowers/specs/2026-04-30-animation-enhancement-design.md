@@ -80,7 +80,7 @@ Each primitive accepts a new prop `persistentAnim?: 'off' | 'breathing' | 'float
 | `CenteredStack` | Title (first child if heading) gets `breathing` |
 | `HubLayout` | Center node gets `breathing`; surrounding nodes get `float` with staggered phases |
 | `TwoColumnCompare` | Both panel titles get `breathing` |
-| `TimelineFlow` | Currently active step (computed from frame timing) gets `float`; others static |
+| `TimelineFlow` | Currently active step gets `float`; others static. The primitive accepts a new prop `activeIndex?: number` (computed by the shot from `useCurrentFrame`); when not provided, falls back to `Math.floor(frame / framesPerStep)` based on items length and current shot duration. |
 
 ### Script field
 
@@ -172,8 +172,12 @@ Add three new sections:
 - **Persistent Animation** — primitive prop documentation
 - **Decoration Layers** — Lottie/Starburst auto-binding table + script field
 
+**Replace the existing "Lottie Animations" section (currently at SKILL.md lines ~999-1044)** which uses raw `fetch + delayRender` patterns. The new "Decoration Layers" section is the single source of truth for Lottie usage; the old section is removed to prevent two conflicting patterns coexisting.
+
 Update the FATAL RULES list to include:
 - "Use `<KenBurns>` to wrap any `<Img>` or `<Video>` from `assets/stock/` or AI background images. Naked `<Img>` for backgrounds is forbidden."
+
+**Public contract note**: `KenBurns` is consumed by `/asset-pack` (sibling spec). Treat its prop signature as a stable API — additive changes only during this implementation.
 
 ### Modifications to `video-script/SKILL.md`
 
