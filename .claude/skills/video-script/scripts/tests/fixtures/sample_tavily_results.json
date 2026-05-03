@@ -1,0 +1,13 @@
+{
+  "query": "DeepSeek V4",
+  "answer": "DeepSeek V4 is the latest model release from DeepSeek.",
+  "results": [
+    {"title": "DeepSeek V4 Release", "url": "https://example.com/article1", "content": "Announcing the release of DeepSeek V4."},
+    {"title": "Benchmark", "url": "https://example.com/article2", "content": "DeepSeek V4 benchmark results."}
+  ],
+  "images": [
+    "https://example.com/img1.jpg",
+    "https://example.com/static/logo/brand.png",
+    "https://example.com/img2.png"
+  ]
+}
