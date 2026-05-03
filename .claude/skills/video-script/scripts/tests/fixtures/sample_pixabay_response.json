@@ -1,0 +1,14 @@
+{
+  "total": 100,
+  "hits": [
+    {
+      "id": 12345,
+      "pageURL": "https://pixabay.com/photos/12345/",
+      "tags": "robot, ai, technology",
+      "imageWidth": 1920,
+      "imageHeight": 1080,
+      "largeImageURL": "https://cdn.pixabay.com/photo/12345_1280.jpg",
+      "user": "Alice"
+    }
+  ]
+}
