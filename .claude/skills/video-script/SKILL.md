@@ -7,14 +7,16 @@ You are an expert Douyin short video scriptwriter and content strategist.
 
 ## How This Skill Works
 
-1. User provides an idea: `/video-script <idea>`
-2. **Research phase**: Search for official/authoritative materials related to the topic
-3. Present research summary to user for review and confirmation
-4. Analyze the idea (informed by research) and determine if it has a clear angle
-5. If angle is unclear, propose 3 numbered angle options
-6. User selects an angle (by number or provides custom text)
-7. Generate a complete storyboard script following the Douyin viral framework, grounded in verified facts
-8. Save the script to `projects/<YYYY-MM-DD-<slug>>/script.md`
+1. User provides an idea: `/video-script <idea>` or references an existing `idea.md` via `@` mention
+2. **Detect existing project directory**: If the user references an `idea.md` file (e.g., `@projects/2026-05-02-xxx/idea.md`), extract the project directory from the file path and use it directly. **Do NOT create a new directory in this case.** If no existing directory is referenced, follow the normal directory creation flow.
+3. **Research phase**: Search for official/authoritative materials related to the topic
+4. Present research summary to user for review and confirmation
+5. **Collect research assets**: Extract English keywords (LLM, cached to research.md), invoke collect-research-assets script to download images/videos from Tavily/articles/Pixabay into `projects/<slug>/assets/research/`. Append "## 视觉素材清单" to research.md. Failure here does NOT block subsequent steps.
+6. Analyze the idea (informed by research) and determine if it has a clear angle
+7. If angle is unclear, propose 3 numbered angle options
+8. User selects an angle (by number or provides custom text)
+9. Generate a complete storyboard script following the Douyin viral framework, grounded in verified facts
+10. Save the script to the project directory's `script.md`
 
 ## Research Phase
 
@@ -94,6 +96,82 @@ After completing research and presenting the summary to the user, save all resea
 - User can add their own knowledge or steer the direction
 
 If the user says "skip" or "直接继续", proceed immediately to angle detection with whatever research you have.
+
+## Asset Collection (after research summary)
+
+After research summary is generated and before angle detection, gather visual materials.
+
+### Step 1: When invoking `tavily-search` skill, request images
+
+For every Tavily search done in this skill, pass `include_images=True`. Example:
+
+```python
+results = client.search(query, max_results=5, include_images=True)
+# results["images"] is now a list of image URLs
+```
+
+### Step 2: Extract English keywords (one-shot LLM call)
+
+If `research.md` does NOT contain a `## 视觉素材英文关键词` section, generate one:
+
+Prompt yourself:
+
+> Extract 3–5 concrete, visual English nouns/concepts from this research summary. Return as comma-separated single-line. No prose, no quotes. Concrete and visual (good: "neural network, robot, server room"; bad: "innovation, future").
+
+Then use the Edit/Write tool to append this section to `research.md`:
+
+```markdown
+## 视觉素材英文关键词
+- AI model
+- neural network
+- benchmark
+```
+
+### Step 3: Serialize Tavily results to a temp file
+
+Use the **Write tool** to save the Tavily search results to `/tmp/tavily-<slug>.json` with this exact shape:
+
+```json
+{
+  "results": [
+    {"title": "...", "url": "https://...", "content": "..."},
+    ...
+  ],
+  "images": [
+    "https://example.com/img1.jpg",
+    "https://example.com/img2.png"
+  ]
+}
+```
+
+If you ran multiple Tavily queries during research, **merge** them: union the `images` arrays (deduplicate), and concatenate the `results` arrays. The script reads the `results[].url` field for top-3 article HTML scraping and the `images` array for direct image candidates.
+
+### Step 4: Invoke the collection script
+
+You MUST `cd` into the script directory first (the script uses `python3 -m`, which requires the package directory on `sys.path`):
+
+```bash
+cd .claude/skills/video-script/scripts && python3 -m collect_research_assets \
+  --slug <YYYY-MM-DD-<slug>> \
+  --research-md ../../../../projects/<YYYY-MM-DD-<slug>>/research.md \
+  --tavily-results-json /tmp/tavily-<slug>.json
+```
+
+Note paths to `--research-md` are relative to the `cd`'d directory. The script:
+- Downloads to `projects/<slug>/assets/research/{reference,stock}/`
+- Writes `manifest.json`
+- Appends "## 视觉素材清单" to research.md
+- Prints summary: `📦 已下载: X reference + Y stock (Z.Z MB), 跳过 N`
+
+### Step 5: If script fails, continue gracefully
+
+If the script exits non-zero or prints an error, **do not block**. Print a warning and proceed to angle detection.
+
+### Asset reuse during script writing
+
+When generating shots in the script, you can reference materials in `assets/research/`:
+- `assets/research/stock/*` — Pixabay-licensed, **safe to use as `固定图片` shot 画面**
+- `assets/research/reference/*` — external license, **only as inspiration for `画面` description; do NOT mark as `固定图片`**
 
 ## Angle Detection
 
@@ -330,12 +408,19 @@ Note: Timestamps are NOT fixed multiples of 5. They are calculated from actual c
 | 噪点纹理 | 电影感颗粒叠加 | 全片或特定氛围镜头 | `噪点纹理` |
 | SVG 图形 | 圆形、矩形、箭头等几何图形 | 图解、流程图、装饰元素 | `SVG图形:圆形/箭头/饼图` |
 | 动态图表 | 柱状图、折线图动画 | 数据对比镜头 | `动态图表:柱状图/折线图` |
+| 脉冲呼吸 | 元素持续缩放呼吸，吸引注意力 | CTA 按钮、关键数据强调 | `脉冲呼吸` |
+| 宽度展开 | 进度条/下划线从左向右展开 | 排名展示、进度对比、数据揭晓 | `宽度展开` |
+| 水平抖动 | 元素左右快速抖动后停止 | 警告、错误提示、冲突强调 | `水平抖动` |
+| 旋转入场 | 元素带旋转角度弹性缩放进入 | 图标揭示、戏剧性强调、数据出场 | `旋转入场` |
 
 **使用原则：**
-- 每个视频使用 1-2 种增强效果即可，避免视觉过载
+- 每个视频使用 1-3 种增强效果即可，避免视觉过载
 - 光线泄露和星芒放射适合关键转折点，不要每个镜头都用
 - 噪点纹理适合全片叠加，营造电影感
 - 动态图表是数据镜头的首选，比纯文字展示更直观
+- 脉冲呼吸适合 CTA 镜头，吸引点击注意力
+- 宽度展开适合排名/进度数据，比静态数字更生动
+- 水平抖动谨慎使用，仅用于冲突/警告场景
 
 ## File Output
 
@@ -343,7 +428,10 @@ Save THREE files: research notes, storyboard script, and extracted voiceover.
 
 ### Directory
 `projects/<YYYY-MM-DD-<slug>>/` (relative to project root `/Users/yasin/code/media/`)
-- Auto-create directory if it doesn't exist
+
+**Directory resolution order:**
+1. If the user referenced an `idea.md` or any file inside a `projects/<date-slug>/` directory, use that existing directory — do NOT create a new one
+2. Otherwise, auto-create directory following the naming convention
 
 ### File Naming
 Each project is a directory named `YYYY-MM-DD-<slug>` containing:
