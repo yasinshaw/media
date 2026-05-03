@@ -5,9 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from collect_research_assets.pixabay import (
     parse_image_hits,
-    parse_video_hits,
     build_image_search_params,
-    build_video_search_params,
     _get_with_429_backoff,
 )
 
@@ -35,11 +33,6 @@ def test_image_search_params():
     assert p["per_page"] == 3
     assert p["image_type"] == "photo"
 
-
-def test_video_search_params():
-    p = build_video_search_params("KEY", "robot", per_page=2)
-    assert p["per_page"] == 2
-    assert p["orientation"] == "vertical"
 
 
 @pytest.mark.asyncio

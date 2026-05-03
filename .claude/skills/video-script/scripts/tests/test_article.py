@@ -6,12 +6,11 @@ from collect_research_assets.article import (
 )
 
 
-def test_extract_images_and_videos():
+def test_extract_images():
     html = (Path(__file__).parent / "fixtures" / "sample_article.html").read_text()
     media = extract_media_from_html(html, page_url="https://example.com/article")
     urls = [m["url"] for m in media]
     assert "https://example.com/photo1.jpg" in urls
-    assert "https://example.com/clip.mp4" in urls
     assert "https://example.com/static/icons/share.png" not in urls
     assert all(not u.startswith("data:") for u in urls)
 

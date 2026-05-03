@@ -17,7 +17,7 @@ def test_next_id_with_host():
 def test_extension_from_url():
     assert extension_from_url("https://x.com/foo.jpg") == ".jpg"
     assert extension_from_url("https://x.com/path/photo.png?v=1") == ".png"
-    assert extension_from_url("https://x.com/clip.MP4") == ".mp4"
+    assert extension_from_url("https://x.com/clip.MP4") == ".jpg"
 
 
 def test_extension_default_image():

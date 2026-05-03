@@ -21,11 +21,10 @@ from .filters import (
 )
 from .keywords import read_cached_keywords
 from .manifest import LIMITS, Manifest, read_manifest, write_manifest
-from .pixabay import search_images, search_videos
+from .pixabay import search_images
 from .research_md import append_visual_section
 from .tavily import extract_image_urls
 
-MIN_VIDEO_BYTES = 100 * 1024  # 100KB threshold for stub/thumbnail rejection
 
 
 async def run(
@@ -103,11 +102,6 @@ async def run(
                     continue
                 cand["meta"]["width"] = w
                 cand["meta"]["height"] = h
-            elif cand["type"] == "video":
-                if size < MIN_VIDEO_BYTES:
-                    cand["dest"].unlink(missing_ok=True)
-                    manifest.skipped.append({"url": cand["url"], "reason": f"video too small ({size} bytes)"})
-                    continue
 
             cand["meta"]["size_bytes"] = size
             cand["meta"]["local_path"] = str(cand["dest"].relative_to(project_dir / "assets"))
@@ -195,17 +189,17 @@ async def _collect_candidates(
             if exceeds_domain_quota(host, domain_counts):
                 break
             url = media["url"]
-            ext = extension_from_url(url, default=(".mp4" if media["type"] == "video" else ".jpg"))
+            ext = extension_from_url(url, default=".jpg")
             item_id = next_id(f"article-{host}", used_ids)
             used_ids.add(item_id)
             domain_counts[host] = domain_counts.get(host, 0) + 1
             ref_count += 1
             candidates.append({
                 "url": url,
-                "type": media["type"],
+                "type": "image",
                 "dest": build_local_path(research_dir, "reference", item_id, ext),
                 "meta": {
-                    "id": item_id, "type": media["type"], "category": "reference",
+                    "id": item_id, "type": "image", "category": "reference",
                     "source": "article", "source_url": url,
                     "page_url": page_url, "page_title": page_title,
                     "alt": media.get("alt", ""),
@@ -218,7 +212,6 @@ async def _collect_candidates(
     if pix_key and keywords:
         query = "+".join(keywords[:3])
         img_hits = await search_images(session, pix_key, query, per_page=5)
-        vid_hits = await search_videos(session, pix_key, query, per_page=2)
 
         for hit in img_hits:
             if stock_count >= LIMITS["max_stock"]:
@@ -233,25 +226,6 @@ async def _collect_candidates(
                 "dest": build_local_path(research_dir, "stock", item_id, ext),
                 "meta": {
                     "id": item_id, "type": "image", "category": "stock",
-                    "source": "pixabay", "source_url": hit["url"],
-                    "page_url": hit["page_url"], "pixabay_id": hit["pixabay_id"],
-                    "tags": hit["tags"], "credit": hit["credit"],
-                    "license": "Pixabay Content License",
-                },
-            })
-        for hit in vid_hits:
-            if stock_count >= LIMITS["max_stock"]:
-                break
-            ext = extension_from_url(hit["url"], default=".mp4")
-            item_id = next_id("pixabay-vid", used_ids)
-            used_ids.add(item_id)
-            stock_count += 1
-            candidates.append({
-                "url": hit["url"],
-                "type": "video",
-                "dest": build_local_path(research_dir, "stock", item_id, ext),
-                "meta": {
-                    "id": item_id, "type": "video", "category": "stock",
                     "source": "pixabay", "source_url": hit["url"],
                     "page_url": hit["page_url"], "pixabay_id": hit["pixabay_id"],
                     "tags": hit["tags"], "credit": hit["credit"],

@@ -39,7 +39,6 @@ async def test_run_creates_manifest(mock_image, tmp_path, monkeypatch):
     mock_image.open.return_value.__exit__ = MagicMock(return_value=False)
 
     with patch("collect_research_assets.orchestrator.search_images", new=AsyncMock(return_value=[])), \
-         patch("collect_research_assets.orchestrator.search_videos", new=AsyncMock(return_value=[])), \
          patch("collect_research_assets.orchestrator.fetch_article", new=AsyncMock(return_value=None)), \
          patch("collect_research_assets.orchestrator.download_all", new=fake_download_all):
         await run(
@@ -86,7 +85,6 @@ async def test_refresh_archives_old_manifest_and_cleans_dirs(tmp_path, monkeypat
     tavily_json.write_text("{}")
 
     with patch("collect_research_assets.orchestrator.search_images", new=AsyncMock(return_value=[])), \
-         patch("collect_research_assets.orchestrator.search_videos", new=AsyncMock(return_value=[])), \
          patch("collect_research_assets.orchestrator.fetch_article", new=AsyncMock(return_value=None)):
         await run(project_dir, research_md, tavily_json, refresh=True)
 
@@ -108,47 +106,8 @@ async def test_corrupt_manifest_archived_and_rerun(tmp_path):
     tavily_json.write_text("{}")
 
     with patch("collect_research_assets.orchestrator.search_images", new=AsyncMock(return_value=[])), \
-         patch("collect_research_assets.orchestrator.search_videos", new=AsyncMock(return_value=[])), \
          patch("collect_research_assets.orchestrator.fetch_article", new=AsyncMock(return_value=None)):
         await run(project_dir, research_md, tavily_json, refresh=False)
 
     archives = list(research_dir.glob("manifest.*.bak.json"))
     assert len(archives) == 1
-
-
-@pytest.mark.asyncio
-async def test_video_size_filter(tmp_path, monkeypatch):
-    """Videos under 100KB are rejected after download."""
-    project_dir = tmp_path / "projects" / "2026-05-03-test"
-    project_dir.mkdir(parents=True)
-    research_md = project_dir / "research.md"
-    research_md.write_text("# r\n## 视觉素材英文关键词\n- server\n")
-    tavily_json = tmp_path / "tavily.json"
-    tavily_json.write_text(json.dumps({
-        "results": [],
-        "images": [],
-    }))
-    monkeypatch.setenv("PIXABAY_API_KEY", "fake-key")
-
-    video_hit = {
-        "pixabay_id": 99, "url": "https://cdn.example.com/vid.mp4",
-        "page_url": "https://pixabay.com/videos/99/", "tags": ["server"],
-        "width": 1920, "height": 1080, "credit": "user", "type": "video",
-    }
-
-    async def fake_download_all(session, jobs, concurrency=10):
-        for _, dest in jobs:
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            dest.write_bytes(b"tiny-video-content")
-        return [True] * len(jobs)
-
-    with patch("collect_research_assets.orchestrator.search_images", new=AsyncMock(return_value=[])), \
-         patch("collect_research_assets.orchestrator.search_videos", new=AsyncMock(return_value=[video_hit])), \
-         patch("collect_research_assets.orchestrator.download_all", new=fake_download_all), \
-         patch("collect_research_assets.orchestrator.fetch_article", new=AsyncMock(return_value=None)):
-        await run(project_dir, research_md, tavily_json, refresh=False)
-
-    manifest_path = project_dir / "assets" / "research" / "manifest.json"
-    data = json.loads(manifest_path.read_text())
-    assert data["stats"]["skipped"] == 1
-    assert "too small" in data["skipped"][0]["reason"]

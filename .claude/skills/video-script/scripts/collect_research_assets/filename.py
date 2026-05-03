@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from urllib.parse import urlparse
 
-VIDEO_EXTS = {".mp4", ".webm", ".mov"}
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
 
 
@@ -20,12 +19,12 @@ def next_id(prefix: str, used_ids: set[str]) -> str:
 def extension_from_url(url: str, default: str = ".jpg") -> str:
     """Extract a normalized file extension from a URL.
 
-    Only recognizes known video/image extensions; falls back to *default* otherwise.
+    Only recognizes known image extensions; falls back to *default* otherwise.
     """
     path = urlparse(url).path.lower()
     if "." in path:
         ext = "." + path.rsplit(".", 1)[1].split("?")[0]
-        if ext in VIDEO_EXTS or ext in IMAGE_EXTS:
+        if ext in IMAGE_EXTS:
             return ext
     return default
 

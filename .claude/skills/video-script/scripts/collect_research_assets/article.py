@@ -14,7 +14,7 @@ FETCH_TIMEOUT = 15
 
 
 def extract_media_from_html(html: str, page_url: str) -> list[dict[str, Any]]:
-    """Extract images and videos from HTML, filtering out UI chrome."""
+    """Extract images from HTML, filtering out UI chrome."""
     soup = BeautifulSoup(html, "html.parser")
     out: list[dict[str, Any]] = []
     seen: set[str] = set()
@@ -29,22 +29,6 @@ def extract_media_from_html(html: str, page_url: str) -> list[dict[str, Any]]:
             "url": abs_url,
             "type": "image",
             "alt": (img.get("alt") or "").strip(),
-        })
-
-    for vid in soup.find_all("video"):
-        src = vid.get("src") or ""
-        if not src:
-            source_tag = vid.find("source")
-            if source_tag:
-                src = source_tag.get("src") or ""
-        abs_url = urljoin(page_url, src) if src else ""
-        if not abs_url or not is_acceptable_url(abs_url) or abs_url in seen:
-            continue
-        seen.add(abs_url)
-        out.append({
-            "url": abs_url,
-            "type": "video",
-            "alt": "",
         })
 
     return out

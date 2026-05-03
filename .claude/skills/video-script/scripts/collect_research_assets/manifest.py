@@ -21,15 +21,10 @@ class Manifest:
         stk = sum(1 for it in self.items if it.get("category") == "stock")
         tav = sum(1 for it in self.items if it.get("source") == "tavily")
         art = sum(1 for it in self.items if it.get("source") == "article")
-        pix_img = sum(
+        pix = sum(
             1
             for it in self.items
-            if it.get("source") == "pixabay" and it.get("type") == "image"
-        )
-        pix_vid = sum(
-            1
-            for it in self.items
-            if it.get("source") == "pixabay" and it.get("type") == "video"
+            if it.get("source") == "pixabay"
         )
         total_bytes = sum(it.get("size_bytes", 0) for it in self.items)
         return {
@@ -38,8 +33,7 @@ class Manifest:
             "total_size_mb": round(total_bytes / 1024 / 1024, 2),
             "tavily_count": tav,
             "article_count": art,
-            "pixabay_image_count": pix_img,
-            "pixabay_video_count": pix_vid,
+            "pixabay_count": pix,
             "skipped": len(self.skipped),
         }
 
