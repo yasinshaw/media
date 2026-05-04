@@ -169,9 +169,15 @@ If the script exits non-zero or prints an error, **do not block**. Print a warni
 
 ### Asset reuse during script writing
 
-When generating shots in the script, you can reference materials in `assets/research/`:
-- `assets/research/stock/*` — Pixabay-licensed, **safe to use as `固定图片` shot 画面**
-- `assets/research/reference/*` — external license, **only as inspiration for `画面` description; do NOT mark as `固定图片`**
+When generating shots, you MUST read the collected assets and actively use them:
+
+1. Read `## 视觉素材清单` from `research.md` — lists all downloaded assets with filenames and sources
+2. Read `assets/research/manifest.json` — contains full metadata (tags, dimensions, source URLs)
+3. For each shot's `画面`, check if a collected asset matches:
+   - `assets/research/stock/*` — Pixabay-licensed, **safe to use as `固定图片` shot 画面**. Write: `固定图片 — 使用 stock 素材: pixabay-img-XXX.jpg`
+   - `assets/research/reference/*` — external license, **only as inspiration for `画面` description**. Use the visual content as reference when describing what the shot should look like, but do NOT mark as `固定图片`
+4. Prefer stock assets over generating new AI images when a relevant stock image exists
+5. If no assets match a shot, proceed with other 画面类型 as normal
 
 ## Angle Detection
 
@@ -212,6 +218,11 @@ Analyze the user's idea to determine if it already contains a clear angle.
 
 After angle selection (or skip), generate a complete storyboard script. **All factual claims in the script must be grounded in the research results saved in `research.md`.** Read the existing `research.md` to reference verified data points. If a claim cannot be found in research.md, either remove it or explicitly flag it as opinion/speculation.
 
+**Before writing shots, read the collected research assets:**
+1. Read `research.md` and find the `## 视觉素材清单` section — lists all available stock and reference images
+2. Read `assets/research/manifest.json` for full metadata (tags, dimensions)
+3. Plan each shot's `画面类型` with awareness of what assets are available — prefer `固定图片` with a stock asset when one matches the shot's topic
+
 ### 画面类型 (Visual Type)
 
 Each shot must specify a visual type. This determines how the visual will be produced and what additional fields are needed.
@@ -226,13 +237,16 @@ Each shot must specify a visual type. This determines how the visual will be pro
 | ai背景图 | AI 生成场景背景（Remotion 叠加前景内容） | 背景氛围描述 + 前景内容说明 | `**背景图提示词**` (必填) |
 
 **选择原则（按成本优先级从低到高）：**
-1. `固定图片`（用户已提供）— 零成本，优先使用
-2. `remotion` — 代码复用，边际成本低
-3. `ai背景图` — 生成成本低，大幅提升画面质感（推荐用于标题/钩子镜头）
-4. `ai生图` — 生成成本低，适合概念插图
-5. `固定图片`（需用户寻找）— 需额外素材收集
-6. `实景拍摄` — 拍摄成本高，真人出镜必要场景
-7. `ai生视频` — 成本最高，仅当无法用其他方式实现动态效果时使用
+1. `固定图片`（stock 素材）— 零成本，**Step 3 已下载到 `assets/research/stock/`**，必须优先检查并使用
+2. `固定图片`（用户已提供）— 零成本，用户手动放到 `assets/images/` 的素材
+3. `remotion` — 代码复用，边际成本低
+4. `ai背景图` — 生成成本低，大幅提升画面质感（推荐用于标题/钩子镜头）
+5. `ai生图` — 生成成本低，适合概念插图
+6. `固定图片`（需用户寻找）— 需额外素材收集
+7. `实景拍摄` — 拍摄成本高，真人出镜必要场景
+8. `ai生视频` — 成本最高，仅当无法用其他方式实现动态效果时使用
+
+**⚠️ 强制要求：分配画面类型前，必须先读取 `## 视觉素材清单`。** 对于每个镜头，先检查 stock 素材中是否有匹配的图片（按主题/内容相关性匹配）。如果有，该镜头 MUST 使用 `固定图片`，画面字段写：`固定图片 — 使用 stock 素材: <filename>`。只有确认没有匹配的 stock 素材后，才能降级到 `remotion` 或 `ai背景图`。**不允许在 stock 素材有关联图片的情况下使用 `remotion` 或 `ai背景图`。**
 
 **适用场景参考：**
 - 产品截图、界面展示、用户已有素材 → `固定图片`
@@ -306,7 +320,7 @@ Each shot = one visual scene OR one key argument
 - **口播**: "<口播文案>"
 - **转场效果**: fade / slide / wipe / flip / clock-wipe / none
 - **文字特效**: typewriter / highlight / none
-- **音效**: whoosh-in / whoosh / impact / text-pop / outro / 留空不写
+- **音效**: mood/action/intensity 或旧格式(whoosh-in/impact/text-pop/outro) 或 留空不写
 - **生图提示词**: <仅 ai生图 需要，英文 prompt>
 - **生视频提示词**: <仅 ai生视频 需要，英文 prompt>
 - **背景图提示词**: <仅 ai背景图 需要，英文 prompt，不含文字>
@@ -317,7 +331,7 @@ Each shot = one visual scene OR one key argument
 - **口播**: "<...>"
 - **转场效果**: <type>
 - **文字特效**: <type>
-- **音效**: whoosh-in / whoosh / impact / text-pop / outro / 留空不写
+- **音效**: mood/action/intensity 或旧格式(whoosh-in/impact/text-pop/outro) 或 留空不写
 
 ### 镜头 3 — 核心内容第一段（Ys-Zs）
 - **画面类型**: <type>
@@ -325,7 +339,7 @@ Each shot = one visual scene OR one key argument
 - **口播**: "<...>"
 - **转场效果**: <type>
 - **文字特效**: <type>
-- **音效**: whoosh-in / whoosh / impact / text-pop / outro / 留空不写
+- **音效**: mood/action/intensity 或旧格式(whoosh-in/impact/text-pop/outro) 或 留空不写
 
 [Continue with more core content shots as needed, duration varies by content]
 
@@ -335,7 +349,7 @@ Each shot = one visual scene OR one key argument
 - **口播**: "<...>"
 - **转场效果**: <type>
 - **文字特效**: <type>
-- **音效**: whoosh-in / whoosh / impact / text-pop / outro / 留空不写
+- **音效**: mood/action/intensity 或旧格式(whoosh-in/impact/text-pop/outro) 或 留空不写
 ```
 
 ### 转场效果指南
@@ -384,8 +398,11 @@ Note: Timestamps are NOT fixed multiples of 5. They are calculated from actual c
 
 ### 音效标注指南
 
-为需要强调的镜头标注音效（留空 = 无音效）：
+为需要强调的镜头标注音效（留空 = 无音效）。
 
+支持两种格式：
+
+**旧格式**（向后兼容）：
 | 镜头类型 | 推荐音效 | 说明 |
 |---------|---------|------|
 | 第 1 个镜头（钩子） | `whoosh-in` | 开场切入 |
@@ -394,7 +411,25 @@ Note: Timestamps are NOT fixed multiples of 5. They are calculated from actual c
 | 有文字特效的镜头 | `text-pop` | 配合文字动画 |
 | 其他镜头 | 留空 | 不标注 = 无音效 |
 
-多个音效用逗号分隔：`**音效**: impact, text-pop`
+**新格式**（推荐，支持多层）：
+格式为 `mood/action/intensity`，逗号分隔多个音效。
+
+| 镜头类型 | 推荐标签 | 说明 |
+|---------|---------|------|
+| 钩子（开场） | `epic/transition/strong` | 震撼开场 |
+| 数据/跑分 | `energetic/emphasis/strong` | 强调关键数据 |
+| 文字特效 | `playful/feedback/medium` | 配合文字动画 |
+| 情绪转折 | `tense/transition/medium` | 节奏变化 |
+| 知识讲解 | `calm/ambient/subtle` | 柔和铺垫 |
+| 产品对比 | `energetic/transition/medium` | 动态切换 |
+| 警告/错误 | `tense/emphasis/strong` | 紧迫感 |
+| CTA 收尾 | `epic/emphasis/medium` | 收束感 |
+
+**多层示例**：`**音效**: calm/ambient/subtle, energetic/emphasis/medium`
+
+Mood: energetic · calm · tense · playful · epic · neutral
+Action: transition · emphasis · entry · exit · ambient · feedback
+Intensity: subtle · medium · strong
 
 ### 视觉增强效果指南
 
