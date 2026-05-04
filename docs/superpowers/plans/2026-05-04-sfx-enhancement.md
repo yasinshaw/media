@@ -92,8 +92,10 @@ describe('matchSFX', () => {
   })
 
   it('falls back to mood+action with medium intensity', () => {
-    expect(matchSFX('energetic', 'emphasis', 'subtle', originalFiles))
-      .toBeNull() // no energetic-emphasis-medium exists
+    // Add energetic-emphasis-medium to test this fallback path
+    const filesWithMoodAction = [...originalFiles, 'energetic-emphasis-medium.mp3']
+    expect(matchSFX('energetic', 'emphasis', 'subtle', filesWithMoodAction))
+      .toBe('energetic-emphasis-medium.mp3')
   })
 
   it('falls back to neutral+action+intensity', () => {
@@ -260,23 +262,11 @@ export const SFX_LAYER_SCALE: Record<number, number> = {
   3: 0.7,
 }
 
-// Static manifest of available SFX files.
+// Static manifest of available SFX files (taxonomy-named only).
+// Legacy files (impact.mp3, whoosh.mp3) are handled by SFX_FILE_MAP, not this list.
 // Update via: scripts/update-sfx-manifest.sh
 export const SFX_AVAILABLE_FILES: string[] = [
-  // Current files (old naming, kept during migration)
-  'click.mp3',
-  'ding.mp3',
-  'glitch.mp3',
-  'impact.mp3',
-  'outro.mp3',
-  'reveal.mp3',
-  'riser.mp3',
-  'success.mp3',
-  'swoosh.mp3',
-  'text-pop.mp3',
-  'transition.mp3',
-  'whoosh.mp3',
-  'whoosh-in.mp3',
+  // Populated by update-sfx-manifest.sh — add taxonomy-named files here
 ]
 ```
 
@@ -341,7 +331,12 @@ interface SFXLayerProps {
   startFrame?: number
 }
 
+const normalizeSrc = (s: string) => s.replace(/^\/audio\/sfx\//, '')
+
 function resolveEffect(effect: SFXConfig, availableFiles: string[]): ResolvedSFX | null {
+  // Guard: empty config produces no sound
+  if (!effect.type && !effect.mood && !effect.action) return null
+
   // Legacy format: type field present
   if (effect.type) {
     const legacy = translateLegacyType(effect.type)
@@ -349,14 +344,14 @@ function resolveEffect(effect: SFXConfig, availableFiles: string[]): ResolvedSFX
       const fallbackSrc = SFX_FILE_MAP[effect.type]
       if (!fallbackSrc) return null
       return {
-        src: fallbackSrc,
+        src: normalizeSrc(fallbackSrc),
         layer: inferLayer('transition'),
         delay: effect.delay ?? 0,
         volume: effect.volume ?? SFX.VOLUME,
       }
     }
     const src = matchSFX(legacy.mood, legacy.action, legacy.intensity, availableFiles)
-      ?? SFX_FILE_MAP[effect.type]
+      ?? (SFX_FILE_MAP[effect.type] ? normalizeSrc(SFX_FILE_MAP[effect.type]) : null)
     if (!src) return null
     return {
       src,
@@ -407,14 +402,15 @@ export const SFXLayer: React.FC<SFXLayerProps> = ({ effects, startFrame = 0 }) =
         let volume: number
         if (effect.layer === 'ambient' && effect.duration) {
           const durFrames = effect.duration * fps
-          const fadeOutStart = durFrames - 0.5 * fps
+          const ambientEnd = absoluteStart + durFrames
+          const fadeOutStart = ambientEnd - 0.5 * fps
           const baseVol = effect.volume * scale
           volume =
             interpolate(frame, [absoluteStart, absoluteStart + fadeInFrames], [0, baseVol], {
               extrapolateLeft: 'clamp',
               extrapolateRight: 'clamp',
             }) *
-            interpolate(frame, [fadeOutStart, durFrames], [1, 0], {
+            interpolate(frame, [fadeOutStart, ambientEnd], [1, 0], {
               extrapolateLeft: 'clamp',
               extrapolateRight: 'clamp',
             })
@@ -451,23 +447,9 @@ cd remotion && npx tsc --noEmit
 
 Expected: No errors.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Update index.ts exports**
 
-```bash
-git add remotion/src/components/SFXLayer.tsx
-git commit -m "feat: upgrade SFXLayer with 3D taxonomy, multi-layer stacking, volume balancing"
-```
-
----
-
-### Task 5: Update index.ts exports
-
-**Files:**
-- Modify: `remotion/src/components/index.ts`
-
-- [ ] **Step 1: Add new exports**
-
-Update the Audio section in `index.ts`:
+Update the Audio section in `remotion/src/components/index.ts`:
 
 ```typescript
 // === Audio ===
@@ -491,22 +473,24 @@ export {
 export type { SFXMood, SFXAction, SFXIntensity, SFXLayerType } from './constants'
 ```
 
-- [ ] **Step 2: Verify TypeScript compiles**
+- [ ] **Step 4: Verify TypeScript compiles**
 
 ```bash
 cd remotion && npx tsc --noEmit
 ```
 
-- [ ] **Step 3: Commit**
+Expected: No errors.
+
+- [ ] **Step 5: Commit**
 
 ```bash
-git add remotion/src/components/index.ts
-git commit -m "feat: export SFX taxonomy types and matcher functions from index"
+git add remotion/src/components/SFXLayer.tsx remotion/src/components/index.ts
+git commit -m "feat: upgrade SFXLayer with 3D taxonomy, multi-layer stacking, volume balancing"
 ```
 
 ---
 
-### Task 6: Create utility scripts
+### Task 5: Create utility scripts
 
 **Files:**
 - Create: `scripts/update-sfx-manifest.sh`
@@ -516,7 +500,9 @@ git commit -m "feat: export SFX taxonomy types and matcher functions from index"
 
 ```bash
 #!/usr/bin/env bash
-# Regenerates SFX_AVAILABLE_FILES in constants.ts from the audio/sfx/ directory.
+# Regenerates SFX_AVAILABLE_FILES in constants.ts from taxonomy-named files only.
+# Files matching the pattern {mood}-{action}-{intensity}.mp3 are included.
+# Legacy-named files (e.g., impact.mp3) are excluded.
 # Usage: bash scripts/update-sfx-manifest.sh
 
 SFX_DIR="remotion/public/audio/sfx"
@@ -527,32 +513,47 @@ if [ ! -d "$SFX_DIR" ]; then
   exit 1
 fi
 
-files=$(find "$SFX_DIR" -name '*.mp3' -exec basename {} \; | sort)
+# Only include taxonomy-named files (contain two hyphens in the stem)
+files=$(find "$SFX_DIR" -name '*.mp3' | while read f; do
+  basename=$(basename "$f" .mp3)
+  # Count hyphens: taxonomy names have exactly 2 (mood-action-intensity)
+  count=$(echo "$basename" | tr -cd '-' | wc -c | tr -d ' ')
+  if [ "$count" -eq 2 ]; then
+    echo "$basename.mp3"
+  fi
+done | sort)
 
-# Build the array literal
-array_content=""
-for f in $files; do
-  array_content="${array_content}  '${f}',\n"
-done
+if [ -z "$files" ]; then
+  echo "⚠️ No taxonomy-named SFX files found in $SFX_DIR"
+  exit 0
+fi
 
-# Replace the SFX_AVAILABLE_FILES block in constants.ts
-python3 -c "
-import re, sys
+# Build the array entries
+entries=""
+while IFS= read -r f; do
+  entries="${entries}  '${f}',\n"
+done <<< "$files"
+
+# Use Python for reliable file editing
+python3 << PYEOF
+import re
+
+entries = """$(echo -e "$entries")"""
 
 with open('$CONSTANTS_FILE', 'r') as f:
     content = f.read()
 
-pattern = r"(export const SFX_AVAILABLE_FILES: string\[\] = \[).*?(\])"
-files_str = '''$(echo -e "$array_content")'''
-replacement = r'\g<1>\n' + files_str + r'\2'
+pattern = r'(export const SFX_AVAILABLE_FILES: string\[\] = \[).*?(\])'
+new_block = r'\g<1>\n' + entries + r'\2'
 
-new_content = re.sub(pattern, replacement, content, flags=re.DOTALL)
+result = re.sub(pattern, new_block, content, flags=re.DOTALL)
 
 with open('$CONSTANTS_FILE', 'w') as f:
-    f.write(new_content)
-"
+    f.write(result)
 
-echo "✅ Updated SFX_AVAILABLE_FILES with $(echo "$files" | wc -l | tr -d ' ') files"
+count = len(entries.strip().split(','))
+print(f"✅ Updated SFX_AVAILABLE_FILES with {count} taxonomy-named files")
+PYEOF
 ```
 
 - [ ] **Step 2: Create rename-sfx.sh**
@@ -596,14 +597,14 @@ git commit -m "feat: add SFX utility scripts for manifest update and bulk rename
 
 ---
 
-### Task 7: Update video-script SKILL.md
+### Task 6: Update video-script SKILL.md
 
 **Files:**
 - Modify: `.claude/skills/video-script/SKILL.md`
 
 - [ ] **Step 1: Update the 音效标注指南 section**
 
-Replace the existing `### 音效标注指南` section (around line 399-411) with:
+Replace the existing `### 音效标注指南` section with:
 
 ```markdown
 ### 音效标注指南
@@ -659,7 +660,7 @@ git commit -m "docs: update video-script skill with 3D SFX taxonomy format"
 
 ---
 
-### Task 8: Update remotion-video SKILL.md
+### Task 7: Update remotion-video SKILL.md
 
 **Files:**
 - Modify: `.claude/skills/remotion-video/SKILL.md`
@@ -710,7 +711,7 @@ git commit -m "docs: update remotion-video skill with 3D SFX parsing and matchSF
 
 ---
 
-### Task 9: Run full test suite and verify backward compat
+### Task 8: Run full test suite and verify backward compat
 
 **Files:**
 - No new files
@@ -738,5 +739,5 @@ Open an existing composition that uses `<SFXLayer effects={[{ type: 'whoosh-in' 
 - [ ] **Step 4: Commit (if any fixes needed)**
 
 ```bash
-git add -A && git commit -m "fix: resolve backward compat issues in SFX system"
+git add remotion/src/components/ remotion/src/projects/ && git commit -m "fix: resolve backward compat issues in SFX system"
 ```
