@@ -1,7 +1,6 @@
 import React from 'react'
 import { AbsoluteFill, Sequence, Audio, staticFile } from 'remotion'
-import { BGMAudio } from '../../components'
-import { SFXLayer } from '../../components'
+import { BGMAudio, SFXLayer, Transition } from '../../components'
 import { Shot1 } from './shots/Shot1'
 import { Shot2 } from './shots/Shot2'
 import { Shot3 } from './shots/Shot3'
@@ -46,6 +45,8 @@ const segments: SubtitleSegment[] = [
   { text: '关注我，第一时间解读最新AI动态。', start: 94.2, end: 97.44, duration: 3.24 },
 ]
 
+const voiceoverTimings = segments.map(({ start, end }) => ({ start, end }))
+
 // Shot timing data from voiceover manifest
 const shotData = [
   { number: 1, duration: 4.03, startTime: 0 },
@@ -73,7 +74,7 @@ export const DeepseekV4: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: '#0f172a' }}>
       {/* Background music */}
-      <BGMAudio style="科技电子" tempo="medium" volume={0.08} />
+      <BGMAudio style="科技电子" tempo="medium" voiceoverSegments={voiceoverTimings} />
 
       {/* Full audio for ProgressiveSubtitle timing */}
       <Audio src={staticFile('/audio/deepseek-v4/voiceover-full.mp3')} volume={1} />
@@ -84,30 +85,42 @@ export const DeepseekV4: React.FC = () => {
       </Sequence>
 
       <Sequence from={shotFrames[1].from} durationInFrames={shotFrames[1].durationInFrames}>
-        <Shot2 subtitleSegments={segments} videoOffset={shotData[1].startTime} />
+        <Transition type="slide-left">
+          <Shot2 subtitleSegments={segments} videoOffset={shotData[1].startTime} />
+        </Transition>
       </Sequence>
 
       <Sequence from={shotFrames[2].from} durationInFrames={shotFrames[2].durationInFrames}>
-        <Shot3 subtitleSegments={segments} videoOffset={shotData[2].startTime} />
+        <Transition type="zoom-in">
+          <Shot3 subtitleSegments={segments} videoOffset={shotData[2].startTime} />
+        </Transition>
       </Sequence>
 
       <Sequence from={shotFrames[3].from} durationInFrames={shotFrames[3].durationInFrames}>
-        <Shot4 subtitleSegments={segments} videoOffset={shotData[3].startTime} />
-        <SFXLayer effects={[{ type: 'impact' }]} />
+        <Transition type="slide-up">
+          <Shot4 subtitleSegments={segments} videoOffset={shotData[3].startTime} />
+          <SFXLayer effects={[{ type: 'impact' }]} />
+        </Transition>
       </Sequence>
 
       <Sequence from={shotFrames[4].from} durationInFrames={shotFrames[4].durationInFrames}>
-        <Shot5 subtitleSegments={segments} videoOffset={shotData[4].startTime} />
-        <SFXLayer effects={[{ type: 'impact' }]} />
+        <Transition type="fade">
+          <Shot5 subtitleSegments={segments} videoOffset={shotData[4].startTime} />
+          <SFXLayer effects={[{ type: 'impact' }]} />
+        </Transition>
       </Sequence>
 
       <Sequence from={shotFrames[5].from} durationInFrames={shotFrames[5].durationInFrames}>
-        <Shot6 subtitleSegments={segments} videoOffset={shotData[5].startTime} />
+        <Transition type="slide-left">
+          <Shot6 subtitleSegments={segments} videoOffset={shotData[5].startTime} />
+        </Transition>
       </Sequence>
 
       <Sequence from={shotFrames[6].from} durationInFrames={shotFrames[6].durationInFrames}>
-        <Shot7 subtitleSegments={segments} videoOffset={shotData[6].startTime} />
-        <SFXLayer effects={[{ type: 'outro' }]} />
+        <Transition type="zoom-in">
+          <Shot7 subtitleSegments={segments} videoOffset={shotData[6].startTime} />
+          <SFXLayer effects={[{ type: 'outro' }]} />
+        </Transition>
       </Sequence>
     </AbsoluteFill>
   )
