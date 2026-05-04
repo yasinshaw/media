@@ -24,8 +24,17 @@ export { CTA } from './CTA'
 export { Demo } from './Demo'
 
 // === Audio ===
-export { BGMAudio, type BGMAudioConfig } from './BGMAudio'
+export { BGMAudio, type BGMAudioConfig, type VoiceoverSegment } from './BGMAudio'
 export { SFXLayer, type SFXConfig } from './SFXLayer'
+export { matchSFX, translateLegacyType, inferLayer } from './sfx-matcher'
+export type { SFXTriple } from './sfx-matcher'
 
 // === Constants ===
-export { SAFE_AREA, SUBTITLE, LAYOUT, BGM, SFX, BGM_STYLE_MAP, SFX_FILE_MAP } from './constants'
+export {
+  SAFE_AREA, SUBTITLE, LAYOUT, BGM, BGM_STYLE_MAP,
+  SFX, SFX_FILE_MAP,
+  SFX_MOODS, SFX_ACTIONS, SFX_INTENSITIES,
+  SFX_LAYER_DEFAULTS, SFX_LAYER_SCALE,
+  SFX_AVAILABLE_FILES,
+} from './constants'
+export type { SFXMood, SFXAction, SFXIntensity, SFXLayerType } from './constants'
