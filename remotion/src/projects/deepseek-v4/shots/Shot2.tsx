@@ -1,18 +1,9 @@
 import React from 'react'
-import { useCurrentFrame, interpolate, spring } from 'remotion'
-import { TwoColumnCompare } from '../../../components'
+import { useCurrentFrame, spring } from 'remotion'
+import { TwoColumnCompare, useSlideIn } from '../../../components'
 
-interface SubtitleSegment {
-  text: string
-  start: number
-  end: number
-  duration: number
-}
-
-interface Shot2Props {
-  subtitleSegments?: SubtitleSegment[]
-  videoOffset?: number
-}
+interface SubtitleSegment { text: string; start: number; end: number; duration: number }
+interface Shot2Props { subtitleSegments?: SubtitleSegment[]; videoOffset?: number }
 
 export const Shot2: React.FC<Shot2Props> = ({ subtitleSegments, videoOffset }) => {
   const frame = useCurrentFrame()
@@ -29,7 +20,7 @@ export const Shot2: React.FC<Shot2Props> = ({ subtitleSegments, videoOffset }) =
     config: { damping: 15, stiffness: 80 },
   })
 
-  const priceTagOpacity = interpolate(frame, [60, 100], [0, 1], { extrapolateRight: 'clamp' })
+  const priceTagEntry = useSlideIn(frame, 'up', 50, 30, 15)
 
   const BarChart = ({ height, color, label }: { height: number; color: string; label: string }) => (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
@@ -77,8 +68,8 @@ export const Shot2: React.FC<Shot2Props> = ({ subtitleSegments, videoOffset }) =
             fontSize: 36,
             fontWeight: 700,
             color: '#fbbf24',
-            opacity: priceTagOpacity,
             textAlign: 'center',
+            ...priceTagEntry.style,
           }}
         >
           💰 价格仅 1/6
