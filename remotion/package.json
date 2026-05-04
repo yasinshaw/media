@@ -6,11 +6,18 @@
   "scripts": {
     "start": "remotion studio",
     "build": "remotion render",
-    "upgrade": "remotion upgrade"
+    "upgrade": "remotion upgrade",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.0",
+    "@remotion/google-fonts": "4.0.448",
+    "@remotion/light-leaks": "^4.0.448",
     "@remotion/media": "4.0.448",
+    "@remotion/shapes": "4.0.448",
+    "@remotion/starburst": "4.0.448",
+    "@remotion/transitions": "4.0.448",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "remotion": "^4.0.0"
@@ -22,6 +29,7 @@
     "@types/react-dom": "^18.2.0",
     "eslint": "^8.0.0",
     "prettier": "^3.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^4.1.5"
   }
 }
