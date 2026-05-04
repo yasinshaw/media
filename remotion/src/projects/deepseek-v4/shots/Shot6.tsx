@@ -1,6 +1,6 @@
 import React from 'react'
-import { useCurrentFrame, spring, interpolate } from 'remotion'
-import { CenteredStack } from '../../../components'
+import { useCurrentFrame } from 'remotion'
+import { CenteredStack, useStagger, useNumberRoll, useFadeIn } from '../../../components'
 
 interface SubtitleSegment {
   text: string
@@ -17,23 +17,25 @@ interface Shot6Props {
 export const Shot6: React.FC<Shot6Props> = ({ subtitleSegments, videoOffset }) => {
   const frame = useCurrentFrame()
 
-  const scale1 = spring({ frame, fps: 30, config: { damping: 12, stiffness: 80 } })
-  const scale2 = spring({ frame: frame + 10, fps: 30, config: { damping: 12, stiffness: 80 } })
-  const scale3 = spring({ frame: frame + 20, fps: 30, config: { damping: 12, stiffness: 80 } })
-  const footerOpacity = interpolate(frame, [100, 140], [0, 1], { extrapolateRight: 'clamp' })
+  const stagger = useStagger(frame, 3, 10, 15)
+  const footer = useFadeIn(frame, 100, 20)
+
+  const price1 = useNumberRoll(frame, 0.14, 45, 10, 2)
+  const price2 = useNumberRoll(frame, 0.20, 45, 20, 2)
+  const price3 = useNumberRoll(frame, 1.00, 45, 30, 2)
 
   const PriceCircle = ({
     size,
     price,
     label,
     color,
-    scale,
+    staggerStyle,
   }: {
     size: number
     price: string
     label: string
     color: string
-    scale: number
+    staggerStyle: React.CSSProperties
   }) => (
     <div
       style={{
@@ -45,7 +47,7 @@ export const Shot6: React.FC<Shot6Props> = ({ subtitleSegments, videoOffset }) =
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        transform: `scale(${scale})`,
+        ...staggerStyle,
         boxShadow: `0 20px 50px ${color}40`,
       }}
     >
@@ -64,9 +66,9 @@ export const Shot6: React.FC<Shot6Props> = ({ subtitleSegments, videoOffset }) =
       <div style={{ fontSize: 52, fontWeight: 800, color: '#e2e8f0', marginBottom: 40 }}>价格革命</div>
 
       <div style={{ display: 'flex', flexDirection: 'row', gap: 40, alignItems: 'center' }}>
-        <PriceCircle size={140} price="$0.14" label="V4 Flash" color="#22c55e" scale={scale1} />
-        <PriceCircle size={180} price="$0.20" label="GPT-5.4 Nano" color="#f97316" scale={scale2} />
-        <PriceCircle size={240} price="$1.00" label="Claude Haiku" color="#ef4444" scale={scale3} />
+        <PriceCircle size={140} price={`$${price1.toFixed(2)}`} label="V4 Flash" color="#22c55e" staggerStyle={stagger[0].style} />
+        <PriceCircle size={180} price={`$${price2.toFixed(2)}`} label="GPT-5.4 Nano" color="#f97316" staggerStyle={stagger[1].style} />
+        <PriceCircle size={240} price={`$${price3.toFixed(2)}`} label="Claude Haiku" color="#ef4444" staggerStyle={stagger[2].style} />
       </div>
 
       <div
@@ -76,7 +78,7 @@ export const Shot6: React.FC<Shot6Props> = ({ subtitleSegments, videoOffset }) =
           color: '#fbbf24',
           marginTop: 40,
           textAlign: 'center',
-          opacity: footerOpacity,
+          opacity: footer.style.opacity,
         }}
       >
         V4 Pro $1.74 vs 竞品 $10+
@@ -87,7 +89,7 @@ export const Shot6: React.FC<Shot6Props> = ({ subtitleSegments, videoOffset }) =
           fontSize: 28,
           color: '#94a3b8',
           textAlign: 'center',
-          opacity: footerOpacity,
+          opacity: footer.style.opacity,
         }}
       >
         每百万 token 价格对比

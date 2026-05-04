@@ -1,6 +1,6 @@
 import React from 'react'
-import { useCurrentFrame, spring, interpolate } from 'remotion'
-import { HubLayout } from '../../../components'
+import { useCurrentFrame, spring } from 'remotion'
+import { HubLayout, useStagger, GradientFlow, FloatingOrbs } from '../../../components'
 
 interface SubtitleSegment {
   text: string
@@ -18,10 +18,10 @@ export const Shot7: React.FC<Shot7Props> = ({ subtitleSegments, videoOffset }) =
   const frame = useCurrentFrame()
 
   const centerScale = spring({ frame, fps: 30, config: { damping: 10, stiffness: 80 } })
-  const nodeFadeIn = interpolate(frame, [20, 50], [0, 1], { extrapolateRight: 'clamp' })
-  const lineFadeIn = interpolate(frame, [30, 60], [0, 1], { extrapolateRight: 'clamp' })
+  const stagger = useStagger(frame, 4, 10, 12)
+  const staggerOpacities = stagger.map((s) => s.style.opacity as number)
 
-  const Tag = ({ label, color }: { label: string; color: string }) => (
+  const Tag = ({ label, color, staggerStyle }: { label: string; color: string; staggerStyle: React.CSSProperties }) => (
     <div
       style={{
         padding: '16px 28px',
@@ -31,6 +31,7 @@ export const Shot7: React.FC<Shot7Props> = ({ subtitleSegments, videoOffset }) =
         fontWeight: 700,
         color: '#fff',
         boxShadow: `0 10px 30px ${color}40`,
+        ...staggerStyle,
       }}
     >
       {label}
@@ -40,6 +41,12 @@ export const Shot7: React.FC<Shot7Props> = ({ subtitleSegments, videoOffset }) =
   return (
     <HubLayout
       background="linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)"
+      backgroundLayer={
+        <>
+          <GradientFlow colors={['#1e3a8a', '#1e40af', '#1e3a8a']} duration={200} />
+          <FloatingOrbs colors={['#3b82f630', '#60a5fa20']} count={3} />
+        </>
+      }
       center={{
         node: (
           <div style={{ textAlign: 'center' }}>
@@ -60,14 +67,14 @@ export const Shot7: React.FC<Shot7Props> = ({ subtitleSegments, videoOffset }) =
         scale: centerScale,
       }}
       surrounding={[
-        { position: 'top-left', node: <Tag label="开源" color="#22c55e" />, opacity: nodeFadeIn },
-        { position: 'top-right', node: <Tag label="最大模型" color="#3b82f6" />, opacity: nodeFadeIn },
-        { position: 'bottom-left', node: <Tag label="最便宜" color="#fbbf24" />, opacity: nodeFadeIn },
-        { position: 'bottom-right', node: <Tag label="数学领先" color="#a855f7" />, opacity: nodeFadeIn },
+        { position: 'top-left', node: <Tag label="开源" color="#22c55e" staggerStyle={stagger[0].style} />, opacity: staggerOpacities[0] },
+        { position: 'top-right', node: <Tag label="最大模型" color="#3b82f6" staggerStyle={stagger[1].style} />, opacity: staggerOpacities[1] },
+        { position: 'bottom-left', node: <Tag label="最便宜" color="#fbbf24" staggerStyle={stagger[2].style} />, opacity: staggerOpacities[2] },
+        { position: 'bottom-right', node: <Tag label="数学领先" color="#a855f7" staggerStyle={stagger[3].style} />, opacity: staggerOpacities[3] },
       ]}
       radius={280}
       connectionColor="#60a5fa"
-      connectionsOpacity={lineFadeIn}
+      connectionsOpacity={staggerOpacities[3]}
       footer={
         <div
           style={{

@@ -1,6 +1,6 @@
 import React from 'react'
-import { useCurrentFrame, interpolate } from 'remotion'
-import { TimelineFlow } from '../../../components'
+import { useCurrentFrame } from 'remotion'
+import { TimelineFlow, useStagger, useFadeIn } from '../../../components'
 
 interface SubtitleSegment {
   text: string
@@ -17,9 +17,13 @@ interface Shot5Props {
 export const Shot5: React.FC<Shot5Props> = ({ subtitleSegments, videoOffset }) => {
   const frame = useCurrentFrame()
 
-  const fade1 = interpolate(frame, [0, 25], [0, 1], { extrapolateRight: 'clamp' })
-  const fade2 = interpolate(frame, [50, 80], [0, 1], { extrapolateRight: 'clamp' })
-  const fade3 = interpolate(frame, [100, 130], [0, 1], { extrapolateRight: 'clamp' })
+  const stagger = useStagger(frame, 3, 15, 15)
+  const footer = useFadeIn(frame, 130, 20)
+
+  const [item1Opacity, item2Opacity, item3Opacity] = stagger.map(
+    (s) => s.style.opacity as number,
+  )
+  const footerOpacity = footer.style.opacity as number
 
   return (
     <TimelineFlow
@@ -45,21 +49,21 @@ export const Shot5: React.FC<Shot5Props> = ({ subtitleSegments, videoOffset }) =
           detail: '超 Claude Opus 4.7 (79.3%)',
           icon: '🌐',
           color: '#22c55e',
-          opacity: fade1,
+          opacity: item1Opacity,
         },
         {
           label: 'SWE-Bench 55.4%',
           detail: '接近 GPT-5.5 (58.6%)',
           icon: '📊',
           color: '#fbbf24',
-          opacity: fade2,
+          opacity: item2Opacity,
         },
         {
           label: '数学推理',
           detail: '超越 GPT-5',
           icon: '🧮',
           color: '#22c55e',
-          opacity: fade3,
+          opacity: item3Opacity,
         },
       ]}
       footer={
@@ -69,6 +73,7 @@ export const Shot5: React.FC<Shot5Props> = ({ subtitleSegments, videoOffset }) =
             fontWeight: 700,
             color: '#22c55e',
             textAlign: 'center',
+            opacity: footerOpacity,
           }}
         >
           搜索 + 数学 = 世界第一梯队
