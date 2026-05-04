@@ -83,6 +83,86 @@ Within the theme system, vary background styles across shots. Don't use `linear-
 
 ---
 
+## Reusable Animation Hooks (PREFERRED)
+
+**Hooks are the preferred way to add animations.** Use a hook first — fall back to inline `interpolate`/`spring` patterns (see ANIMATION LIBRARY below) only when no hook covers the need.
+
+All hooks return `{ style: React.CSSProperties }` for direct use with `<div style={...}>`, except `useNumberRoll` which returns a `number` and `useTextReveal` which returns `{ visibleCount, getStyle }`. All hooks have a `.compute()` static method for testing.
+
+### Import
+
+```tsx
+import { useSlideIn, useStagger, useNumberRoll, useFloat, useFadeIn, useScaleIn, useTextReveal, usePulse, useRotate } from '../../../components'
+```
+
+### Hook Reference
+
+| Hook | Purpose | Key Params |
+|------|---------|------------|
+| `useFadeIn(frame, { delay?, duration? })` | Basic fade-in | delay: 0, duration: 15 |
+| `useScaleIn(frame, { delay?, damping?, stiffness? })` | Elastic scale-in with opacity | Uses spring physics |
+| `useSlideIn(frame, direction, { delay?, distance?, duration? })` | Slide from direction + fade | direction: `'left'` \| `'right'` \| `'up'` \| `'down'` |
+| `useStagger(frame, count, delayBetween?, duration?)` | Staggered reveal for lists | Returns style array |
+| `useNumberRoll(frame, target, { delay?, duration?, decimals? })` | Animate number 0 → target | Returns number, not style |
+| `useTextReveal(frame, wordCount, delayBetween?)` | Per-word reveal | Returns `{ visibleCount, getStyle }` |
+| `useFloat(frame, { amplitude?, speed? })` | Gentle vertical float | Continuous, sine-based |
+| `usePulse(frame, { minScale?, maxScale?, speed? })` | Pulsing scale | Continuous |
+| `useRotate(frame, { speed? })` | Continuous rotation | degrees/frame |
+
+### Usage Examples
+
+```tsx
+// Fade in a title
+const titleStyle = useFadeIn(frame, { delay: 5, duration: 15 })
+<h1 style={{ fontSize: 72, ...titleStyle }}>标题</h1>
+
+// Slide in from left
+const cardStyle = useSlideIn(frame, 'left', { delay: 10, distance: 80 })
+<div style={{ ...cardStyle }}>Card content</div>
+
+// Staggered list items
+const itemStyles = useStagger(frame, 4, 8) // 4 items, 8 frames between each
+items.map((item, i) => <div key={i} style={itemStyles[i]}>{item}</div>)
+
+// Number roll animation
+const count = useNumberRoll(frame, 1600, { delay: 10, duration: 30 })
+<span>{count}万粉丝</span>
+
+// Per-word text reveal
+const { visibleCount, getStyle } = useTextReveal(frame, 5, 4)
+const words = ['这是', '一个', '精彩', '的视频', '标题']
+<div>{words.slice(0, visibleCount).map((w, i) => <span key={i} style={getStyle(i)}>{w}</span>)}</div>
+
+// Floating decorative element
+const floatStyle = useFloat(frame, { amplitude: 15, speed: 0.05 })
+<div style={{ ...floatStyle }}>Floating icon</div>
+```
+
+### Background Components
+
+Rich background effects that work as the `backgroundLayer` prop on layout primitives.
+
+**Import:**
+```tsx
+import { FloatingOrbs, GradientFlow, GridPattern, ParticleField } from '../../../components'
+```
+
+| Component | Effect | Usage |
+|-----------|--------|-------|
+| `FloatingOrbs` | Blurred gradient orbs floating | `<FloatingOrbs colors={['#3b82f640']} count={3} />` |
+| `GradientFlow` | Animated gradient background | `<GradientFlow colors={['#0f172a', '#1e293b']} />` |
+| `GridPattern` | Subtle grid lines | `<GridPattern color="#fff" opacity={0.05} />` |
+| `ParticleField` | Floating particles | `<ParticleField count={20} color="#fff" />` |
+
+**Usage pattern** — pass as `backgroundLayer` prop to layout primitives:
+```tsx
+<CenteredStack backgroundLayer={<FloatingOrbs colors={['#0ea5e940']} count={3} />}>
+  {/* content */}
+</CenteredStack>
+```
+
+---
+
 ## ANIMATION LIBRARY — Mandatory Variety
 
 **Rule: Each video MUST use at least 3 DIFFERENT animation patterns across its shots.** Using `fadeIn` on every shot is forbidden.
@@ -881,6 +961,25 @@ import { slide } from '@remotion/transitions/slide'
   </TransitionSeries.Sequence>
 </TransitionSeries>
 ```
+
+### Transition Wrapper Component
+
+For simpler per-shot transitions without `TransitionSeries`, use the `Transition` wrapper component:
+
+```tsx
+import { Transition } from '../../../components'
+
+// In composition, wrap each shot in Transition:
+<Sequence from={shotFrames[1].from} durationInFrames={shotFrames[1].durationInFrames} premountFor={1 * fps}>
+  <Transition type="slide-left">
+    <Shot2 ... />
+  </Transition>
+</Sequence>
+```
+
+**Available types:** `fade` (default), `slide-left`, `slide-right`, `slide-up`, `slide-down`, `zoom-in`, `zoom-out`
+
+Use `TransitionSeries` for complex multi-scene compositions (recommended). Use the `Transition` wrapper for simple one-off transitions or when you need per-shot control without a full `TransitionSeries` setup.
 
 **Important:** Transitions overlap adjacent scenes, so total duration = sum(durations) - sum(transition durations). Use `timing.getDurationInFrames({ fps })` to calculate.
 
