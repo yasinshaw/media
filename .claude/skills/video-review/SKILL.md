@@ -273,6 +273,10 @@ const secondOpacity = interpolate(progress, [0.30, 0.35, 0.62, 0.66], [0, 1, 1, 
 | **Text effects on data shots** | Shots with numbers/stats use typewriter or word highlight | Plain text for data = flat, unengaging |
 | **AI background for hook** | Hook shot considers AI-generated background instead of plain gradient | First impression matters most |
 | **No all-same-background** | Not every shot uses the same `linear-gradient` | Visual fatigue |
+| **Animation hooks used** | Shots should prefer hooks from `components/animations/` over inline `interpolate`/`spring` for common patterns (slide, scale, stagger, fade) | Warning |
+| **Background atmosphere** | At least 2 shots should have a background component (`FloatingOrbs`, `GradientFlow`, etc.) or `backgroundLayer` prop | Warning |
+| **Number data animated** | Shots displaying numbers/prices/percentages should use `useNumberRoll` instead of static text | Info |
+| **Stagger on lists** | Timeline/Hub shots with 3+ items should use `useStagger` instead of manual per-item fade | Warning |
 
 **Auto-fix rules for visual richness:**
 - **Missing TransitionSeries**: Replace `<AbsoluteFill>` + `<Sequence>` wrapping with `TransitionSeries` + `TransitionSeries.Sequence`
@@ -464,6 +468,9 @@ Applied X fixes:
 - **Visual alignment: Missing zIndex on elements that should be above SVG**
 - **Visual alignment: Absolute positioning that conflicts with flex layout**
 - **Animation smoothness: Boolean opacity (`opacity: bool ? 1 : 0`) causing jumps**
+- **Stagger: manual per-item `interpolate` fade with 3+ identical patterns → `useStagger` from `components/animations/`**
+- **Number display: static text for numbers/prices/percentages in data/comparison shots → `useNumberRoll`**
+- **Background atmosphere: all shots use plain solid/linear-gradient with no atmosphere → suggest `FloatingOrbs` or `GradientFlow` background component**
 
 **Visual Alignment Fix Strategy:**
 When detecting SVG/element misalignment:
