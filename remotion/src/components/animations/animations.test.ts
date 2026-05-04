@@ -140,3 +140,47 @@ describe('useTextReveal', () => {
     expect(result.visibleCount).toBeLessThan(5)
   })
 })
+
+describe('useFloat', () => {
+  it('returns 0 translateY at frame 0', () => {
+    const result = useFloat.compute({ frame: 0 })
+    expect(result.style.transform).toContain('translateY(0')
+  })
+  it('returns non-zero translateY during animation', () => {
+    const result = useFloat.compute({ frame: 15, amplitude: 10, speed: 0.05 })
+    expect(result.style.transform).toBeDefined()
+  })
+  it('oscillates (returns to near 0 after full cycle)', () => {
+    const result1 = useFloat.compute({ frame: 0, speed: 0.1 })
+    const result2 = useFloat.compute({ frame: 63, speed: 0.1 })
+    const y1 = parseFloat(result1.style.transform!.match(/translateY\((.+?)px\)/)![1])
+    const y2 = parseFloat(result2.style.transform!.match(/translateY\((.+?)px\)/)![1])
+    expect(Math.abs(y1 - y2)).toBeLessThan(2)
+  })
+})
+
+describe('usePulse', () => {
+  it('returns scale 1 at frame 0', () => {
+    const result = usePulse.compute({ frame: 0 })
+    expect(result.style.transform).toContain('scale(1')
+  })
+  it('returns scale > 1 during pulse', () => {
+    const result = usePulse.compute({ frame: 15, minScale: 1, maxScale: 1.05, speed: 0.1 })
+    const scale = parseFloat(result.style.transform!.match(/scale\((.+?)\)/)![1])
+    expect(scale).toBeGreaterThan(1)
+  })
+})
+
+describe('useRotate', () => {
+  it('returns 0 rotation at frame 0', () => {
+    const result = useRotate.compute({ frame: 0 })
+    expect(result.style.transform).toContain('rotate(0deg)')
+  })
+  it('increases rotation over time', () => {
+    const r1 = useRotate.compute({ frame: 0, speed: 1 })
+    const r2 = useRotate.compute({ frame: 30, speed: 1 })
+    const d1 = parseFloat(r1.style.transform!.match(/rotate\((.+?)deg\)/)![1])
+    const d2 = parseFloat(r2.style.transform!.match(/rotate\((.+?)deg\)/)![1])
+    expect(d2).toBeGreaterThan(d1)
+  })
+})
