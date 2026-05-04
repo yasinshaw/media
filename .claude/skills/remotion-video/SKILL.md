@@ -24,6 +24,209 @@ You are a Remotion specialist who converts video scripts into production-ready R
 
 ---
 
+## VISUAL IDENTITY — Color Theme System (MANDATORY)
+
+**Every project MUST receive a unique ColorTheme before any shot code is generated.** This prevents template-ification. Two consecutive projects MUST NOT use the same theme.
+
+### Step 1: Pick a Theme
+
+Analyze the script topic and mood, then assign ONE theme:
+
+| Theme | Mood | Backgrounds | Accent | AccentAlt | CardBg | TextPrimary | TextSecondary | Animation |
+|-------|------|-------------|--------|-----------|--------|-------------|---------------|-----------|
+| **Sunrise** | 效率/数据/成长 | `#FFF7ED → #FED7AA`, `#FFFBEB → #FDE68A`, `#FEF3C7 → #FCD34D`, `#FFF1F2 → #FECDD3`, `#ECFDF5 → #A7F3D0` | `#F97316` | `#EAB308` | `#FFFBEB` | `#1C1917` | `#78716C` | bouncy |
+| **Ocean** | 技术/产品/AI | `#F0F9FF → #BAE6FD`, `#ECFEFF → #A5F3FC`, `#F0FDFA → #99F6E4`, `#EFF6FF → #BFDBFE`, `#E0F2FE → #7DD3FC` | `#0EA5E9` | `#06B6D4` | `#F0F9FF` | `#0C4A6E` | `#64748B` | snappy |
+| **Sakura** | 人文/创意/故事 | `#FDF2F8 → #FBCFE8`, `#FAF5FF → #D8B4FE`, `#F5F3FF → #C4B5FD`, `#FFF1F2 → #FECDD3`, `#FCE7F3 → #F9A8D4` | `#EC4899` | `#A855F7` | `#FDF2F8` | `#4A1D6A` | `#6B7280` | smooth |
+| **Neon** | 前沿/突破/震撼 | `#18181B → #27272A`, `#1E1B4B → #312E81`, `#0F172A → #1E293B`, `#0C4A6E → #075985`, `#1A1A2E → #16213E` | `#A78BFA` | `#38BDF8` | `rgba(255,255,255,0.08)` | `#F8FAFC` | `#94A3B8` | snappy |
+| **Forest** | 教程/方法论/实用 | `#F0FDF4 → #BBF7D0`, `#ECFDF5 → #A7F3D0`, `#FEFCE8 → #FEF08A`, `#F0FDF4 → #86EFAC`, `#ECFDF5 → #6EE7B7` | `#22C55E` | `#84CC16` | `#F0FDF4` | `#14532D` | `#6B7280` | bouncy |
+
+### Step 2: Distribute Backgrounds
+
+Assign a DIFFERENT background from the theme's palette to each shot. Cycle through them so no two adjacent shots share the same background.
+
+Example with Sunrise theme (6 shots):
+- Shot 1: `#FFF7ED → #FED7AA`
+- Shot 2: `#FFFBEB → #FDE68A`
+- Shot 3: `#FEF3C7 → #FCD34D`
+- Shot 4: `#FFF1F2 → #FECDD3`
+- Shot 5: `#ECFDF5 → #A7F3D0`
+- Shot 6: `#FFF7ED → #FED7AA` (cycle back)
+
+### Step 3: Use Theme Colors in ALL shot code
+
+- `background` → pick from theme's backgrounds
+- `color` on titles → `theme.textPrimary`
+- `color` on subtitles/captions → `theme.textSecondary`
+- `accent` / `border` / `highlight` → `theme.accent` or `theme.accentAlt`
+- `cardBg` / `panelBg` → `theme.cardBg`
+- `borderRadius` → use `16`–`24`px on cards for the playful style
+- `boxShadow` → add `0 8px 32px rgba(0,0,0,0.08)` on cards for depth
+
+### Step 4: Declare the Theme
+
+Add a comment at the top of `composition.tsx`:
+```tsx
+// Theme: Sunrise — 效率/数据/成长
+```
+
+### Background Style Variations
+
+Within the theme system, vary background styles across shots. Don't use `linear-gradient` for every shot:
+
+| Style | CSS Pattern | When |
+|-------|-------------|------|
+| Gradient (default) | `linear-gradient(135deg, A, B)` | Most shots |
+| Radial glow | `radial-gradient(circle at 50% 30%, A, B)` | Title/hook shots |
+| Solid + decorative circles | `background: solidColor` + absolute positioned `<div>` circles with `opacity: 0.15` | CTA shots, data shots |
+| Dot grid pattern | `background: color` + SVG `<pattern>` of dots | Timeline/process shots |
+| AI background image | `<Img>` + overlay | When script specifies `画面类型: ai背景图` |
+
+---
+
+## ANIMATION LIBRARY — Mandatory Variety
+
+**Rule: Each video MUST use at least 3 DIFFERENT animation patterns across its shots.** Using `fadeIn` on every shot is forbidden.
+
+### Animation Patterns
+
+#### 1. fadeSlideUp — default for text blocks
+```tsx
+const fadeSlideUp = (delay: number) => {
+  const opacity = interpolate(frame, [delay, delay + 12], [0, 1], { extrapolateRight: 'clamp' })
+  const translateY = interpolate(frame, [delay, delay + 12], [30, 0], { extrapolateRight: 'clamp' })
+  return { opacity, transform: `translateY(${translateY}px)` }
+}
+```
+
+#### 2. scaleIn — for emphasis elements (data, icons)
+```tsx
+const scaleIn = (delay: number) => {
+  const progress = spring({ frame, fps, config: { damping: 12, stiffness: 200 }, delay })
+  const scale = interpolate(progress, [0, 1], [0.5, 1])
+  const opacity = interpolate(progress, [0, 0.5], [0, 1])
+  return { transform: `scale(${scale})`, opacity }
+}
+```
+
+#### 3. slideInFromLeft / slideInFromRight — for list items, comparisons
+```tsx
+const slideInFromLeft = (delay: number) => {
+  const opacity = interpolate(frame, [delay, delay + 15], [0, 1], { extrapolateRight: 'clamp' })
+  const translateX = interpolate(frame, [delay, delay + 15], [-60, 0], {
+    extrapolateRight: 'clamp', easing: Easing.out(Easing.quad),
+  })
+  return { opacity, transform: `translateX(${translateX}px)` }
+}
+```
+
+#### 4. staggerReveal — for multiple parallel items
+```tsx
+// Apply to items with increasing delay
+items.map((_, i) => fadeSlideUp(10 + i * 8))
+```
+
+#### 5. blurIn — for dramatic scene transitions
+```tsx
+const blurIn = (delay: number) => {
+  const opacity = interpolate(frame, [delay, delay + 15], [0, 1], { extrapolateRight: 'clamp' })
+  const blur = interpolate(frame, [delay, delay + 15], [20, 0], { extrapolateRight: 'clamp' })
+  return { opacity, filter: `blur(${blur}px)` }
+}
+```
+
+#### 6. typewriter — for numbers, titles
+```tsx
+const text = '1600万粉丝'
+const visibleChars = Math.floor(frame * 0.8)
+<span>{text.slice(0, visibleChars)}<Cursor /></span>
+```
+
+#### 7. fadeSlideDown — for headers, notifications, labels
+```tsx
+const fadeSlideDown = (delay: number) => {
+  const opacity = interpolate(frame, [delay, delay + 12], [0, 1], { extrapolateRight: 'clamp' })
+  const translateY = interpolate(frame, [delay, delay + 12], [-30, 0], { extrapolateRight: 'clamp' })
+  return { opacity, transform: `translateY(${translateY}px)` }
+}
+```
+
+#### 8. rotateIn — for dramatic emphasis, icon reveals
+```tsx
+const rotateIn = (delay: number) => {
+  const progress = spring({ frame, fps, config: { damping: 12, stiffness: 150 }, delay })
+  const rotation = interpolate(progress, [0, 1], [-15, 0])
+  const scale = interpolate(progress, [0, 1], [0.6, 1])
+  const opacity = interpolate(progress, [0, 0.4], [0, 1])
+  return { transform: `rotate(${rotation}deg) scale(${scale})`, opacity }
+}
+```
+
+#### 9. wordHighlight — spring-animated highlighter wipe on key terms
+```tsx
+const wordHighlight = (delay: number) => {
+  const progress = spring({ frame, fps, config: { damping: 200 }, delay })
+  return { scaleX: progress, transformOrigin: 'left center' }
+}
+// Usage:
+<span style={{ position: 'relative', display: 'inline-block' }}>
+  <span style={{
+    position: 'absolute', left: 0, right: 0, top: '50%', height: '1.05em',
+    transform: `translateY(-50%) scaleX(${highlightProgress})`,
+    transformOrigin: 'left center', backgroundColor: theme.accent, borderRadius: '0.18em',
+    opacity: 0.3,
+  }} />
+  <span style={{ position: 'relative', zIndex: 1 }}>关键词</span>
+</span>
+```
+
+#### 10. pulse — breathing/pulsing effect for CTA, attention
+```tsx
+const pulse = (delay: number) => {
+  const scale = interpolate(
+    Math.sin((frame - delay) * 0.08),
+    [-1, 1], [1, 1.05],
+  )
+  return { transform: `scale(${scale})` }
+}
+```
+
+#### 11. revealExpand — width/height expand from zero, good for progress bars, underlines, cards
+```tsx
+const revealExpand = (delay: number) => {
+  const progress = spring({ frame, fps, config: { damping: 15, stiffness: 120 }, delay })
+  return { transform: `scaleX(${progress})`, transformOrigin: 'left center' }
+}
+// Usage on a container or underline:
+<div style={{ width: '100%', height: 4, backgroundColor: theme.accent, ...revealExpand(10) }} />
+```
+
+#### 12. shake — horizontal shake for emphasis, warning
+```tsx
+const shake = (delay: number, intensity = 5) => {
+  const shakeProgress = interpolate(frame, [delay, delay + 20], [0, 1], { extrapolateRight: 'clamp' })
+  const decay = 1 - shakeProgress
+  const offset = Math.sin(frame * 1.2) * intensity * decay
+  return { transform: `translateX(${offset}px)` }
+}
+```
+
+### Animation Distribution Strategy
+
+Assign animations per shot type:
+
+| Shot Type | Recommended Animation | Alternative |
+|-----------|----------------------|-------------|
+| Hook/Title | `typewriter` + `blurIn` | `rotateIn` |
+| Data/Stats | `scaleIn` + `typewriter` | `fadeSlideUp` with stagger |
+| Comparison | `slideInFromLeft` + `slideInFromRight` | `blurIn` |
+| Process/Steps | `staggerReveal` (items appear one by one) | `fadeSlideDown` cascade |
+| Quote/Highlight | `scaleIn` (dramatic) | `wordHighlight` |
+| CTA | `pulse` + `scaleIn` | `fadeSlideUp` |
+| Warning/Error | `shake` | `rotateIn` |
+| Progress/Ranking | `revealExpand` + `staggerReveal` | `scaleIn` |
+
+---
+
 ## FATAL RULES — read before generating any shot
 
 These rules cause the most recurring layout bugs. Violating any one of them is a Critical issue in `/video-review`.
@@ -54,6 +257,25 @@ These rules cause the most recurring layout bugs. Violating any one of them is a
 
 12. **Use `TransitionSeries` for scene transitions** instead of custom fade/slide wrappers. See `remotion-best-practices` → `rules/transitions.md`.
 
+13. **`TransitionSeries.Overlay` and `TransitionSeries.Transition` are MUTUALLY EXCLUSIVE at the same gap.** Between any two Sequences, you may use EITHER an Overlay OR a Transition — NEVER both. If you need both a visual effect (like LightLeak) AND a transition (like flip), put the effect INSIDE the Sequence as a child element, not between Sequences:
+    ```tsx
+    // WRONG — Overlay + Transition at same gap = runtime error
+    <TransitionSeries.Sequence>...</TransitionSeries.Sequence>
+    <TransitionSeries.Transition presentation={flip()} />
+    <TransitionSeries.Overlay><LightLeak /></TransitionSeries.Overlay>
+    <TransitionSeries.Sequence>...</TransitionSeries.Sequence>
+
+    // CORRECT — effect inside Sequence, transition between Sequences
+    <TransitionSeries.Sequence>
+      <Shot5 />
+      <LightLeak />  {/* effect as child of Sequence */}
+    </TransitionSeries.Sequence>
+    <TransitionSeries.Transition presentation={flip()} />
+    <TransitionSeries.Sequence>...</TransitionSeries.Sequence>
+    ```
+
+13. **Visual Variety is MANDATORY.** Assign a ColorTheme (see Visual Identity section above). Each video MUST use ≥3 different animation patterns. No two adjacent shots may share the same background. All colors must come from the assigned theme — NEVER hardcode `#0f172a`, `#1e293b`, `#94a3b8`, or `#fff` as defaults.
+
 ---
 
 ## Quick Start
@@ -69,7 +291,7 @@ Example: `/remotion-video 2026-04-22-gpt-image2-compare`
 ### Step 1: Locate Script
 Search `projects/` for the matching `script.md` (use slug if no full path provided).
 
-### Step 2: Parse Script
+### Step 2: Parse Script + Assign Theme
 Extract from video-script format:
 - Video title → composition name
 - Each shot/镜头 → component + duration
@@ -77,11 +299,32 @@ Extract from video-script format:
 - 口播 → subtitle text/segments
 - 字幕 → on-screen text overlay (use Layout primitive `header`/`footer` slots)
 
-### Step 3: Check Voiceover Audio
+**Then assign a ColorTheme** (see "VISUAL IDENTITY" section above):
+1. Analyze the script topic and mood
+2. Pick the best matching theme from the 5 options (Sunrise/Ocean/Sakura/Neon/Forest)
+3. Distribute backgrounds from the theme's palette across shots (no adjacent duplicates)
+4. Record the theme choice for use in all shot code generation
+
+### Step 3: Check Voiceover Audio (MANDATORY — HARD GATE)
+
+**This step MUST complete before any code generation.** If no audio files are found, STOP and ask the user to generate voiceover first. Do NOT proceed to Step 4.
+
 Look in `projects/<YYYY-MM-DD-<slug>>/assets/audio/`. Detection priority:
 1. **Manifest + split files**: `voiceover-manifest.json` + `voiceover-01.mp3, voiceover-02.mp3, ...` — one per shot, with Whisper-aligned subtitle timing
 2. **Full file only**: `voiceover-full.mp3` — single audio, no per-shot timing
-3. **None**: add placeholder comment in composition
+
+**If neither is found, STOP immediately and output:**
+```
+❌ 未找到语音文件
+
+在 `projects/<YYYY-MM-DD-<slug>>/assets/audio/` 目录下未检测到语音文件。
+
+请先生成语音文件：
+  /voiceover-tts <project-slug>
+
+生成完成后再重新运行 /remotion-video。
+```
+Do NOT continue to Step 4 or generate any code.
 
 If `voiceover-manifest.json` exists, read it to get:
 - `segments[].duration_seconds` → shot duration
@@ -95,7 +338,17 @@ Parse BGM and SFX annotations from the script.
 1. **Parse BGM**: Look for `**BGM**: <style> | <tempo> | <volume>` after the title. If missing, skip BGM entirely.
 2. **Check BGM asset**: Verify `remotion/public/audio/bgm/<mapped-style>-<tempo>.mp3` exists. If missing, warn user and skip BGM (do NOT download at render time).
 3. **Parse SFX**: Scan each shot for `**音效**: <effect-list>`. Build an array of SFX configs per shot.
-4. **Check SFX assets**: Verify each referenced SFX file exists in `remotion/public/audio/sfx/`. If missing, warn and skip that effect.
+
+**New format parsing** (`mood/action/intensity`):
+- Split by comma for multiple effects
+- Split each by `/` into [mood, action, intensity] (defaults: neutral, emphasis, medium)
+- Map to `SFXConfig`: `{ mood, action, intensity, layer: auto-inferred }`
+
+**Legacy format** (`whoosh`, `impact`, etc.):
+- Use as `type` field: `{ type: 'impact' }`
+- Auto-translated to taxonomy triple by SFXLayer
+
+4. **Check SFX assets**: For each parsed SFX config, use `matchSFX()` to resolve the file path. If `matchSFX()` returns null, fall back to `SFX_FILE_MAP` for legacy types. If still not found, warn and skip that effect (don't block render).
 
 **BGM style mapping** (Chinese → directory name):
 
@@ -107,15 +360,17 @@ Parse BGM and SFX annotations from the script.
 | 温馨抒情 | `warm` |
 | 史诗大气 | `epic` |
 
-**SFX file mapping:**
+**SFX resolution** (handled by `matchSFX()` + `SFX_FILE_MAP` fallback):
 
-| Effect | File |
-|--------|------|
-| `whoosh-in` | `/audio/sfx/whoosh-in.mp3` |
-| `whoosh` | `/audio/sfx/whoosh.mp3` |
-| `impact` | `/audio/sfx/impact.mp3` |
-| `text-pop` | `/audio/sfx/text-pop.mp3` |
-| `outro` | `/audio/sfx/outro.mp3` |
+New files follow naming: `{mood}-{action}-{intensity}.mp3`
+Legacy files kept at: `/audio/sfx/{old-name}.mp3`
+
+| Effect | Resolved file (new) | Fallback (legacy) |
+|--------|-------------------|-------------------|
+| `epic/transition/strong` | `epic-transition-strong.mp3` | — |
+| `energetic/emphasis/strong` | `energetic-emphasis-strong.mp3` | — |
+| `impact` (legacy) | `neutral-emphasis-strong.mp3` | `/audio/sfx/impact.mp3` |
+| `whoosh` (legacy) | `neutral-transition-medium.mp3` | `/audio/sfx/whoosh.mp3` |
 
 ### Step 4: Project Setup (First Time Only)
 If `remotion/` doesn't exist:
@@ -127,9 +382,26 @@ If `remotion/` doesn't exist:
 For each shot:
 
 1. **Pick a layout primitive** based on 画面 description (see table below).
-2. **Compute duration** from audio manifest (preferred) or script timing label.
-3. **Write `src/projects/<slug>/shots/Shot<N>.tsx`** — wrap content in the chosen primitive.
-4. **Pass subtitle props** — `subtitle` (single string) or `subtitleSegments + videoOffset` (progressive).
+2. **Check for `画面类型: 固定图片`** — if present, resolve the image:
+   - If the shot references a stock asset (e.g., `使用 stock 素材: pixabay-xxx.jpg`):
+     a. Verify the file exists in `projects/<YYYY-MM-DD-<slug>>/assets/research/stock/`
+     b. Copy it to `remotion/public/images/<slug>/` so `staticFile()` can access it:
+        ```bash
+        mkdir -p remotion/public/images/<slug>
+        cp projects/<YYYY-MM-DD-<slug>>/assets/research/stock/<filename> remotion/public/images/<slug>/
+        ```
+     c. Use the `<Img>` + overlay pattern (same as `ai背景图`) with `staticFile(`images/<slug>/<filename>`)`
+   - If the shot references a user-provided image (e.g., from `assets/images/`):
+     a. Copy to `remotion/public/images/<slug>/` and use `staticFile()`
+3. **Check for `画面类型: ai背景图`** — if present, generate the background image BEFORE writing the shot component:
+   - Read `**背景图提示词**` from the script shot
+   - Call `scripts/generate_image.py` to generate a portrait background (see "AI-Generated Background Images" section)
+   - Output path: `remotion/public/images/<slug>/shot<N>-bg.png`
+4. **Compute duration** from audio manifest (preferred) or script timing label.
+5. **Write `src/projects/<slug>/shots/Shot<N>.tsx`** — wrap content in the chosen primitive.
+   - For `固定图片` or `ai背景图` shots: use `<Img>` + overlay pattern instead of `background` prop (see code example below)
+   - For `remotion` shots: use the primitive's `background` prop as normal
+6. **Pass subtitle props** — `subtitle` (single string) or `subtitleSegments + videoOffset` (progressive).
 
 ### Step 6: Generate Composition
 Create `src/projects/<slug>/composition.tsx`:
@@ -170,6 +442,7 @@ Every shot should start from one of these. They handle SafeArea, alignment, subt
 | 中心 + 周围 / 队长队友 / hub-spoke / 星形 | `HubLayout` | Center + 8-position surrounding, auto SVG lines |
 | 对比 / 左右对比 / 上下对比 / 优劣分析 | `TwoColumnCompare` | Two equal panels with title+body+caption |
 | 流程 / 步骤 / 时间线 / 顺序 | `TimelineFlow` | Sequential items with badges and connectors |
+| 固定图片 / ai背景图 / 需要视觉冲击 | `<Img>` + overlay (see AI-Generated Background Images) | Stock photo from research or AI-generated background |
 | 切到 X 界面 / 演示 | `CenteredStack` + `<ScreenRecording>` | Stack the screen-recording mock as the body |
 | 关注按钮 / CTA | `CenteredStack` + `<CTA>` | Stack the CTA component as the body |
 
@@ -180,17 +453,23 @@ If nothing fits, use `<SafeArea>` directly and follow [references/manual-positio
 ```tsx
 import { CenteredStack } from '../../../components'
 
-export const Shot1: React.FC<ShotProps> = ({ subtitle }) => (
-  <CenteredStack
-    background="linear-gradient(135deg, #0f172a, #1e293b)"
-    maxWidth={900}
-    gap={32}
-    subtitle={subtitle}
-  >
-    <h1 style={{ fontSize: 72, fontWeight: 900, color: '#fff' }}>标题</h1>
-    <p style={{ fontSize: 36, color: '#94a3b8' }}>说明文字</p>
-  </CenteredStack>
-)
+export const Shot1: React.FC<ShotProps> = ({ subtitle }) => {
+  const frame = useCurrentFrame()
+  const { fps } = useVideoConfig()
+  const titleAnim = scaleIn(5)
+
+  return (
+    <CenteredStack
+      background="linear-gradient(135deg, #FFF7ED, #FED7AA)"  // from theme palette
+      maxWidth={900}
+      gap={32}
+      subtitle={subtitle}
+    >
+      <h1 style={{ fontSize: 72, fontWeight: 900, color: '#1C1917', ...titleAnim }}>标题</h1>
+      <p style={{ fontSize: 36, color: '#78716C' }}>说明文字</p>
+    </CenteredStack>
+  )
+}
 ```
 
 Props: `background`, `maxWidth` (default 900), `gap` (default 32), `align`, `justify`, `subtitle`, `subtitleSegments`, `videoOffset`.
@@ -203,16 +482,16 @@ Solves the recurring "SVG line doesn't align with element" bug. Both nodes AND l
 import { HubLayout } from '../../../components'
 
 <HubLayout
-  background="linear-gradient(135deg, #0c4a6e, #075985)"
+  background="linear-gradient(135deg, #F0F9FF, #BAE6FD)"  // Ocean theme
   center={{
-    node: <Circle size={200} color="#f59e0b">队长</Circle>,
+    node: <Circle size={200} color="#0EA5E9">队长</Circle>,
     scale: centerScale,
   }}
   surrounding={[
-    { position: 'top-left',     node: <Circle size={140} color="#3b82f6">队友1</Circle>, opacity: fadeIn },
-    { position: 'top-right',    node: <Circle size={140} color="#3b82f6">队友2</Circle>, opacity: fadeIn },
-    { position: 'bottom-left',  node: <Circle size={140} color="#3b82f6">队友3</Circle>, opacity: fadeIn },
-    { position: 'bottom-right', node: <Circle size={140} color="#3b82f6">队友4</Circle>, opacity: fadeIn },
+    { position: 'top-left',     node: <Circle size={140} color="#06B6D4">队友1</Circle>, opacity: fadeIn },
+    { position: 'top-right',    node: <Circle size={140} color="#06B6D4">队友2</Circle>, opacity: fadeIn },
+    { position: 'bottom-left',  node: <Circle size={140} color="#06B6D4">队友3</Circle>, opacity: fadeIn },
+    { position: 'bottom-right', node: <Circle size={140} color="#06B6D4">队友4</Circle>, opacity: fadeIn },
   ]}
   radius={380}
   connectionsOpacity={lineFadeIn}
@@ -231,19 +510,19 @@ Default `direction="vertical"` (top/bottom — best for 9:16). Use `horizontal` 
 import { TwoColumnCompare } from '../../../components'
 
 <TwoColumnCompare
-  background="linear-gradient(135deg, #1e293b, #334155)"
+  background="linear-gradient(135deg, #FFF7ED, #FFFBEB)"  // Sunrise theme
   left={{
     title: '子Agent',
     body: <DiagramSubAgent />,
     caption: '只汇报结果',
-    accent: '#ef4444',
+    accent: '#F97316',  // theme.accent
     opacity: leftOpacity,
   }}
   right={{
     title: 'Agent Teams',
     body: <DiagramTeams />,
     caption: '队友间直接交流',
-    accent: '#22c55e',
+    accent: '#EAB308',  // theme.accentAlt
     opacity: rightOpacity,
   }}
   footer={<Note>Token 成本更高，但协作更灵活</Note>}
@@ -257,8 +536,8 @@ import { TwoColumnCompare } from '../../../components'
 import { TimelineFlow } from '../../../components'
 
 <TimelineFlow
-  background="linear-gradient(135deg, #1e1b4b, #312e81)"
-  accent="#6366f1"
+  background="linear-gradient(135deg, #F0FDF4, #BBF7D0)"  // Forest theme
+  accent="#22C55E"
   items={[
     { label: '前端', detail: '生成组件代码', opacity: fade1 },
     { label: '后端', detail: '生成 API 代码', opacity: fade2 },
@@ -473,9 +752,11 @@ Layout primitives auto-render subtitles when you pass `subtitle` (string) or `su
 | Single `<Audio>` per shot, no manifest | `subtitle="full text"` |
 | No audio | omit both |
 
-### Auto-cleaned punctuation
+### Punctuation handling
 
-`Subtitle` and `ProgressiveSubtitle` strip `，。．、；;：:！!`. Question marks (`？?`) are kept.
+`Subtitle` and `ProgressiveSubtitle` call `cleanSubtitleText()` from `components/subtitle-utils.ts`. This function strips **only periods** (`。` and `.`). All other punctuation (commas `，,`、spaces、semicolons、colons、exclamation marks、question marks) MUST be preserved — they are essential for readability and natural speech rhythm.
+
+**NEVER modify `cleanSubtitleText` to strip commas, spaces, or other punctuation.** If you need to adjust it, the regex in `subtitle-utils.ts` must remain `/[。.]/g` (periods only).
 
 ### Subtitle style (already enforced by component)
 
@@ -513,16 +794,17 @@ interface ShotProps {
 export const Shot1: React.FC<ShotProps> = ({ subtitle, subtitleSegments, videoOffset }) => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
-  const fadeIn = interpolate(frame, [0, 15], [0, 1], { extrapolateRight: 'clamp' })
+  // Pick animation from Animation Library — NOT always fadeIn!
+  const titleAnim = fadeSlideUp(5)
 
   return (
     <CenteredStack
-      background="..."
+      background="..."  // from assigned theme palette
       subtitle={subtitle}
       subtitleSegments={subtitleSegments}
       videoOffset={videoOffset}
     >
-      {/* content with `opacity: fadeIn`, etc. */}
+      {/* content with themed colors and varied animations */}
     </CenteredStack>
   )
 }
@@ -610,13 +892,30 @@ Add `<LightLeak>` overlays at major scene transitions (e.g., hook → pain point
 cd remotion && npx remotion add @remotion/light-leaks
 ```
 
+**Pattern A — LightLeak only (no Transition at same gap):**
 ```tsx
 import { LightLeak } from '@remotion/light-leaks'
 
-// Between major scene changes:
+// Between major scene changes where there's NO TransitionSeries.Transition:
+<TransitionSeries.Sequence>...</TransitionSeries.Sequence>
 <TransitionSeries.Overlay durationInFrames={30}>
   <LightLeak seed={3} hueShift={240} />
 </TransitionSeries.Overlay>
+<TransitionSeries.Sequence>...</TransitionSeries.Sequence>
+```
+
+**Pattern B — LightLeak + Transition (put LightLeak INSIDE the Sequence):**
+```tsx
+// When you need BOTH a transition AND a light leak:
+<TransitionSeries.Sequence durationInFrames={shotFrames[4]}>
+  <Shot5 subtitleSegments={segments[5]} videoOffset={shotStartSeconds[4]} />
+  <SFXLayer effects={sfxByShot[5]} />
+  <LightLeak seed={5} hueShift={240} />
+</TransitionSeries.Sequence>
+<TransitionSeries.Transition presentation={flip()} timing={TRANSITION_FRAMES['5→6']} />
+<TransitionSeries.Sequence durationInFrames={shotFrames[5]}>
+  <Shot6 ... />
+</TransitionSeries.Sequence>
 ```
 
 **Usage guidelines:**
@@ -624,6 +923,7 @@ import { LightLeak } from '@remotion/light-leaks'
 - `hueShift`: 0 = warm orange/yellow (default), 120 = green, 240 = blue
 - Different `seed` values produce different light patterns
 - Match hue to the video's color scheme
+- **NEVER put `TransitionSeries.Overlay` and `TransitionSeries.Transition` at the same gap** — they are mutually exclusive
 
 ---
 
@@ -789,14 +1089,15 @@ Available projects: {list}
 
 ⚠️ Invalid timing in shot {N}: "{timing}" — using default 5s
 ⚠️ Shot {N} missing required field: {field} — using fallback
-⚠️ Audio file not found: {path} — rendering without audio
+❌ Audio not found: {path} — STOP and ask user to run /voiceover-tts first
 ```
 
 ---
 
 ## AI-Generated Background Images
 
-When the script specifies `画面类型: ai背景图`, generate a background image using the Volcano Ark API (same API as `/video-cover`).
+When the script specifies `画面类型: ai背景图`, generate a background image via the shared
+`scripts/generate_image.py` helper (same script as `/video-cover`).
 
 ### When to use
 
@@ -807,23 +1108,22 @@ When the script specifies `画面类型: ai背景图`, generate a background ima
 ### Generation workflow
 
 1. Read the `**背景图提示词**` from the script shot
-2. Call Volcano Ark API to generate a 2K background image
-3. Download to `remotion/public/images/<slug>/shot<N>-bg.png`
+2. Call `scripts/generate_image.py` with a portrait size (best fit for 1080x1920 output)
+3. The script writes directly to `remotion/public/images/<slug>/shot<N>-bg.png`
 4. Reference in the shot component with `<Img src={staticFile(`images/${slug}/shot${N}-bg.png`)} />`
 
-### API call
+### Script call
 
 ```bash
-curl -X POST https://ark.cn-beijing.volces.com/api/v3/images/generations \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $VOLCARK_API_KEY" \
-  -d '{
-    "model": "doubao-seedream-5-0-260128",
-    "prompt": "<背景图提示词 from script, no text, no orientation>",
-    "size": "2K",
-    "response_format": "url"
-  }'
+python scripts/generate_image.py \
+  remotion/public/images/<slug>/shot<N>-bg.png \
+  "<背景图提示词 from script, no text, no orientation>" \
+  --size 1024x1536
 ```
+
+Provider/key/model are read from `.env` (`IMAGE_API_KEY`, `IMAGE_API_BASE_URL`, `IMAGE_MODEL`).
+For vertical Douyin shots, prefer a portrait size like `1024x1536` so the image already
+matches the 1080x1920 frame after `objectFit: cover`.
 
 ### Usage in shot component
 
