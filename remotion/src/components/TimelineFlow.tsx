@@ -33,9 +33,15 @@ interface TimelineFlowProps {
   header?: React.ReactNode
   /** Optional footer below timeline */
   footer?: React.ReactNode
+  /** Text color for labels. Default '#f1f5f9' (white, for dark bg). */
+  textColor?: string
+  /** Text color for detail text. Default '#94a3b8'. */
+  detailColor?: string
   subtitle?: string
   subtitleSegments?: SubtitleSegment[]
   videoOffset?: number
+  /** Background layer rendered behind all content */
+  backgroundLayer?: React.ReactNode
 }
 
 /**
@@ -57,9 +63,12 @@ export const TimelineFlow: React.FC<TimelineFlowProps> = ({
   background,
   header,
   footer,
+  textColor = '#f1f5f9',
+  detailColor = '#94a3b8',
   subtitle,
   subtitleSegments,
   videoOffset,
+  backgroundLayer,
 }) => {
   const isVertical = direction === 'vertical'
   const arrowChar = isVertical ? '↓' : '→'
@@ -73,6 +82,11 @@ export const TimelineFlow: React.FC<TimelineFlowProps> = ({
         justifyContent: 'center',
       }}
     >
+      {backgroundLayer && (
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+          {backgroundLayer}
+        </div>
+      )}
       {header && <div style={{ marginBottom: 32 }}>{header}</div>}
 
       <div
@@ -134,7 +148,7 @@ export const TimelineFlow: React.FC<TimelineFlowProps> = ({
                     style={{
                       fontSize: 36,
                       fontWeight: 700,
-                      color: '#f1f5f9',
+                      color: textColor,
                     }}
                   >
                     {item.label}
@@ -143,7 +157,7 @@ export const TimelineFlow: React.FC<TimelineFlowProps> = ({
                     <div
                       style={{
                         fontSize: 28,
-                        color: '#94a3b8',
+                        color: detailColor,
                         fontWeight: 500,
                       }}
                     >
@@ -157,18 +171,31 @@ export const TimelineFlow: React.FC<TimelineFlowProps> = ({
               {showConnectors && !isLast && (
                 <div
                   style={{
-                    fontSize: connectorStyle === 'arrow' ? 36 : 0,
-                    color: accent,
-                    opacity: 0.7,
-                    width: connectorStyle === 'line' && !isVertical ? 64 : 'auto',
-                    height: connectorStyle === 'line' && isVertical ? 32 : 'auto',
-                    background:
-                      connectorStyle === 'line'
-                        ? `linear-gradient(${isVertical ? '180deg' : '90deg'}, ${accent}, transparent)`
-                        : 'transparent',
+                    width: isVertical ? '100%' : 32,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexShrink: 0,
                   }}
                 >
-                  {connectorStyle === 'arrow' ? arrowChar : null}
+                  <div
+                    style={{
+                      width: 80,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      fontSize: connectorStyle === 'arrow' ? 36 : 0,
+                      color: accent,
+                      opacity: 0.7,
+                      height: connectorStyle === 'line' && isVertical ? 32 : 'auto',
+                      background:
+                        connectorStyle === 'line'
+                          ? `linear-gradient(${isVertical ? '180deg' : '90deg'}, ${accent}, transparent)`
+                          : 'transparent',
+                    }}
+                  >
+                    {connectorStyle === 'arrow' ? arrowChar : null}
+                  </div>
                 </div>
               )}
             </React.Fragment>

@@ -20,6 +20,8 @@ interface CenteredStackProps {
   subtitleSegments?: SubtitleSegment[]
   /** Offset (s) when this shot starts in full audio */
   videoOffset?: number
+  /** Background layer rendered behind all content */
+  backgroundLayer?: React.ReactNode
 }
 
 /**
@@ -41,6 +43,7 @@ export const CenteredStack: React.FC<CenteredStackProps> = ({
   subtitle,
   subtitleSegments,
   videoOffset,
+  backgroundLayer,
 }) => (
   <SafeArea
     style={{
@@ -50,6 +53,11 @@ export const CenteredStack: React.FC<CenteredStackProps> = ({
       justifyContent: justify,
     }}
   >
+    {backgroundLayer && (
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+        {backgroundLayer}
+      </div>
+    )}
     <div
       style={{
         width: '100%',

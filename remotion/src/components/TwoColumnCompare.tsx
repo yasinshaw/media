@@ -33,6 +33,8 @@ interface TwoColumnCompareProps {
   subtitle?: string
   subtitleSegments?: SubtitleSegment[]
   videoOffset?: number
+  /** Background layer rendered behind all content */
+  backgroundLayer?: React.ReactNode
 }
 
 /**
@@ -56,6 +58,7 @@ export const TwoColumnCompare: React.FC<TwoColumnCompareProps> = ({
   subtitle,
   subtitleSegments,
   videoOffset,
+  backgroundLayer,
 }) => {
   const renderPanel = (panel: ComparePanel) => (
     <div
@@ -121,6 +124,11 @@ export const TwoColumnCompare: React.FC<TwoColumnCompareProps> = ({
         flexDirection: 'column',
       }}
     >
+      {backgroundLayer && (
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+          {backgroundLayer}
+        </div>
+      )}
       {header && (
         <div
           style={{

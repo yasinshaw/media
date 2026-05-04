@@ -48,6 +48,8 @@ interface HubLayoutProps {
   subtitle?: string
   subtitleSegments?: SubtitleSegment[]
   videoOffset?: number
+  /** Background layer rendered behind all content */
+  backgroundLayer?: React.ReactNode
 }
 
 const POSITION_ANGLES: Record<HubPosition, number> = {
@@ -90,6 +92,7 @@ export const HubLayout: React.FC<HubLayoutProps> = ({
   subtitle,
   subtitleSegments,
   videoOffset,
+  backgroundLayer,
 }) => {
   const centerX = LAYOUT.WIDTH / 2
   // Hub center is the vertical midpoint of the content-safe area
@@ -108,6 +111,12 @@ export const HubLayout: React.FC<HubLayoutProps> = ({
 
   return (
     <AbsoluteFill style={{ background }}>
+      {backgroundLayer && (
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+          {backgroundLayer}
+        </div>
+      )}
+
       {/* Header slot (above hub) */}
       {header && (
         <div
