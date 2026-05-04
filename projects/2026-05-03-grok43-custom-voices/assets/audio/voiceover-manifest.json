@@ -1,0 +1,271 @@
+{
+  "total_segments": 24,
+  "speaker": "zh_male_liufei_uranus_bigtts",
+  "total_duration_seconds": 77.26,
+  "segments": [
+    {
+      "index": 1,
+      "shot": 1,
+      "sub_index": 1,
+      "file": "voiceover-01.mp3",
+      "size_bytes": 32301,
+      "text": "xAI一夜连发两个大招，直接掀桌子了。",
+      "duration_seconds": 4.03,
+      "start": 0,
+      "end": 4.03
+    },
+    {
+      "index": 2,
+      "shot": 2,
+      "sub_index": 1,
+      "file": "voiceover-02.mp3",
+      "size_bytes": 46893,
+      "text": "先说Grok 4.3，输入价格砍掉40%，输出砍掉60%。",
+      "duration_seconds": 5.86,
+      "start": 4.03,
+      "end": 9.89
+    },
+    {
+      "index": 3,
+      "shot": 2,
+      "sub_index": 2,
+      "file": "voiceover-03.mp3",
+      "size_bytes": 29037,
+      "text": "跑一轮完整benchmark只要395美元，",
+      "duration_seconds": 3.62,
+      "start": 9.89,
+      "end": 13.51
+    },
+    {
+      "index": 4,
+      "shot": 2,
+      "sub_index": 3,
+      "file": "voiceover-04.mp3",
+      "size_bytes": 25965,
+      "text": "GPT-5.5要花将近4000，",
+      "duration_seconds": 3.24,
+      "start": 13.51,
+      "end": 16.75
+    },
+    {
+      "index": 5,
+      "shot": 2,
+      "sub_index": 4,
+      "file": "voiceover-05.mp3",
+      "size_bytes": 22701,
+      "text": "Claude Opus 4.7要4800。",
+      "duration_seconds": 2.83,
+      "start": 16.75,
+      "end": 19.58
+    },
+    {
+      "index": 6,
+      "shot": 3,
+      "sub_index": 1,
+      "file": "voiceover-06.mp3",
+      "size_bytes": 34221,
+      "text": "性能上Intelligence Index拿了53分排第八，",
+      "duration_seconds": 4.27,
+      "start": 19.58,
+      "end": 23.86
+    },
+    {
+      "index": 7,
+      "shot": 3,
+      "sub_index": 2,
+      "file": "voiceover-07.mp3",
+      "size_bytes": 22893,
+      "text": "刚好压过Claude Sonnet 4.6。",
+      "duration_seconds": 2.86,
+      "start": 23.86,
+      "end": 26.71
+    },
+    {
+      "index": 8,
+      "shot": 3,
+      "sub_index": 3,
+      "file": "voiceover-08.mp3",
+      "size_bytes": 40557,
+      "text": "Abacus AI的CEO直接说，和Sonnet一样聪明但便宜五倍。",
+      "duration_seconds": 5.06,
+      "start": 26.71,
+      "end": 31.78
+    },
+    {
+      "index": 9,
+      "shot": 4,
+      "sub_index": 1,
+      "file": "voiceover-09.mp3",
+      "size_bytes": 22893,
+      "text": "还有个Imagine Agent模式，",
+      "duration_seconds": 2.86,
+      "start": 31.78,
+      "end": 34.63
+    },
+    {
+      "index": 10,
+      "shot": 4,
+      "sub_index": 2,
+      "file": "voiceover-10.mp3",
+      "size_bytes": 11757,
+      "text": "不是一次生图，",
+      "duration_seconds": 1.46,
+      "start": 34.63,
+      "end": 36.1
+    },
+    {
+      "index": 11,
+      "shot": 4,
+      "sub_index": 3,
+      "file": "voiceover-11.mp3",
+      "size_bytes": 13101,
+      "text": "而是能自己规划、",
+      "duration_seconds": 1.63,
+      "start": 36.1,
+      "end": 37.73
+    },
+    {
+      "index": 12,
+      "shot": 4,
+      "sub_index": 4,
+      "file": "voiceover-12.mp3",
+      "size_bytes": 9837,
+      "text": "生成、",
+      "duration_seconds": 1.22,
+      "start": 37.73,
+      "end": 38.95
+    },
+    {
+      "index": 13,
+      "shot": 4,
+      "sub_index": 5,
+      "file": "voiceover-13.mp3",
+      "size_bytes": 8493,
+      "text": "编辑、",
+      "duration_seconds": 1.06,
+      "start": 38.95,
+      "end": 40.01
+    },
+    {
+      "index": 14,
+      "shot": 4,
+      "sub_index": 6,
+      "file": "voiceover-14.mp3",
+      "size_bytes": 6765,
+      "text": "修订，",
+      "duration_seconds": 0.84,
+      "start": 40.01,
+      "end": 40.85
+    },
+    {
+      "index": 15,
+      "shot": 4,
+      "sub_index": 7,
+      "file": "voiceover-15.mp3",
+      "size_bytes": 9837,
+      "text": "做短片、",
+      "duration_seconds": 1.22,
+      "start": 40.85,
+      "end": 42.07
+    },
+    {
+      "index": 16,
+      "shot": 4,
+      "sub_index": 8,
+      "file": "voiceover-16.mp3",
+      "size_bytes": 22509,
+      "text": "漫画集这种创意项目都能搞定。",
+      "duration_seconds": 2.81,
+      "start": 42.07,
+      "end": 44.88
+    },
+    {
+      "index": 17,
+      "shot": 5,
+      "sub_index": 1,
+      "file": "voiceover-17.mp3",
+      "size_bytes": 19437,
+      "text": "第二个大招是声音克隆。",
+      "duration_seconds": 2.42,
+      "start": 44.88,
+      "end": 47.3
+    },
+    {
+      "index": 18,
+      "shot": 5,
+      "sub_index": 2,
+      "file": "voiceover-18.mp3",
+      "size_bytes": 25965,
+      "text": "录一分钟你的声音，两分钟就出模型。",
+      "duration_seconds": 3.24,
+      "start": 47.3,
+      "end": 50.54
+    },
+    {
+      "index": 19,
+      "shot": 5,
+      "sub_index": 3,
+      "file": "voiceover-19.mp3",
+      "size_bytes": 45165,
+      "text": "双重验证机制，先朗读再比对声纹，防止拿录音克隆别人。",
+      "duration_seconds": 5.64,
+      "start": 50.54,
+      "end": 56.18
+    },
+    {
+      "index": 20,
+      "shot": 6,
+      "sub_index": 1,
+      "file": "voiceover-20.mp3",
+      "size_bytes": 45165,
+      "text": "Voice Library有80多种预置声音覆盖28种语言，克隆不额外收费。",
+      "duration_seconds": 5.64,
+      "start": 56.18,
+      "end": 61.82
+    },
+    {
+      "index": 21,
+      "shot": 6,
+      "sub_index": 2,
+      "file": "voiceover-21.mp3",
+      "size_bytes": 48429,
+      "text": "TTS每百万字符4.2美元，语音Agent每小时才3美元。",
+      "duration_seconds": 6.05,
+      "start": 61.82,
+      "end": 67.87
+    },
+    {
+      "index": 22,
+      "shot": 7,
+      "sub_index": 1,
+      "file": "voiceover-22.mp3",
+      "size_bytes": 29229,
+      "text": "xAI这波明显在打价格战抢开发者。",
+      "duration_seconds": 3.65,
+      "start": 67.87,
+      "end": 71.52
+    },
+    {
+      "index": 23,
+      "shot": 7,
+      "sub_index": 2,
+      "file": "voiceover-23.mp3",
+      "size_bytes": 21357,
+      "text": "你觉得Grok能卷动市场吗？",
+      "duration_seconds": 2.66,
+      "start": 71.52,
+      "end": 74.18
+    },
+    {
+      "index": 24,
+      "shot": 7,
+      "sub_index": 3,
+      "file": "voiceover-24.mp3",
+      "size_bytes": 24621,
+      "text": "关注我，持续追踪AI最新动态。",
+      "duration_seconds": 3.07,
+      "start": 74.18,
+      "end": 77.26
+    }
+  ]
+}

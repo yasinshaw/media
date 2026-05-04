@@ -133,9 +133,37 @@ def draw_glow(img, text, x, y, font, glow_color, blur_radius=8):
     img.paste(result)
 
 
+def center_crop(img, target_ratio):
+    """Center-crop image to target aspect ratio (width/height)."""
+    w, h = img.size
+    current = w / h
+    if current > target_ratio:
+        new_w = int(h * target_ratio)
+        left = (w - new_w) // 2
+        img = img.crop((left, 0, left + new_w, h))
+    else:
+        new_h = int(w / target_ratio)
+        top = (h - new_h) // 2
+        img = img.crop((0, top, w, top + new_h))
+    return img
+
+
 def add_text_overlay(background_path, output_path, title, subtitle="", colors_json=None):
     """Add stylized text overlay with AI-recommended or auto-generated colors."""
     img = Image.open(background_path).convert("RGBA")
+
+    # Parse crop from colors_json if present
+    crop = None
+    if colors_json:
+        parsed = json.loads(colors_json)
+        crop = parsed.pop("crop", None)
+        colors_json = json.dumps(parsed) if parsed else None
+
+    if crop == "portrait":
+        img = center_crop(img, 3 / 4)
+    elif crop == "landscape":
+        img = center_crop(img, 4 / 3)
+
     img = remove_watermark(img)
     draw = ImageDraw.Draw(img)
     width, height = img.size
@@ -161,7 +189,7 @@ def add_text_overlay(background_path, output_path, title, subtitle="", colors_js
 
     # Font sizes
     title_font_size = max(48, int(width * 0.11))
-    subtitle_font_size = max(28, int(width * 0.045))
+    subtitle_font_size = max(32, int(width * 0.055))
 
     title_font = get_font(title_font_size, bold=True)
     subtitle_font = get_font(subtitle_font_size, bold=True)
@@ -226,11 +254,13 @@ def add_text_overlay(background_path, output_path, title, subtitle="", colors_js
         pill_y2 = subtitle_y + sub_height // 2 + sub_pill_padding_y
 
         draw_rounded_rect(draw, (pill_x1, pill_y1, pill_x2, pill_y2), radius=15,
-                         color=(*c["accent_color"][:3], 180))
+                         color=(*c["accent_color"][:3], 220))
 
-        for offset in [(2, 2), (1, 1)]:
+        draw_glow(img, subtitle, width // 2, subtitle_y, subtitle_font, glow_color_rgba, blur_radius=6)
+
+        for offset in [(4, 4), (3, 3), (2, 2), (1, 1)]:
             draw.text((width // 2 + offset[0], subtitle_y + offset[1]), subtitle,
-                     font=subtitle_font, fill=(0, 0, 0, 200), anchor="mm")
+                     font=subtitle_font, fill=(0, 0, 0, shadow_alpha), anchor="mm")
 
         sub_text_color = (255, 255, 255) if c["is_dark"] else (15, 15, 25)
         draw.text((width // 2, subtitle_y), subtitle, font=subtitle_font, fill=sub_text_color, anchor="mm")

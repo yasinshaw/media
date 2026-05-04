@@ -1,0 +1,187 @@
+{
+  "total_segments": 6,
+  "speaker": "zh_male_liufei_uranus_bigtts",
+  "total_duration_seconds": 53.5,
+  "segments": [
+    {
+      "index": 1,
+      "shot": 1,
+      "sub_index": 0,
+      "file": "voiceover-01.mp3",
+      "size_bytes": 34221,
+      "text": "GPT Image 2 来了，AI 生图又变天了",
+      "duration_seconds": 4.27,
+      "start": 0,
+      "end": 4.27,
+      "subtitles": [
+        {
+          "text": "GPT Image 2 来了，AI 生图又变天了",
+          "start": 0.0,
+          "end": 4.08,
+          "duration": 4.08
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "shot": 2,
+      "sub_index": 0,
+      "file": "voiceover-02.mp3",
+      "size_bytes": 85293,
+      "text": "一年前 GPT Image 1 发布，首周 1.3 亿用户生成了 7 亿张图片，吉卜力风潮直接刷屏。但 AI 生图一直有个致命弱点。",
+      "duration_seconds": 10.66,
+      "start": 4.27,
+      "end": 14.93,
+      "subtitles": [
+        {
+          "text": "一年前 GPT Image 1 发布，",
+          "start": 4.27,
+          "end": 8.37,
+          "duration": 4.1
+        },
+        {
+          "text": "首周 1.3 亿用户生成了 7 亿张图片，",
+          "start": 8.37,
+          "end": 12.97,
+          "duration": 4.6
+        },
+        {
+          "text": "吉卜力风潮直接刷屏。",
+          "start": 12.97,
+          "end": 14.43,
+          "duration": 1.46
+        },
+        {
+          "text": "但 AI 生图一直有个致命弱点。",
+          "start": 14.43,
+          "end": 14.79,
+          "duration": 0.36
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "shot": 3,
+      "sub_index": 0,
+      "file": "voiceover-03.mp3",
+      "size_bytes": 73773,
+      "text": "文字。之前的模型生成的文字基本是乱码。GPT Image 2 基本解决了这个问题，文本渲染准确率接近 99%。",
+      "duration_seconds": 9.22,
+      "start": 14.93,
+      "end": 24.14,
+      "subtitles": [
+        {
+          "text": "文字。",
+          "start": 14.93,
+          "end": 15.65,
+          "duration": 0.72
+        },
+        {
+          "text": "之前的模型生成的文字基本是乱码。",
+          "start": 15.95,
+          "end": 18.91,
+          "duration": 2.96
+        },
+        {
+          "text": "GPT Image 2 基本解决了这个问题，文本渲染准确率接近 99%。",
+          "start": 18.91,
+          "end": 23.79,
+          "duration": 4.88
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "shot": 4,
+      "sub_index": 0,
+      "file": "voiceover-04.mp3",
+      "size_bytes": 67437,
+      "text": "分辨率从 1536 直接提升到 4K，速度从十几秒缩短到只要 3 秒，还支持了 16:9 宽屏。",
+      "duration_seconds": 8.42,
+      "start": 24.14,
+      "end": 32.57,
+      "subtitles": [
+        {
+          "text": "分辨率从 1536 直接提升到 4K，",
+          "start": 24.14,
+          "end": 28.64,
+          "duration": 4.5
+        },
+        {
+          "text": "速度从十几秒缩短到只要 3 秒，",
+          "start": 28.64,
+          "end": 31.64,
+          "duration": 3.0
+        },
+        {
+          "text": "还支持了 16:9 宽屏。",
+          "start": 31.64,
+          "end": 32.26,
+          "duration": 0.62
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "shot": 5,
+      "sub_index": 0,
+      "file": "voiceover-05.mp3",
+      "size_bytes": 88557,
+      "text": "新增 Thinking Mode 思考模式，能自检输出、保持多张图风格一致。UI 截图生成更是逼真到离谱，设计师看了都得愣一下。",
+      "duration_seconds": 11.06,
+      "start": 32.57,
+      "end": 43.63,
+      "subtitles": [
+        {
+          "text": "新增 Thinking Mode 思考模式，能自检输出、保持多张图风格一致。",
+          "start": 32.57,
+          "end": 41.17,
+          "duration": 8.6
+        },
+        {
+          "text": "UI 截图生成更是逼真到离谱，设计师看了都得愣一下。",
+          "start": 41.17,
+          "end": 43.41,
+          "duration": 2.24
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "shot": 6,
+      "sub_index": 0,
+      "file": "voiceover-06.mp3",
+      "size_bytes": 78957,
+      "text": "AI 生图已经从玩具变成生产力工具了。你用 GPT Image 2 生成过什么？评论区聊聊。关注我，第一时间了解 AI 动态。",
+      "duration_seconds": 9.86,
+      "start": 43.63,
+      "end": 53.5,
+      "subtitles": [
+        {
+          "text": "AI 生图已经从玩具变成生产力工具了。",
+          "start": 43.63,
+          "end": 47.83,
+          "duration": 4.2
+        },
+        {
+          "text": "你用 GPT Image 2 生成过什么？",
+          "start": 47.83,
+          "end": 51.43,
+          "duration": 3.6
+        },
+        {
+          "text": "评论区聊聊。",
+          "start": 51.43,
+          "end": 52.49,
+          "duration": 1.06
+        },
+        {
+          "text": "关注我，第一时间了解 AI 动态。",
+          "start": 52.49,
+          "end": 53.21,
+          "duration": 0.72
+        }
+      ]
+    }
+  ]
+}

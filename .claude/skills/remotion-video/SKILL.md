@@ -452,6 +452,65 @@ Legacy files kept at: `/audio/sfx/{old-name}.mp3`
 | `impact` (legacy) | `neutral-emphasis-strong.mp3` | `/audio/sfx/impact.mp3` |
 | `whoosh` (legacy) | `neutral-transition-medium.mp3` | `/audio/sfx/whoosh.mp3` |
 
+### Step 3.6: Load Research Assets (if available)
+
+Check for `projects/<YYYY-MM-DD-<slug>>/assets/research/manifest.json`. If it exists:
+
+1. **Read the manifest** — catalog all `reference` category images:
+   ```json
+   { "items": [{ "id": "tavily-001", "local_path": "research/reference/tavily-001.png", "source_url": "...", "width": 1920, "height": 1200 }] }
+   ```
+   Only use items with `"category": "reference"`. Ignore `"category": "stock"` unless the script explicitly says `使用 stock 素材: <filename>`.
+
+2. **Match images to shots** — for each shot, compare its `画面` description to available reference images. A reference image is a good match when:
+   - The shot describes product UI, actual interface screenshots, or feature demos that the image depicts
+   - Example: shot says "6列看板" → manifest has kanban board screenshot → match
+
+3. **Copy matched images to public/** so Remotion can access them via `staticFile()`:
+   ```bash
+   mkdir -p remotion/public/images/<slug>/research
+   cp projects/<YYYY-MM-DD-<slug>>/assets/research/reference/<filename> remotion/public/images/<slug>/research/
+   ```
+
+4. **Record the mapping** (shot index → image file list) for use in Step 5.
+
+**How to use research images in shots:**
+
+Use research screenshots as **visual evidence panels** — show the actual product UI alongside the animated explanation. Pattern:
+
+```tsx
+import { Img, staticFile } from 'remotion'
+
+// Research screenshot panel (framed card, not full-screen)
+<div style={{
+  borderRadius: 20, overflow: 'hidden',
+  boxShadow: '0 8px 40px rgba(0,0,0,0.4)',
+  border: '1px solid rgba(255,255,255,0.15)',
+  opacity: screenshotOpacity,
+  transform: `scale(${screenshotScale})`,
+}}>
+  <Img
+    src={staticFile(`images/<slug>/research/<filename>`)}
+    style={{ width: '100%', height: 'auto', display: 'block' }}
+  />
+</div>
+```
+
+**Layout strategies:**
+- **Side panel**: Place screenshot in a `TwoColumnCompare` or as a side card in `CenteredStack`
+- **Background overlay**: Use as full-screen background with `rgba(0,0,0,0.6)` overlay for text readability (same as `ai背景图` pattern)
+- **Inset card**: Float as an animated card within the shot, revealing as the narrator explains the feature
+
+**When to use:**
+- Shot showcases actual product/tool UI that reference images depict
+- Reference image adds visual proof that matches the spoken content
+- Prefer using images for shots that would otherwise be plain text/icons
+
+**When NOT to use:**
+- Don't replace a rich animated Remotion visualization (hub, timeline, compare) with a static screenshot unless the image is clearly more informative
+- Don't use images that are irrelevant to the shot's 画面 description
+- Don't cover research image licenses — they are for production use as visual references
+
 ### Step 4: Project Setup (First Time Only)
 If `remotion/` doesn't exist:
 1. Copy `assets/remotion-template`
@@ -523,6 +582,7 @@ Every shot should start from one of these. They handle SafeArea, alignment, subt
 | 对比 / 左右对比 / 上下对比 / 优劣分析 | `TwoColumnCompare` | Two equal panels with title+body+caption |
 | 流程 / 步骤 / 时间线 / 顺序 | `TimelineFlow` | Sequential items with badges and connectors |
 | 固定图片 / ai背景图 / 需要视觉冲击 | `<Img>` + overlay (see AI-Generated Background Images) | Stock photo from research or AI-generated background |
+| 产品截图 / 调研图 / 展示真实界面 | `CenteredStack` + research screenshot panel (see Step 3.6) | Research reference images from manifest.json as framed evidence cards |
 | 切到 X 界面 / 演示 | `CenteredStack` + `<ScreenRecording>` | Stack the screen-recording mock as the body |
 | 关注按钮 / CTA | `CenteredStack` + `<CTA>` | Stack the CTA component as the body |
 

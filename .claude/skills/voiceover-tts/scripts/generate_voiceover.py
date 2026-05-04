@@ -3,11 +3,14 @@
 Generate voiceover audio using Volcano Ark TTS API.
 
 Modes:
-1. Single file: python generate_voiceover.py <text_file> <output_file> [speaker]
-2. Split mode: python generate_voiceover.py split <text_file> <output_dir> [speaker]
-   - Generates one audio file per line of text
-   - Files named: voiceover-01.mp3, voiceover-02.mp3, etc.
-   - Also generates voiceover-full.mp3 (combined)
+1. Full mode (default): python generate_voiceover.py full <text_file> <output_dir> [speaker] [--split]
+   - Generates complete audio in one API call for natural prosody
+   - Produces voiceover-full.mp3 + manifest with timing
+   - Optional --split: also generate per-shot files from full audio
+2. Split mode (legacy): python generate_voiceover.py split <text_file> <output_dir> [speaker] [--no-fine]
+   - Generates one audio file per line of text (separate API calls)
+   - Use only when independent per-line audio is needed
+3. Single file: python generate_voiceover.py <text_file> <output_file> [speaker]
 """
 import os
 import sys
@@ -522,6 +525,185 @@ def generate_split_mode(
     return all_segments
 
 
+def generate_full_mode(
+    text_file: str,
+    output_dir: str,
+    speaker: str,
+    split_shots: bool = False,
+) -> list[dict[str, Union[str, int, float]]]:
+    """
+    Generate complete voiceover as one continuous audio for natural prosody.
+
+    Sends the full text to TTS in a single API call so the engine has complete
+    context for natural intonation and pacing. Then optionally splits the result
+    into per-shot files using ffmpeg for editing flexibility.
+
+    Args:
+        text_file: Path to voiceover text file
+        output_dir: Directory to save audio files
+        speaker: Speaker voice ID
+        split_shots: If True, also split into per-shot MP3 files
+
+    Returns:
+        List of segment dicts with metadata
+    """
+    try:
+        with open(text_file, "r", encoding="utf-8") as f:
+            content = f.read()
+    except FileNotFoundError:
+        print(f"Error: Text file not found: {text_file}")
+        sys.exit(1)
+
+    lines = parse_voiceover_text(content)
+    if not lines:
+        print("Error: No voiceover text found in file")
+        sys.exit(1)
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Join lines with newline for natural paragraph pauses
+    full_text = "\n".join(lines)
+    print(f"Text: {len(full_text)} chars, {len(lines)} lines")
+
+    MAX_API_CHARS = 5000
+
+    if len(full_text) <= MAX_API_CHARS:
+        print(f"Generating complete audio (single API call)...")
+        audio_data = generate_tts(full_text, speaker)
+        full_path = os.path.join(output_dir, "voiceover-full.mp3")
+        with open(full_path, "wb") as f:
+            f.write(audio_data)
+    else:
+        # Exceeds single-call limit: generate per line, concatenate with ffmpeg
+        print(f"Text exceeds single-call limit ({len(full_text)} > {MAX_API_CHARS})")
+        print(f"Generating by line ({len(lines)} chunks)...")
+
+        chunk_files = []
+        for i, line in enumerate(lines):
+            print(f"  [{i + 1}/{len(lines)}] {line[:40]}...")
+            chunk = generate_tts(line, speaker)
+            chunk_path = os.path.join(output_dir, f"_chunk_{i:02d}.mp3")
+            with open(chunk_path, "wb") as f:
+                f.write(chunk)
+            chunk_files.append(chunk_path)
+
+        # Use ffmpeg concat demuxer for clean join
+        concat_file = os.path.join(output_dir, "_concat_list.txt")
+        with open(concat_file, "w") as f:
+            for cf in chunk_files:
+                f.write(f"file '{cf}'\n")
+
+        full_path = os.path.join(output_dir, "voiceover-full.mp3")
+        cmd = [
+            'ffmpeg', '-y', '-f', 'concat', '-safe', '0',
+            '-i', concat_file, '-acodec', 'libmp3lame',
+            '-ar', '24000', full_path,
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError(f"ffmpeg concat failed: {result.stderr[:200]}")
+
+        # Cleanup temp files
+        for cf in chunk_files:
+            os.remove(cf)
+        os.remove(concat_file)
+
+    full_duration = get_audio_duration(full_path)
+    if full_duration is None:
+        full_duration = len(full_text) / 4.5
+        print(f"  Warning: using estimated duration ({full_duration:.2f}s)")
+    print(f"Full audio: voiceover-full.mp3 ({full_duration:.2f}s)")
+
+    # Build sentence-level timing from character proportions
+    all_sentences = []
+    for shot_idx, line in enumerate(lines, 1):
+        subs = split_text_into_sentences(line)
+        for sub_idx, (text, char_count) in enumerate(subs):
+            all_sentences.append({
+                'shot': shot_idx,
+                'sub_index': sub_idx + 1,
+                'text': text,
+                'char_count': char_count,
+            })
+
+    total_chars = sum(s['char_count'] for s in all_sentences)
+    current_time = 0.0
+
+    segments = []
+    for i, sent in enumerate(all_sentences):
+        prop_duration = (sent['char_count'] / total_chars) * full_duration if total_chars > 0 else 0
+        end_time = current_time + prop_duration
+
+        segments.append({
+            'index': i + 1,
+            'shot': sent['shot'],
+            'sub_index': sent['sub_index'],
+            'text': sent['text'],
+            'start': round(current_time, 2),
+            'end': round(end_time, 2),
+            'duration_seconds': round(prop_duration, 2),
+        })
+        current_time = end_time
+
+    # Pin last segment end to actual duration
+    if segments:
+        segments[-1]['end'] = round(full_duration, 2)
+        segments[-1]['duration_seconds'] = round(
+            segments[-1]['end'] - segments[-1]['start'], 2
+        )
+
+    # Optionally split full audio into per-shot files
+    if split_shots:
+        print(f"\nSplitting into per-shot files...")
+        for shot_idx in range(1, len(lines) + 1):
+            shot_segs = [s for s in segments if s['shot'] == shot_idx]
+            if not shot_segs:
+                continue
+
+            start = shot_segs[0]['start']
+            end = shot_segs[-1]['end']
+            duration = end - start
+
+            filename = f"voiceover-{shot_idx:02d}.mp3"
+            filepath = os.path.join(output_dir, filename)
+
+            cmd = [
+                'ffmpeg', '-y',
+                '-i', full_path,
+                '-ss', str(start),
+                '-t', str(duration),
+                '-acodec', 'libmp3lame',
+                '-ar', '24000',
+                filepath,
+            ]
+            result = subprocess.run(cmd, capture_output=True, text=True)
+
+            if result.returncode == 0:
+                file_size = os.path.getsize(filepath)
+                for seg in shot_segs:
+                    seg['file'] = filename
+                    seg['size_bytes'] = file_size
+                print(f"  OK {filename} ({file_size} bytes, {duration:.2f}s)")
+            else:
+                print(f"  ERROR splitting shot {shot_idx}: {result.stderr[:100]}")
+
+    # Save manifest
+    manifest = {
+        "total_segments": len(segments),
+        "speaker": speaker,
+        "total_duration_seconds": round(full_duration, 2),
+        "mode": "full",
+        "segments": segments,
+    }
+
+    manifest_path = os.path.join(output_dir, "voiceover-manifest.json")
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, ensure_ascii=False, indent=2)
+    print(f"Manifest: voiceover-manifest.json ({len(segments)} segments)")
+
+    return segments
+
+
 def generate_single_mode(text_file, output_file, speaker):
     """Generate a single audio file for all text."""
     # Read text file
@@ -566,15 +748,26 @@ def generate_single_mode(text_file, output_file, speaker):
 def main():
     if len(sys.argv) < 3:
         print("Usage:")
-        print("  Single file: python generate_voiceover.py <text_file> <output_file> [speaker]")
-        print("  Split mode:  python generate_voiceover.py split <text_file> <output_dir> [speaker] [--no-fine]")
+        print("  Full mode:  python generate_voiceover.py full <text_file> <output_dir> [speaker] [--split]")
+        print("  Split mode: python generate_voiceover.py split <text_file> <output_dir> [speaker] [--no-fine]")
+        print("  Single:     python generate_voiceover.py <text_file> <output_file> [speaker]")
         print(f"\nDefault speaker: {DEFAULT_SPEAKER}")
+        print("  --split:   Also generate per-shot files (from full audio)")
         print("  --no-fine: Disable sentence-level splitting (one file per line)")
         sys.exit(1)
 
     mode = sys.argv[1]
 
-    if mode == "split":
+    if mode == "full":
+        if len(sys.argv) < 4:
+            print("Usage: python generate_voiceover.py full <text_file> <output_dir> [speaker] [--split]")
+            sys.exit(1)
+        text_file = sys.argv[2]
+        output_dir = sys.argv[3]
+        speaker = sys.argv[4] if len(sys.argv) > 4 and not sys.argv[4].startswith('--') else DEFAULT_SPEAKER
+        split_shots = '--split' in sys.argv
+        generate_full_mode(text_file, output_dir, speaker, split_shots)
+    elif mode == "split":
         if len(sys.argv) < 4:
             print("Usage: python generate_voiceover.py split <text_file> <output_dir> [speaker] [--no-fine]")
             sys.exit(1)
@@ -584,7 +777,7 @@ def main():
         fine_grained = '--no-fine' not in sys.argv
         generate_split_mode(text_file, output_dir, speaker, fine_grained)
     else:
-        # Single file mode
+        # Single file mode (no subcommand)
         text_file = sys.argv[1]
         output_file = sys.argv[2]
         speaker = sys.argv[3] if len(sys.argv) > 3 else DEFAULT_SPEAKER

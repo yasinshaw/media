@@ -83,7 +83,7 @@ function resolveEffect(effect: SFXConfig, availableFiles: string[]): ResolvedSFX
 
 export const SFXLayer: React.FC<SFXLayerProps> = ({ effects, startFrame = 0 }) => {
   const frame = useCurrentFrame()
-  const { fps, durationInFrames } = useVideoConfig()
+  const { fps } = useVideoConfig()
 
   const resolved = effects
     .map((e) => resolveEffect(e, SFX_AVAILABLE_FILES))

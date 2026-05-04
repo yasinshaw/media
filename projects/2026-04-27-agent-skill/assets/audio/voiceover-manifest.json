@@ -1,0 +1,163 @@
+{
+  "total_segments": 6,
+  "speaker": "zh_male_liufei_uranus_bigtts",
+  "total_duration_seconds": 42.26,
+  "segments": [
+    {
+      "index": 1,
+      "shot": 1,
+      "sub_index": 0,
+      "file": "voiceover-01.mp3",
+      "size_bytes": 42093,
+      "text": "Anthropic、OpenAI、Google，三个竞争对手，罕见地走到了一起。",
+      "duration_seconds": 5.26,
+      "start": 0,
+      "end": 5.26,
+      "subtitles": [
+        {
+          "text": "Anthropic、OpenAI、Google，三个竞争对手，罕见地走到了一起。",
+          "start": 0.0,
+          "end": 4.94,
+          "duration": 4.94
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "shot": 2,
+      "sub_index": 0,
+      "file": "voiceover-02.mp3",
+      "size_bytes": 48429,
+      "text": "你问 AI 什么都能答，但让它按你们团队的规范写代码、做部署，它就不行了。",
+      "duration_seconds": 6.05,
+      "start": 5.26,
+      "end": 11.3,
+      "subtitles": [
+        {
+          "text": "你问 AI 什么都能答，但让它按你们团队的规范写代码、做部署，它就不行了。",
+          "start": 5.26,
+          "end": 11.06,
+          "duration": 5.8
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "shot": 3,
+      "sub_index": 0,
+      "file": "voiceover-03.mp3",
+      "size_bytes": 78957,
+      "text": "所以他们做了一个开放标准，叫 Agent Skills。本质上就是一个文件夹，里面放一个 SKILL.md 文件，AI 就能学会新技能。",
+      "duration_seconds": 9.86,
+      "start": 11.3,
+      "end": 21.17,
+      "subtitles": [
+        {
+          "text": "所以他们做了一个开放标准，叫 Agent Skills。",
+          "start": 11.3,
+          "end": 15.92,
+          "duration": 4.62
+        },
+        {
+          "text": "本质上就是一个文件夹，里面放一个 SKILL.md 文件，AI 就能学会新技能。",
+          "start": 15.92,
+          "end": 20.96,
+          "duration": 5.04
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "shot": 4,
+      "sub_index": 0,
+      "file": "voiceover-04.mp3",
+      "size_bytes": 49773,
+      "text": "现在已经有数万个技能包，累计安装数百万次。一行命令，给你的 AI 装上。",
+      "duration_seconds": 6.22,
+      "start": 21.17,
+      "end": 27.38,
+      "subtitles": [
+        {
+          "text": "现在已经有数万个技能包，累计安装数百万次。",
+          "start": 21.17,
+          "end": 25.49,
+          "duration": 4.32
+        },
+        {
+          "text": "一行命令，给你的 AI 装上。",
+          "start": 25.49,
+          "end": 27.15,
+          "duration": 1.66
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "shot": 5,
+      "sub_index": 0,
+      "file": "voiceover-05.mp3",
+      "size_bytes": 70701,
+      "text": "最关键的是跨平台。你在 Claude Code 写的技能，在 Codex、Cursor、Copilot 上直接能用。写一次，到处跑。",
+      "duration_seconds": 8.83,
+      "start": 27.38,
+      "end": 36.22,
+      "subtitles": [
+        {
+          "text": "最关键的是跨平台。",
+          "start": 27.38,
+          "end": 29.52,
+          "duration": 2.14
+        },
+        {
+          "text": "你在 Claude Code 写的技能，",
+          "start": 29.52,
+          "end": 32.08,
+          "duration": 2.56
+        },
+        {
+          "text": "在 Codex、",
+          "start": 32.34,
+          "end": 33.12,
+          "duration": 0.78
+        },
+        {
+          "text": "Cursor、",
+          "start": 33.12,
+          "end": 33.68,
+          "duration": 0.56
+        },
+        {
+          "text": "Copilot 上直接能用。",
+          "start": 33.68,
+          "end": 35.94,
+          "duration": 2.26
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "shot": 6,
+      "sub_index": 0,
+      "file": "voiceover-06.mp3",
+      "size_bytes": 48429,
+      "text": "AI 的技能商店时代，已经来了。关注我，带你跟上 AI 最前沿。",
+      "duration_seconds": 6.05,
+      "start": 36.22,
+      "end": 42.26,
+      "subtitles": [
+        {
+          "text": "AI 的技能商店时代，已经来了。",
+          "start": 36.22,
+          "end": 40.48,
+          "duration": 4.26
+        },
+        {
+          "text": "关注我，带你跟上 AI 最前沿。",
+          "start": 40.48,
+          "end": 42.06,
+          "duration": 1.58
+        }
+      ]
+    }
+  ]
+}

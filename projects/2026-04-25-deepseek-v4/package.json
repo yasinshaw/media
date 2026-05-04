@@ -1,0 +1,16 @@
+{
+  "name": "2026-04-25-deepseek-v4",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generate_pptx.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "pptxgenjs": "^4.0.1"
+  }
+}

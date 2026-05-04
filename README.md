@@ -94,7 +94,7 @@ cd remotion && pnpm install
 
 | 密钥 | 用途 | 获取方式 |
 |------|------|----------|
-| `VOLCARK_API_KEY` | AI 封面图生成（Seedream 5.0） | [火山方舟控制台](https://console.volcengine.com/ark) → API 密钥管理 |
+| `IMAGE_API_KEY` + `IMAGE_API_BASE_URL` + `IMAGE_MODEL` | AI 图片生成（OpenAI 兼容接口，可配置任意供应商） | 中转站 / OpenAI / Gemini 中转，详见 `.env.example` |
 | `VOLC_TTS_API_KEY` | TTS 配音合成 | [火山引擎 TTS 控制台](https://console.volcengine.com/speech/service/8) → API 密钥管理 |
 | `TAVILY_API_KEY` | 联网调研搜索 | [Tavily](https://app.tavily.com/sign-in) 注册 → API Keys 页面 |
 
@@ -215,7 +215,7 @@ Remotion 组合的自动化质量门禁：
 
 | 服务 | 用途 | 环境变量 |
 |------|------|---------|
-| [火山方舟](https://www.volcengine.com/product/doubao) | 图片生成（Seedream 5.0） | `VOLCARK_API_KEY` |
+| OpenAI 兼容图片生成 | 图片生成（中转站 / OpenAI / Gemini 中转，可配置） | `IMAGE_API_KEY` / `IMAGE_API_BASE_URL` / `IMAGE_MODEL` |
 | [火山 TTS](https://www.volcengine.com/docs/6561/1257544) | 配音合成（TTS 2.0） | `VOLC_TTS_API_KEY` |
 | [Tavily](https://tavily.com/) | 联网调研搜索 | `TAVILY_API_KEY` |
 | [抖音](https://www.douyin.com/) | 视频发布 | Cookie via auto-douyin |
@@ -267,7 +267,7 @@ Copy `.env.example` to `.env` and fill in the following keys:
 
 | Key | Purpose | How to get it |
 |-----|---------|---------------|
-| `VOLCARK_API_KEY` | AI cover image generation (Seedream 5.0) | [Volcano Ark Console](https://console.volcengine.com/ark) → API Key Management |
+| `IMAGE_API_KEY` + `IMAGE_API_BASE_URL` + `IMAGE_MODEL` | AI image generation (any OpenAI-compatible provider) | Bltcy relay / OpenAI / Gemini relay — see `.env.example` |
 | `VOLC_TTS_API_KEY` | TTS voiceover synthesis | [Volcano TTS Console](https://console.volcengine.com/speech/service/8) → API Key Management |
 | `TAVILY_API_KEY` | Web search for research | [Tavily](https://app.tavily.com/sign-in) → Sign up → API Keys |
 
@@ -347,7 +347,7 @@ Converts storyboard scripts into production-ready React video code:
 - **Animations**: Spring presets, `interpolate`, typewriter, word highlighting
 - **Transitions**: `TransitionSeries` with fade/slide/wipe/flip/clock-wipe
 - **Audio**: Per-shot voiceover, BGM, sound effects
-- **AI backgrounds**: Volcano Ark API for cinematic shot backgrounds
+- **AI backgrounds**: configurable OpenAI-compatible image API for cinematic shot backgrounds
 - **Visual effects**: Light leaks, motion blur, starburst, noise grain, Lottie, charts
 
 Output: Shot components + composition + Remotion Studio preview
@@ -447,7 +447,7 @@ media/
 
 | Service | Purpose | Env Variable |
 |---------|---------|-------------|
-| [Volcano Ark](https://www.volcengine.com/product/doubao) | Image generation (Seedream 5.0) | `VOLCARK_API_KEY` |
+| OpenAI-compatible image API | Image generation (relay / OpenAI / Gemini relay, configurable) | `IMAGE_API_KEY` / `IMAGE_API_BASE_URL` / `IMAGE_MODEL` |
 | [Volcano TTS](https://www.volcengine.com/docs/6561/1257544) | Voiceover synthesis (TTS 2.0) | `VOLC_TTS_API_KEY` |
 | [Tavily](https://tavily.com/) | Web search for research | `TAVILY_API_KEY` |
 | [Douyin](https://www.douyin.com/) | Video publishing | Cookie via auto-douyin |

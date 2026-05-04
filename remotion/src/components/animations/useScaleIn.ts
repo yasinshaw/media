@@ -1,72 +1,40 @@
 import { spring, interpolate } from 'remotion'
 import type { CSSProperties } from 'react'
 
-interface SpringConfig {
-  damping?: number
-  stiffness?: number
-  mass?: number
-}
-
-interface ScaleInParams {
+interface ScaleInConfig {
   frame: number
   fps?: number
   delay?: number
-  config?: SpringConfig
+  damping?: number
+  stiffness?: number
+  mass?: number
 }
 
 interface ScaleInResult {
   style: CSSProperties
 }
 
-const DEFAULT_SPRING_CONFIG = {
-  damping: 15,
-  stiffness: 120,
-}
+const DEFAULTS = { fps: 30, delay: 0, damping: 15, stiffness: 120 }
 
-const computeScaleIn = (params: ScaleInParams): ScaleInResult => {
-  const {
-    frame,
-    fps = 30,
-    delay = 0,
-    config = DEFAULT_SPRING_CONFIG,
-  } = params
+const computeScaleIn = (params: ScaleInConfig): ScaleInResult => {
+  const { frame, fps, delay, damping, stiffness, mass } = { ...DEFAULTS, ...params }
+  const adjustedFrame = Math.max(0, frame - delay)
 
-  const adjustedFrame = frame - delay
+  const springConfig = { damping, stiffness, ...(mass !== undefined && { mass }) }
 
-  const springConfig: Record<string, number | boolean> = {
-    damping: config.damping ?? DEFAULT_SPRING_CONFIG.damping,
-    stiffness: config.stiffness ?? DEFAULT_SPRING_CONFIG.stiffness,
-  }
-  if (config.mass !== undefined) {
-    springConfig.mass = config.mass
-  }
-
-  const progress = spring({
-    frame: adjustedFrame,
-    fps,
-    config: springConfig,
-  })
-
+  const progress = spring({ frame: adjustedFrame, fps, config: springConfig })
   const scale = interpolate(progress, [0, 1], [0, 1])
   const opacity = interpolate(progress, [0, 0.5], [0, 1], {
     extrapolateRight: 'clamp',
   })
 
   return {
-    style: {
-      transform: `scale(${scale})`,
-      opacity,
-    },
+    style: { transform: `scale(${scale})`, opacity },
   }
 }
 
-function useScaleIn(
-  frame: number,
-  fps?: number,
-  delay?: number,
-  config?: SpringConfig,
-): ScaleInResult {
-  return computeScaleIn({ frame, fps, delay, config })
+function useScaleIn(frame: number, config?: Omit<ScaleInConfig, 'frame'>): ScaleInResult {
+  return computeScaleIn({ frame, ...DEFAULTS, ...config })
 }
 
 useScaleIn.compute = computeScaleIn

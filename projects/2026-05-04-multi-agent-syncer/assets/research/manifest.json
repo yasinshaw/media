@@ -1,0 +1,83 @@
+{
+  "generated_at": "2026-05-04T09:16:23+08:00",
+  "topic": "multi-agent-syncer — 跨 AI 编程代理的技能同步工具",
+  "english_keywords": [
+    "AI coding agent",
+    "terminal command line",
+    "dashboard interface",
+    "symlink file system",
+    "software comparison"
+  ],
+  "limits": {
+    "max_reference": 50,
+    "max_stock": 30,
+    "max_total_mb": 200
+  },
+  "stats": {
+    "reference_count": 3,
+    "stock_count": 0,
+    "total_size_mb": 0.43,
+    "tavily_count": 3,
+    "article_count": 0,
+    "pixabay_count": 0,
+    "skipped": 3
+  },
+  "items": [
+    {
+      "id": "tavily-001",
+      "type": "image",
+      "category": "reference",
+      "source": "tavily",
+      "source_url": "https://www.techloy.com/content/images/2025/04/Windsurf-vs-Cursor---Which-is-the-better-AI-code-editor_Techloy_comparison_infographic.png",
+      "page_url": "",
+      "page_title": "",
+      "license": "external -- research-reference only",
+      "width": 1920,
+      "height": 1440,
+      "size_bytes": 313507,
+      "local_path": "research/reference/tavily-001.png"
+    },
+    {
+      "id": "tavily-003",
+      "type": "image",
+      "category": "reference",
+      "source": "tavily",
+      "source_url": "https://www.flexmind.co/wp-content/uploads/2025/10/GitHub-Copilot-vs-Cursor-AI-vs-Anthropic-Claude.png",
+      "page_url": "",
+      "page_title": "",
+      "license": "external -- research-reference only",
+      "width": 1200,
+      "height": 675,
+      "size_bytes": 78549,
+      "local_path": "research/reference/tavily-003.png"
+    },
+    {
+      "id": "tavily-006",
+      "type": "image",
+      "category": "reference",
+      "source": "tavily",
+      "source_url": "https://cdn.prod.website-files.com/68a44d4040f98a4adf2207b6/6902681b6935a6f61e64165c_og_introducing-agent-skills.jpg",
+      "page_url": "",
+      "page_title": "",
+      "license": "external -- research-reference only",
+      "width": 2000,
+      "height": 1000,
+      "size_bytes": 61346,
+      "local_path": "research/reference/tavily-006.jpg"
+    }
+  ],
+  "skipped": [
+    {
+      "url": "https://miro.medium.com/v2/resize:fit:917/1*LJc8GmsYHaa0CV5rQdIUqA.png",
+      "reason": "download failed"
+    },
+    {
+      "url": "https://platform.claude.com/docs/images/agent-skills-bundling-content.png",
+      "reason": "unreadable image"
+    },
+    {
+      "url": "https://platform.claude.com/docs/images/agent-skills-simple-file.png",
+      "reason": "unreadable image"
+    }
+  ]
+}

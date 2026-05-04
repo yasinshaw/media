@@ -320,7 +320,7 @@ Each shot = one visual scene OR one key argument
 - **口播**: "<口播文案>"
 - **转场效果**: fade / slide / wipe / flip / clock-wipe / none
 - **文字特效**: typewriter / highlight / none
-- **音效**: mood/action/intensity 或旧格式(whoosh-in/impact/text-pop/outro) 或 留空不写
+- **音效**: mood/action/intensity（留空 = 无音效）
 - **生图提示词**: <仅 ai生图 需要，英文 prompt>
 - **生视频提示词**: <仅 ai生视频 需要，英文 prompt>
 - **背景图提示词**: <仅 ai背景图 需要，英文 prompt，不含文字>
@@ -331,7 +331,7 @@ Each shot = one visual scene OR one key argument
 - **口播**: "<...>"
 - **转场效果**: <type>
 - **文字特效**: <type>
-- **音效**: mood/action/intensity 或旧格式(whoosh-in/impact/text-pop/outro) 或 留空不写
+- **音效**: mood/action/intensity（留空 = 无音效）
 
 ### 镜头 3 — 核心内容第一段（Ys-Zs）
 - **画面类型**: <type>
@@ -339,7 +339,7 @@ Each shot = one visual scene OR one key argument
 - **口播**: "<...>"
 - **转场效果**: <type>
 - **文字特效**: <type>
-- **音效**: mood/action/intensity 或旧格式(whoosh-in/impact/text-pop/outro) 或 留空不写
+- **音效**: mood/action/intensity（留空 = 无音效）
 
 [Continue with more core content shots as needed, duration varies by content]
 
@@ -349,7 +349,7 @@ Each shot = one visual scene OR one key argument
 - **口播**: "<...>"
 - **转场效果**: <type>
 - **文字特效**: <type>
-- **音效**: mood/action/intensity 或旧格式(whoosh-in/impact/text-pop/outro) 或 留空不写
+- **音效**: mood/action/intensity（留空 = 无音效）
 ```
 
 ### 转场效果指南
@@ -400,18 +400,6 @@ Note: Timestamps are NOT fixed multiples of 5. They are calculated from actual c
 
 为需要强调的镜头标注音效（留空 = 无音效）。
 
-支持两种格式：
-
-**旧格式**（向后兼容）：
-| 镜头类型 | 推荐音效 | 说明 |
-|---------|---------|------|
-| 第 1 个镜头（钩子） | `whoosh-in` | 开场切入 |
-| 最后 1 个镜头（CTA） | `outro` | 收尾 |
-| 数据对比/跑分展示 | `impact` | 强调关键数据 |
-| 有文字特效的镜头 | `text-pop` | 配合文字动画 |
-| 其他镜头 | 留空 | 不标注 = 无音效 |
-
-**新格式**（推荐，支持多层）：
 格式为 `mood/action/intensity`，逗号分隔多个音效。
 
 | 镜头类型 | 推荐标签 | 说明 |
@@ -430,6 +418,8 @@ Note: Timestamps are NOT fixed multiples of 5. They are calculated from actual c
 Mood: energetic · calm · tense · playful · epic · neutral
 Action: transition · emphasis · entry · exit · ambient · feedback
 Intensity: subtle · medium · strong
+
+> 旧格式（`whoosh-in`、`impact`、`text-pop` 等）仍可使用，会自动映射到新格式。
 
 ### 视觉增强效果指南
 

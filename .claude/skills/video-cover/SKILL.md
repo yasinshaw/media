@@ -32,7 +32,26 @@ Read `projects/<YYYY-MM-DD-<slug>>/script.md` to extract:
 
 ### Step 3: Propose Design (CONFIRMATION REQUIRED)
 
-Present a design proposal to the user:
+**Text Length Validation (BEFORE presenting design):**
+
+Calculate effective text width before proposing. Rules:
+- Each Chinese/CJK character = 1.0 width unit
+- Each Latin/number character = 0.6 width unit
+- **Title max: 8 effective width units** (hard limit)
+- **Subtitle max: 12 effective width units** (soft limit)
+
+If the proposed title exceeds 8 units, you MUST:
+1. Warn the user explicitly in the proposal with the calculated width
+2. Propose a shortened version alongside the original
+3. Do NOT proceed until the user picks a title within limits
+
+Example warning:
+```
+⚠️ 主标题过长（有效宽度: 12.0，上限: 8.0）
+建议缩短版本: "警惕中转站"（5.0）
+```
+
+Present a design proposal with **3 title options** and **3 subtitle options** for the user to pick from:
 
 ```markdown
 ## 📋 封面设计方案
@@ -43,11 +62,15 @@ Present a design proposal to the user:
 
 ### 🎨 设计方案
 
-#### 主标题
-{proposed-main-title}
+#### 主标题（选一个）
+1. **{title-option-1}**（有效宽度: {width}）— {风格说明，如"直击痛点型"}
+2. **{title-option-2}**（有效宽度: {width}）— {风格说明，如"悬念好奇型"}
+3. **{title-option-3}**（有效宽度: {width}）— {风格说明，如"数据冲击型"}
 
-#### 副标题
-{proposed-subtitle}
+#### 副标题（选一个，可跳过）
+1. **{subtitle-option-1}**（有效宽度: {width}）— {说明}
+2. **{subtitle-option-2}**（有效宽度: {width}）— {说明}
+3. **{subtitle-option-3}**（有效宽度: {width}）— {说明}
 
 #### 视觉风格
 - **风格类型**: {tech/business/lifestyle/education/entertainment}
@@ -57,45 +80,51 @@ Present a design proposal to the user:
 ### 确认设计？
 
 回复以下选项：
-- "确认" / "好的" — 使用此方案生成
-- "标题: xxx" — 修改标题
-- "副标题: xxx" — 修改副标题
+- "标题1 副标题2" — 选择对应编号的组合
+- "标题1" — 只选标题，跳过副标题
+- "确认" — 使用默认推荐（标题1 + 副标题1）
+- "标题: xxx" — 自定义标题
+- "副标题: xxx" — 自定义副标题
 - "风格: xxx" — 修改风格（科技/商务/生活/教育/娱乐）
 - "色调: xxx" — 修改色调描述
 ```
 
+**Title option diversity guidelines:**
+- Option 1: Direct & impactful (直击型) — states the core claim/fact directly
+- Option 2: Question/curiosity (悬念型) — raises a question or creates intrigue
+- Option 3: Data/number (数据型) — includes a number, comparison, or metric
+
+**Subtitle option diversity guidelines:**
+- Option 1: Key takeaway (核心观点) — the main message from the video
+- Option 2: Supporting detail (支撑细节) — a specific fact or comparison
+- Option 3: Call-to-action (行动号召) — what the viewer should do/feel
+
 **WAIT for user confirmation before proceeding to Step 4.**
 
-### Step 4: Generate Pure Backgrounds
+### Step 4: Generate Pure Background (SINGLE IMAGE ONLY)
 
-After confirmation, call Volcano Ark API to generate pure background images (NO text in prompt):
+**IMPORTANT**: Only call the API ONCE. Generate a single background image, then crop for both orientations.
+
+After confirmation, call `scripts/generate_image.py` to generate ONE pure background image (NO text in prompt):
 
 ```bash
-curl -X POST https://ark.cn-beijing.volces.com/api/v3/images/generations \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $VOLCARK_API_KEY" \
-  -d '{
-    "model": "doubao-seedream-5-0-260128",
-    "prompt": "<pure background prompt, no text>",
-    "size": "2K",
-    "response_format": "url"
-  }'
+python scripts/generate_image.py \
+  cover-background.png \
+  "<pure background prompt, no text>" \
+  --size 1024x1024
 ```
 
-Download backgrounds to temporary names:
-- `cover-background-landscape.png`
-- `cover-background-portrait.png`
+The script reads provider config from `.env` (`IMAGE_API_KEY`, `IMAGE_API_BASE_URL`, `IMAGE_MODEL`) and writes the result to the output path. Use a square size (1024x1024) since the cover script center-crops to both orientations.
 
 ### Step 5: AI Recommends Color Scheme
 
-Read the generated background images and analyze them to recommend a color scheme:
+Read the generated background image and analyze it to recommend a color scheme:
 
 ```markdown
 ## 🎨 AI 配色推荐
 
 ### 背景图分析
-- **横版背景**: {visual description of landscape background}
-- **竖版背景**: {visual description of portrait background}
+- **背景**: {visual description of background}
 - **主色调**: {dominant colors}
 - **亮度**: {dark/light/mixed}
 
@@ -120,26 +149,26 @@ Read the generated background images and analyze them to recommend a color schem
 
 **WAIT for user confirmation before proceeding to Step 6.**
 
-### Step 6: Add Text Overlay with Python
+### Step 6: Crop Background + Add Text Overlay with Python
 
-Use Python script with AI-recommended colors:
+From the single background image, crop for both orientations, then add text overlay:
 
 ```bash
-# Portrait
+# Portrait (3:4) — center crop from background
 python scripts/add_cover_text.py \
-  cover-background-portrait.png \
+  cover-background.png \
   projects/<YYYY-MM-DD-<slug>>/assets/images/cover-portrait.png \
   "{title}" \
   "{subtitle}" \
-  '{"text_color":"#ffffff","accent_color":"#00ffff","glow_color":"#00ffff","bg_box_alpha":120}'
+  '{"text_color":"#ffffff","accent_color":"#00ffff","glow_color":"#00ffff","bg_box_alpha":120,"crop":"portrait"}'
 
-# Landscape
+# Landscape (4:3) — center crop from background
 python scripts/add_cover_text.py \
-  cover-background-landscape.png \
+  cover-background.png \
   projects/<YYYY-MM-DD-<slug>>/assets/images/cover-landscape.png \
   "{title}" \
   "{subtitle}" \
-  '{"text_color":"#ffffff","accent_color":"#00ffff","glow_color":"#00ffff","bg_box_alpha":120}'
+  '{"text_color":"#ffffff","accent_color":"#00ffff","glow_color":"#00ffff","bg_box_alpha":120,"crop":"landscape"}'
 ```
 
 **Color parameters:**
@@ -150,22 +179,19 @@ python scripts/add_cover_text.py \
 
 Omit the JSON parameter to use auto-generated colors.
 
-## Volcano Ark API
+## Image Generation API
 
-### Configuration
-```
-API Base URL: https://ark.cn-beijing.volces.com/api/v3
-Endpoint: /images/generations
-Model: doubao-seedream-5-0-260128
-```
+All image generation goes through `scripts/generate_image.py`, which talks to any
+OpenAI-compatible `/v1/images/generations` endpoint.
 
-### API Key
-Read from environment variable:
+### Configuration (project-root `.env`)
 ```bash
-VOLCARK_API_KEY=REDACTED_API_KEY
+IMAGE_API_KEY=...                          # required
+IMAGE_API_BASE_URL=https://api.bltcy.ai/v1 # default; switch to use a different provider
+IMAGE_MODEL=gpt-image-2-all                # default; e.g. gemini-3.1-flash-image-preview
 ```
 
-Stored in project root `.env` file.
+Switching provider only requires editing `.env`; the skill code does not change.
 
 ## Style Presets
 
@@ -184,26 +210,28 @@ Stored in project root `.env` file.
 ### Background Prompt Structure
 ```
 <Video Theme>, <Main Visual Elements>, <Style Keywords>,
-<Composition Description - leave space for title at top>,
+<Composition Description - center-focused, works for both crops>,
 <Color Scheme>, <Lighting>, <Quality Tags>
 ```
 
+**NOTE**: Generate ONE image. The prompt should be center-focused so it works well for both landscape (4:3) and portrait (3:4) crops. Do NOT specify orientation in the prompt.
+
 ### Example Background Prompts
 
-**Tech/AI (Portrait):**
+**Tech/AI:**
 ```
 AI人工智能主题, 未来科技感, 霓虹蓝色和紫色渐变背景,
 电路板纹理, 数据流动光效, 上升的数据流粒子,
-画面上方30%留空给标题, 下方70%展示科技元素,
-赛博朋克风格, 高对比度, 电影大片质感, 8K分辨率, 竖版构图
+中央区域展示核心科技元素, 四周留有裁剪余量,
+赛博朋克风格, 高对比度, 电影大片质感, 8K分辨率
 ```
 
-**Business (Landscape):**
+**Business:**
 ```
 商业金融主题, 高端商务风格, 深蓝和金色配色,
 摩天大楼剪影, 上升的图表曲线, 专业感, 大气,
-画面左侧留空给标题, 右侧展示视觉元素,
-电影级光效, 极其清晰, 4K高清, 横版构图
+中央聚焦视觉元素, 画面平衡适合多方向裁剪,
+电影级光效, 极其清晰, 4K高清
 ```
 
 ## Text Overlay Script
@@ -226,29 +254,33 @@ AI-recommended colors as JSON string:
   "text_color": "#ffffff",      // Main title text color
   "accent_color": "#00ffff",    // Decorative elements, corners, subtitle pill
   "glow_color": "#00ffff",      // Title glow effect
-  "bg_box_alpha": 120           // Background box opacity (0-255)
+  "bg_box_alpha": 120,          // Background box opacity (0-255)
+  "crop": "portrait"            // "portrait" (3:4) or "landscape" (4:3) — center crop from source
 }
 ```
 
-Omit `colors_json` to use auto-generated colors based on background analysis.
+The `crop` parameter is REQUIRED. It center-crops the single background into the target aspect ratio before adding text.
+
+Omit other color fields to use auto-generated colors based on background analysis.
 
 ### Usage Examples
 
 ```bash
-# With AI-recommended colors
+# Portrait (3:4) with AI-recommended colors
 python scripts/add_cover_text.py \
-  cover-background-portrait.png \
+  cover-background.png \
   projects/2026-04-25-xxx/assets/images/cover-portrait.png \
   "GPT-5.5来了" \
   "推理+8% 代码+9%" \
-  '{"text_color":"#ffffff","accent_color":"#00ffff","glow_color":"#00ffff","bg_box_alpha":120}'
+  '{"text_color":"#ffffff","accent_color":"#00ffff","glow_color":"#00ffff","bg_box_alpha":120,"crop":"portrait"}'
 
-# With auto-generated colors (no colors_json)
+# Landscape (4:3) with auto-generated colors
 python scripts/add_cover_text.py \
-  cover-background-landscape.png \
+  cover-background.png \
   projects/2026-04-25-xxx/assets/images/cover-landscape.png \
   "GPT-5.5来了" \
-  "综合第一但有个项目输了"
+  "综合第一但有个项目输了" \
+  '{"crop":"landscape"}'
 ```
 
 ## Output Format
@@ -309,7 +341,7 @@ python scripts/add_cover_text.py \
 状态码: {status-code}
 错误信息: {error-message}
 请检查:
-1. VOLCARK_API_KEY 是否正确
+1. IMAGE_API_KEY / IMAGE_API_BASE_URL / IMAGE_MODEL 是否正确
 2. 网络连接是否正常
 3. API 配额是否用完
 ```
@@ -332,10 +364,13 @@ This skill runs after `/video-script` and optionally after `/remotion-video`:
 ## Tips
 
 1. **Always propose design first** — never generate without user confirmation
-2. **Background prompts must exclude text** — AI renders text poorly
-3. **Title should be short** — ≤8 characters for best readability
-4. **Subtitle is optional** — omit if title is self-explanatory
-5. **AI recommends colors after background generation** — analyze the generated background and propose a matching color scheme
-6. **Use auto-generated colors as fallback** — if user doesn't want to specify, the script will auto-generate based on background luminance
-7. **Test font rendering** — ensure Chinese characters display correctly
-8. **Ensure high contrast** — text color should contrast well with background (WCAG AA level or better)
+2. **Only ONE API call** — generate a single background, then crop for both orientations
+3. **Background prompts must exclude text** — AI renders text poorly
+4. **Background prompts should be center-focused** — no orientation specified, works for both crops
+5. **Title should be short** — ≤8 effective width units (Chinese=1.0, Latin=0.6). Always calculate and warn before proposing
+6. **Subtitle length** — ≤12 effective width units (soft limit, warn but allow)
+6. **Subtitle is optional** — omit if title is self-explanatory
+7. **AI recommends colors after background generation** — analyze the generated background and propose a matching color scheme
+8. **Use auto-generated colors as fallback** — if user doesn't want to specify, the script will auto-generate based on background luminance
+9. **Test font rendering** — ensure Chinese characters display correctly
+10. **Ensure high contrast** — text color should contrast well with background (WCAG AA level or better)

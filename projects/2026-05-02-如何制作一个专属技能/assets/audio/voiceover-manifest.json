@@ -1,0 +1,271 @@
+{
+  "total_segments": 24,
+  "speaker": "zh_male_liufei_uranus_bigtts",
+  "total_duration_seconds": 75.29,
+  "segments": [
+    {
+      "index": 1,
+      "shot": 1,
+      "sub_index": 1,
+      "file": "voiceover-01.mp3",
+      "size_bytes": 8493,
+      "text": "你知道吗？",
+      "duration_seconds": 1.06,
+      "start": 0,
+      "end": 1.06
+    },
+    {
+      "index": 2,
+      "shot": 1,
+      "sub_index": 2,
+      "file": "voiceover-02.mp3",
+      "size_bytes": 16365,
+      "text": "Claude Code 里有一个功能，",
+      "duration_seconds": 2.04,
+      "start": 1.06,
+      "end": 3.1
+    },
+    {
+      "index": 3,
+      "shot": 1,
+      "sub_index": 3,
+      "file": "voiceover-03.mp3",
+      "size_bytes": 24621,
+      "text": "能让 AI 自动记住你的工作流程，",
+      "duration_seconds": 3.07,
+      "start": 3.1,
+      "end": 6.17
+    },
+    {
+      "index": 4,
+      "shot": 1,
+      "sub_index": 4,
+      "file": "voiceover-04.mp3",
+      "size_bytes": 16365,
+      "text": "每次都按你的方式干活。",
+      "duration_seconds": 2.04,
+      "start": 6.17,
+      "end": 8.21
+    },
+    {
+      "index": 5,
+      "shot": 2,
+      "sub_index": 1,
+      "file": "voiceover-05.mp3",
+      "size_bytes": 41901,
+      "text": "很多人每天都在重复做同样的事——写同样的提示词，走同样的流程。",
+      "duration_seconds": 5.23,
+      "start": 8.21,
+      "end": 13.44
+    },
+    {
+      "index": 6,
+      "shot": 2,
+      "sub_index": 2,
+      "file": "voiceover-06.mp3",
+      "size_bytes": 30957,
+      "text": "其实只需要三分钟，就能把这些全部自动化。",
+      "duration_seconds": 3.86,
+      "start": 13.44,
+      "end": 17.3
+    },
+    {
+      "index": 7,
+      "shot": 3,
+      "sub_index": 1,
+      "file": "voiceover-07.mp3",
+      "size_bytes": 19437,
+      "text": "第一步，先别急着动手。",
+      "duration_seconds": 2.42,
+      "start": 17.3,
+      "end": 19.73
+    },
+    {
+      "index": 8,
+      "shot": 3,
+      "sub_index": 2,
+      "file": "voiceover-08.mp3",
+      "size_bytes": 27693,
+      "text": "想想你每天最常重复的工作是什么？",
+      "duration_seconds": 3.46,
+      "start": 19.73,
+      "end": 23.18
+    },
+    {
+      "index": 9,
+      "shot": 3,
+      "sub_index": 3,
+      "file": "voiceover-09.mp3",
+      "size_bytes": 25965,
+      "text": "然后去搜一下，有没有人已经做好了。",
+      "duration_seconds": 3.24,
+      "start": 23.18,
+      "end": 26.42
+    },
+    {
+      "index": 10,
+      "shot": 3,
+      "sub_index": 4,
+      "file": "voiceover-10.mp3",
+      "size_bytes": 32301,
+      "text": "GitHub 上有大量现成的技能，可以直接安装使用。",
+      "duration_seconds": 4.03,
+      "start": 26.42,
+      "end": 30.46
+    },
+    {
+      "index": 11,
+      "shot": 4,
+      "sub_index": 1,
+      "file": "voiceover-11.mp3",
+      "size_bytes": 9837,
+      "text": "找不到现成的？",
+      "duration_seconds": 1.22,
+      "start": 30.46,
+      "end": 31.68
+    },
+    {
+      "index": 12,
+      "shot": 4,
+      "sub_index": 2,
+      "file": "voiceover-12.mp3",
+      "size_bytes": 11757,
+      "text": "那就自己做一个。",
+      "duration_seconds": 1.46,
+      "start": 31.68,
+      "end": 33.14
+    },
+    {
+      "index": 13,
+      "shot": 4,
+      "sub_index": 3,
+      "file": "voiceover-13.mp3",
+      "size_bytes": 25965,
+      "text": "Claude Code 自带了 skill-creator 命令，",
+      "duration_seconds": 3.24,
+      "start": 33.14,
+      "end": 36.38
+    },
+    {
+      "index": 14,
+      "shot": 4,
+      "sub_index": 4,
+      "file": "voiceover-14.mp3",
+      "size_bytes": 18093,
+      "text": "你只需要告诉它你想要什么，",
+      "duration_seconds": 2.26,
+      "start": 36.38,
+      "end": 38.64
+    },
+    {
+      "index": 15,
+      "shot": 4,
+      "sub_index": 5,
+      "file": "voiceover-15.mp3",
+      "size_bytes": 21165,
+      "text": "它就能帮你生成完整的技能。",
+      "duration_seconds": 2.64,
+      "start": 38.64,
+      "end": 41.28
+    },
+    {
+      "index": 16,
+      "shot": 5,
+      "sub_index": 1,
+      "file": "voiceover-16.mp3",
+      "size_bytes": 15021,
+      "text": "记住三个原则。",
+      "duration_seconds": 1.87,
+      "start": 41.28,
+      "end": 43.15
+    },
+    {
+      "index": 17,
+      "shot": 5,
+      "sub_index": 2,
+      "file": "voiceover-17.mp3",
+      "size_bytes": 41901,
+      "text": "第一，别做大而全，拆成小技能，每个只做一件事。",
+      "duration_seconds": 5.23,
+      "start": 43.15,
+      "end": 48.38
+    },
+    {
+      "index": 18,
+      "shot": 5,
+      "sub_index": 3,
+      "file": "voiceover-18.mp3",
+      "size_bytes": 29037,
+      "text": "第二，密钥不要写死，用环境变量。",
+      "duration_seconds": 3.62,
+      "start": 48.38,
+      "end": 52.01
+    },
+    {
+      "index": 19,
+      "shot": 5,
+      "sub_index": 4,
+      "file": "voiceover-19.mp3",
+      "size_bytes": 35565,
+      "text": "第三，技能需要迭代，用着不对就让 AI 调整。",
+      "duration_seconds": 4.44,
+      "start": 52.01,
+      "end": 56.45
+    },
+    {
+      "index": 20,
+      "shot": 6,
+      "sub_index": 1,
+      "file": "voiceover-20.mp3",
+      "size_bytes": 24621,
+      "text": "什么时候用技能，什么时候写代码？",
+      "duration_seconds": 3.07,
+      "start": 56.45,
+      "end": 59.52
+    },
+    {
+      "index": 21,
+      "shot": 6,
+      "sub_index": 2,
+      "file": "voiceover-21.mp3",
+      "size_bytes": 38637,
+      "text": "如果你需要跟 AI 反复沟通、动态调整行为，用技能。",
+      "duration_seconds": 4.82,
+      "start": 59.52,
+      "end": 64.34
+    },
+    {
+      "index": 22,
+      "shot": 6,
+      "sub_index": 3,
+      "file": "voiceover-22.mp3",
+      "size_bytes": 37293,
+      "text": "如果追求百分百准确、或者需要可视化界面，写代码。",
+      "duration_seconds": 4.66,
+      "start": 64.34,
+      "end": 69.0
+    },
+    {
+      "index": 23,
+      "shot": 7,
+      "sub_index": 1,
+      "file": "voiceover-23.mp3",
+      "size_bytes": 29037,
+      "text": "三分钟，把重复工作变成专属技能。",
+      "duration_seconds": 3.62,
+      "start": 69.0,
+      "end": 72.62
+    },
+    {
+      "index": 24,
+      "shot": 7,
+      "sub_index": 2,
+      "file": "voiceover-24.mp3",
+      "size_bytes": 21357,
+      "text": "关注我，每天一个 AI 实用技巧。",
+      "duration_seconds": 2.66,
+      "start": 72.62,
+      "end": 75.29
+    }
+  ]
+}

@@ -284,6 +284,23 @@ const secondOpacity = interpolate(progress, [0.30, 0.35, 0.62, 0.66], [0, 1, 1, 
 - **No text effects on data shots**: Add typewriter animation for number reveals
 - **Hook shot plain gradient**: Suggest `ai背景图` type upgrade
 
+### 7.5.1 Research Asset Usage Check
+
+Check if the project has downloaded research images that aren't being used.
+
+1. **Look for `manifest.json`** at `projects/<YYYY-MM-DD-<slug>>/assets/research/manifest.json`
+2. **If it exists and has `reference` items**, check whether any shot imports `staticFile` + renders an `<Img>` referencing files from `images/<slug>/research/`
+3. **If research images exist but none are used** — flag as Warning:
+
+| Check | Severity | Detection | Fix |
+|-------|----------|-----------|-----|
+| Research images available but unused | Warning | `manifest.json` has `reference` items AND no shot has `staticFile('images/<slug>/research/...')` | Add screenshot panels to relevant shots that showcase the product/tool UI depicted in the reference images |
+
+**Auto-fix rule:**
+- This check does NOT auto-fix — incorporating screenshots requires understanding which image matches which shot
+- Instead, report: "⚠️ 发现 N 张调研截图未使用（`assets/research/manifest.json`），建议在 Shot X / Shot Y 中加入截图面板以增加视觉说服力"
+- List available images with their source URLs and suggest which shots they'd fit
+
 ### 7.6 Light Leak Validation
 
 | Check | Requirement |

@@ -1,6 +1,6 @@
 ---
 name: voiceover-tts
-description: Generate voiceover audio from text using Volcano Ark TTS API. Use when user asks to create voiceover, TTS audio, or narration from voiceover text. Reads voiceover.md, confirms speaker, then generates split MP3 files (one per line) for flexible post-production editing.
+description: Generate voiceover audio from text using Volcano Ark TTS API. Use when user asks to create voiceover, TTS audio, or narration from voiceover text. Reads voiceover.md, confirms speaker, then generates complete MP3 audio for natural prosody.
 ---
 
 You are a voiceover specialist who generates professional TTS audio for video content.
@@ -19,49 +19,33 @@ Example:
 /voiceover gpt-image2-compare
 ```
 
-### Fine-Grained Mode (Default)
+### Full Mode (Default)
 
-By default, the skill generates **sentence-level audio segments** for better subtitle synchronization.
+By default, the skill generates the **complete voiceover as one continuous audio file** for natural prosody and intonation.
+
+**Why full mode?**
+- TTS engine has full context for natural intonation and pacing
+- No tonal jumps between segments
+- Better listening experience
 
 **Behavior:**
-- Long voiceover lines are split by punctuation (。！？，；)
-- Each sentence becomes a separate MP3 file
-- Manifest includes precise timing for each segment
-- Enables word-by-word subtitle timing in Remotion
+- All text sent to TTS in a single API call (within 5000 char limit)
+- Produces `voiceover-full.mp3` — the complete, natural-sounding audio
+- Produces `voiceover-manifest.json` — sentence-level timing for subtitle sync
+- Optional `--split` flag: also generates per-shot files cut from the full audio
 
-**Opt out:** Use `--no-fine` flag to generate one file per line (original behavior)
+### Split Mode (Legacy)
 
-Example manifest output:
-```json
-{
-  "total_segments": 15,
-  "speaker": "zh_male_liufei_uranus_bigtts",
-  "total_duration_seconds": 74.5,
-  "segments": [
-    {
-      "index": 1,
-      "shot": 1,
-      "sub_index": 1,
-      "file": "voiceover-01.mp3",
-      "size_bytes": 42093,
-      "text": "GPT-5.5来了！",
-      "duration_seconds": 2.8,
-      "start": 0.0,
-      "end": 2.8
-    },
-    {
-      "index": 2,
-      "shot": 1,
-      "sub_index": 2,
-      "file": "voiceover-02.mp3",
-      "size_bytes": 38124,
-      "text": "多项基准领先，但有一个项目它输了。",
-      "duration_seconds": 4.2,
-      "start": 2.8,
-      "end": 7.0
-    }
-  ]
-}
+Use `split` mode when you need **independently generated** per-line audio files (each line is a separate API call).
+
+**WARNING:** Split mode causes tonal inconsistency between segments because the TTS engine lacks context.
+
+```bash
+python .claude/skills/voiceover-tts/scripts/generate_voiceover.py \
+  split \
+  projects/<YYYY-MM-DD-<slug>>/voiceover.md \
+  projects/<YYYY-MM-DD-<slug>>/assets/audio/ \
+  <speaker>
 ```
 
 ## Workflow
@@ -95,44 +79,57 @@ Present the voiceover summary to the user:
 ### 项目信息
 - **项目**: {project-slug}
 - **视频标题**: {title}
-- **分段数量**: {n}段
+- **字数**: {n}字
+- **分段数**: {m}段
 
 ### 🎙️ 音色设置
 - **默认音色**: 刘飞 2.0 (zh_male_liufei_uranus_bigtts)
 - **说明**: 成熟男性音色，适合知识科普、资讯解说类内容
 
 ### 📁 输出方式
-- **分文件生成**: 每句台词单独生成 MP3 文件
-- **文件命名**: voiceover-01.mp3, voiceover-02.mp3, ...
-- **合并文件**: voiceover-full.mp3 (完整版)
-- **清单文件**: voiceover-manifest.json (索引)
+- **完整语音**: voiceover-full.mp3 (一次生成，语调自然连贯)
+- **时间清单**: voiceover-manifest.json (字幕时间轴)
+- **分段文件**: 默认不生成；需要时加 --split 参数
 
 ### 确认生成？
 
 回复以下选项：
 - "确认" / "好的" — 使用默认音色生成
-- "音色: <音色ID>" — 指定其他音色（可选音色见下方列表）
+- "音色: <音色ID>" — 指定其他音色
+- "加分段" — 同时生成分段文件
 ```
 
 **WAIT for user confirmation before proceeding to Step 4.**
 
-### Step 4: Generate Split Audio Files
+### Step 4: Generate Audio
 
-After confirmation, run the Python script in **split mode**:
+After confirmation, run the Python script in **full mode**:
 
 ```bash
 python .claude/skills/voiceover-tts/scripts/generate_voiceover.py \
-  split \
+  full \
   projects/<YYYY-MM-DD-<slug>>/voiceover.md \
   projects/<YYYY-MM-DD-<slug>>/assets/audio/ \
   <speaker>
 ```
 
+If user requested per-shot files, add `--split`:
+
+```bash
+python .claude/skills/voiceover-tts/scripts/generate_voiceover.py \
+  full \
+  projects/<YYYY-MM-DD-<slug>>/voiceover.md \
+  projects/<YYYY-MM-DD-<slug>>/assets/audio/ \
+  <speaker> \
+  --split
+```
+
 The script will:
-1. Parse voiceover.md and extract each line of voiceover text
-2. Generate one MP3 file per line: `voiceover-01.mp3`, `voiceover-02.mp3`, etc.
-3. Generate `voiceover-full.mp3` — all segments combined for quick preview
-4. Generate `voiceover-manifest.json` — index file with segment info
+1. Parse voiceover.md and join all lines into one text
+2. Generate complete audio in a single API call
+3. Save `voiceover-full.mp3`
+4. Build `voiceover-manifest.json` with sentence-level timing
+5. (With `--split`) Cut per-shot files from the full audio using ffmpeg
 
 Script location: `.claude/skills/voiceover-tts/scripts/generate_voiceover.py`
 
@@ -214,7 +211,7 @@ For complete speaker list, see: https://www.volcengine.com/docs/6561/1257544
 ### Text Length Limits
 - **Recommended**: 200-600 characters (1-3 minutes of audio)
 - **Maximum**: ~5000 characters per request
-- If text exceeds limit, split into multiple audio files
+- If text exceeds limit, script auto-splits by paragraph
 
 ### Text Formatting
 - Remove markdown formatting (bold, italic, links)
@@ -236,29 +233,22 @@ For complete speaker list, see: https://www.volcengine.com/docs/6561/1257544
 - **项目**: {project-slug}
 - **视频标题**: {title}
 - **使用音色**: {speaker-name}
+- **总时长**: {n}s
 
 ## 🎙️ 生成的音频
 
-### 分段文件 (用于后期剪辑)
-- **目录**: `projects/{date-slug}/assets/audio/`
-- **文件**: voiceover-01.mp3, voiceover-02.mp3, ..., voiceover-NN.mp3
-- **格式**: MP3
-- **采样率**: 24000 Hz
-
-### 合并文件 (用于预览)
+### 完整语音 (推荐使用)
 - **文件**: `projects/{date-slug}/assets/audio/voiceover-full.mp3`
-- **说明**: 所有段落合并的完整音频
+- **说明**: 一次性生成，语调自然连贯
+- **格式**: MP3, 24000 Hz
 
-### 索引文件
+### 时间清单 (字幕同步)
 - **文件**: `projects/{date-slug}/assets/audio/voiceover-manifest.json`
-- **内容**: 每段音频的文件名、大小、对应文本
+- **内容**: 每句话的起止时间，用于字幕对齐
 
-## 使用建议
-
-- **后期剪辑**: 使用 voiceover-NN.mp3 单独文件，灵活调整每句时长
-- **快速预览**: 使用 voiceover-full.mp3 听整体效果
-- **重新生成**: 单独重新生成某一句，替换对应文件即可
-- **Remotion**: 可导入单文件或合并文件作为配音
+### 分段文件 (可选)
+- **文件**: voiceover-01.mp3, voiceover-02.mp3, ...
+- **说明**: 从完整音频裁剪，非独立生成
 ```
 
 ## Error Handling
@@ -318,23 +308,8 @@ VOLC_TTS_ACCESS_KEY=your_access_key
 
 This skill runs after `/video-script` generates the voiceover text:
 1. `/video-script` → generates `script.md` and `voiceover.md`
-2. `/voiceover` → **this skill** — generates split MP3 files + manifest
+2. `/voiceover` → **this skill** — generates complete MP3 + manifest
 3. Optional: Use audio in `/remotion-video` or video editing tools
-
-### Post-Production Workflow
-
-The split files enable flexible editing:
-```
-voiceover-01.mp3  →  镜头1配音
-voiceover-02.mp3  →  镜头2配音
-voiceover-03.mp3  →  镜头3配音
-...
-```
-
-Each file can be:
-- Individually trimmed/padded for timing
-- Replaced without re-generating everything
-- Synced with video timeline precisely
 
 ## Path Conventions
 
@@ -342,9 +317,9 @@ Each file can be:
 |------|----------|
 | 口播文案 | `projects/<YYYY-MM-DD-<slug>>/voiceover.md` |
 | 音频目录 | `projects/<YYYY-MM-DD-<slug>>/assets/audio/` |
-| 分段音频 | `voiceover-01.mp3`, `voiceover-02.mp3`, ... |
-| 合并音频 | `voiceover-full.mp3` |
-| 索引清单 | `voiceover-manifest.json` |
+| 完整语音 | `voiceover-full.mp3` |
+| 时间清单 | `voiceover-manifest.json` |
+| 分段音频 | `voiceover-01.mp3`, `voiceover-02.mp3`, ... (可选) |
 | Python脚本 | `.claude/skills/voiceover-tts/scripts/generate_voiceover.py` |
 | API凭证 | `.env` (project root) |
 

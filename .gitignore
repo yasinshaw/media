@@ -14,11 +14,20 @@ Thumbs.db
 __pycache__/
 *.pyc
 
-# IDE
+# IDE & AI Tools
 .vscode/
 .idea/
 *.swp
 *.swo
+.agents/
+.trae/
+.superpowers/
+.claude/worktrees/
+skills/
+
+# Test
+.coverage
+htmlcov/
 
 # Logs
 *.log

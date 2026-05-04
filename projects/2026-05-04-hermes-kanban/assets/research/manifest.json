@@ -1,0 +1,109 @@
+{
+  "generated_at": "2026-05-04T16:53:11+08:00",
+  "topic": "Hermes 看板 — 多Agent协作新方式",
+  "english_keywords": [],
+  "limits": {
+    "max_reference": 50,
+    "max_stock": 30,
+    "max_total_mb": 200
+  },
+  "stats": {
+    "reference_count": 5,
+    "stock_count": 0,
+    "total_size_mb": 3.52,
+    "tavily_count": 5,
+    "article_count": 0,
+    "pixabay_count": 0,
+    "skipped": 4
+  },
+  "items": [
+    {
+      "id": "tavily-001",
+      "type": "image",
+      "category": "reference",
+      "source": "tavily",
+      "source_url": "https://hermes-agent.nousresearch.com/docs/assets/images/01-board-overview-dd98ac39283d95534d6df59f90df98b0.png",
+      "page_url": "",
+      "page_title": "",
+      "license": "external -- research-reference only",
+      "width": 1920,
+      "height": 1200,
+      "size_bytes": 766059,
+      "local_path": "research/reference/tavily-001.png"
+    },
+    {
+      "id": "tavily-006",
+      "type": "image",
+      "category": "reference",
+      "source": "tavily",
+      "source_url": "https://hermes-agent.nousresearch.com/docs/assets/images/02-board-flat-019a7cf4f943c0ff4d95ffa7d579bf25.png",
+      "page_url": "",
+      "page_title": "",
+      "license": "external -- research-reference only",
+      "width": 1920,
+      "height": 1200,
+      "size_bytes": 782295,
+      "local_path": "research/reference/tavily-006.png"
+    },
+    {
+      "id": "tavily-007",
+      "type": "image",
+      "category": "reference",
+      "source": "tavily",
+      "source_url": "https://hermes-agent.nousresearch.com/docs/assets/images/03-drawer-schema-task-217f2993df9ebe7c0f2a678df97d934e.png",
+      "page_url": "",
+      "page_title": "",
+      "license": "external -- research-reference only",
+      "width": 1920,
+      "height": 1200,
+      "size_bytes": 487002,
+      "local_path": "research/reference/tavily-007.png"
+    },
+    {
+      "id": "tavily-008",
+      "type": "image",
+      "category": "reference",
+      "source": "tavily",
+      "source_url": "https://hermes-agent.nousresearch.com/docs/assets/images/07-fleet-transcribes-cf7345a3270df63f9336252cada8da61.png",
+      "page_url": "",
+      "page_title": "",
+      "license": "external -- research-reference only",
+      "width": 1920,
+      "height": 1200,
+      "size_bytes": 830148,
+      "local_path": "research/reference/tavily-008.png"
+    },
+    {
+      "id": "tavily-009",
+      "type": "image",
+      "category": "reference",
+      "source": "tavily",
+      "source_url": "https://hermes-agent.nousresearch.com/docs/assets/images/08-pipeline-auth-2dc4dcc631cf371f649ad70ab1e71611.png",
+      "page_url": "",
+      "page_title": "",
+      "license": "external -- research-reference only",
+      "width": 1920,
+      "height": 1200,
+      "size_bytes": 823572,
+      "local_path": "research/reference/tavily-009.png"
+    }
+  ],
+  "skipped": [
+    {
+      "url": "https://preview.redd.it/hermes-agent-just-added-real-multi-agent-collaboration-via-v0-x2cdqh8epyyg1.png?width=640&crop=smart&auto=webp&s=2bdd8335f1045521dd4eae7d8f2b59512a99af16",
+      "reason": "download failed"
+    },
+    {
+      "url": "https://i.redd.it/hermes-agent-just-added-real-multi-agent-collaboration-via-v0-4vx75f8epyyg1.png?width=952&format=png&auto=webp&s=6f87aa107f6a4d9cf1d8da6bb39a958014238fc2",
+      "reason": "download failed"
+    },
+    {
+      "url": "https://opengraph.githubassets.com/19e152a69da59c57845d74e2907de07f5995e03d4f3b20538c39e3ef6ef4bb6c/NousResearch/hermes-agent/issues/16102",
+      "reason": "download failed"
+    },
+    {
+      "url": "https://opengraph.githubassets.com/f0296fd35d77ed6b083c82c667218a88a0675303ba5236f54058431eb5bbe981/NousResearch/hermes-agent/issues/19036",
+      "reason": "download failed"
+    }
+  ]
+}

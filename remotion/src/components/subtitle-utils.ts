@@ -1,5 +1,5 @@
-const REMOVED_PUNCTUATION = /[，,。,.、；;：:！!]/g
+const TRAILING_PUNCTUATION = /[。！？.!?\s]+$/
 
 export function cleanSubtitleText(text: string): string {
-  return text.replace(REMOVED_PUNCTUATION, '')
+  return text.replace(TRAILING_PUNCTUATION, '')
 }

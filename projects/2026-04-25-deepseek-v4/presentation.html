@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!--
+  DeepSeek V4 演示页面 — 纯网页录屏版
+
+  使用方法:
+  1. cd projects/2026-04-25-deepseek-v4
+  2. python3 -m http.server 8080
+  3. 浏览器打开 http://localhost:8080/presentation.html
+  4. 点击「开始演示」
+-->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeepSeek V4 — 国产大模型的新王炸</title>
+<style>
+:root {
+  --bg: #0a0a1a;
+  --bg-card: #12122a;
+  --gold: #f0b429;
+  --green: #00d68f;
+  --blue: #4d7cff;
+  --blue-deep: #1a3a8a;
+  --red: #ff4757;
+  --orange: #ffa502;
+  --grey: #1e1e3a;
+  --grey-light: #3a3a5a;
+  --text: #ffffff;
+  --text-dim: #7878aa;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: -apple-system, 'SF Pro Display', 'PingFang SC', 'Noto Sans SC', 'Helvetica Neue', sans-serif;
+  color: var(--text);
+  overflow: hidden;
+}
+
+/* === Viewport (9:16) === */
+#viewport {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  height: 100vh;
+  max-width: 100vw;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* === Particle Canvas === */
+#fx-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 40;
+}
+
+/* === Start Screen === */
+#start-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg);
+  z-index: 100;
+  gap: 24px;
+}
+
+#start-screen h1 {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, var(--blue), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+#start-screen p {
+  font-size: 15px;
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 1.6;
+}
+
+#start-btn {
+  margin-top: 16px;
+  padding: 16px 56px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--blue), var(--blue-deep));
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#start-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 8px 40px rgba(77, 124, 255, 0.5);
+}
+
+/* === Shot Base === */
+.shot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 40px 140px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.shot.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Reveal animation base */
+.r {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.shot.active .r {
+  animation: reveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes reveal {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scale reveal (for titles) */
+.rs {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.shot.active .rs {
+  animation: scaleReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scaleReveal {
+  0% { opacity: 0; transform: scale(0.6); }
+  70% { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* === Subtitle === */
+#subtitle {
+  position: absolute;
+  bottom: 70px;
+  left: 24px;
+  right: 24px;
+  text-align: center;
+  z-index: 50;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+#subtitle span {
+  display: inline-block;
+  padding: 8px 20px;
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 8px;
+  font-size: 19px;
+  line-height: 1.6;
+  letter-spacing: 0.5px;
+}
+
+/* === Progress Bar === */
+#progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--gold));
+  z-index: 60;
+  width: 0%;
+}
+
+/* ============================================
+   SHOT 1 — Hook
+   ============================================ */
+.shot-1 { text-align: center; }
+
+.shot-1 .title {
+  font-size: 52px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, #fff 30%, var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation-delay: 0.3s !important;
+}
+
+.shot-1 .subtitle-text {
+  font-size: 22px;
+  color: var(--gold);
+  margin-top: 16px;
+  letter-spacing: 6px;
+  animation-delay: 1.2s !important;
+}
+
+/* ============================================
+   SHOT 2 — Pain Point / Performance vs Price
+   ============================================ */
+.shot-2 { justify-content: flex-start; padding-top: 80px; }
+
+.shot-2 .shot-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 40px;
+  letter-spacing: 1px;
+}
+
+.shot-2 .chart {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.shot-2 .bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.shot-2 .bar-label {
+  width: 130px;
+  font-size: 14px;
+  text-align: right;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.shot-2 .bar-track {
+  flex: 1;
+  height: 36px;
+  background: var(--grey);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.shot-2 .bar-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 6px;
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.shot.active .bar-fill { width: var(--w); }
+
+.shot-2 .bar-tag {
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  transform: translateY(-50%) translateX(100%);
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.shot-2 .bottom-note {
+  margin-top: 36px;
+  font-size: 20px;
+  color: var(--green);
+  font-weight: 700;
+  text-align: center;
+}
+
+.shot-2 .divider {
+  width: 60px;
+  height: 2px;
+  background: var(--gold);
+  margin: 20px auto;
+}
+
+/* ============================================
+   SHOT 3 — Architecture / Parameters
+   ============================================ */
+.shot-3 { text-align: center; gap: 30px; }
+
+.shot-3 .big-number {
+  font-size: 64px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation-delay: 0.2s !important;
+}
+
+.shot-3 .big-label {
+  font-size: 18px;
+  color: var(--text-dim);
+  margin-top: -10px;
+  animation-delay: 0.6s !important;
+}
+
+.shot-3 .moe-box {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  animation-delay: 1.5s !important;
+}
+
+.shot-3 .moe-title {
+  font-size: 16px;
+  color: var(--blue);
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.shot-3 .moe-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.shot-3 .moe-node {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  background: var(--grey);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.shot-3 .moe-node.active {
+  background: var(--blue);
+  box-shadow: 0 0 12px rgba(77, 124, 255, 0.6);
+}
+
+.shot-3 .moe-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.shot-3 .moe-legend span::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.shot-3 .moe-legend .legend-active::before { background: var(--blue); }
+.shot-3 .moe-legend .legend-inactive::before { background: var(--grey); }
+
+.shot-3 .context-box {
+  width: 100%;
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 20px 24px;
+  animation-delay: 3s !important;
+}
+
+.shot-3 .context-title {
+  font-size: 16px;
+  color: var(--green);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.shot-3 .context-bar {
+  width: 100%;
+  height: 24px;
+  background: var(--grey);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.shot-3 .context-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--green), var(--blue));
+  border-radius: 4px;
+  transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shot.active .context-fill { width: 100%; }
+
+.shot-3 .context-label {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+/* ============================================
+   SHOT 4 — Domestic Benchmarks
+   ============================================ */
+.shot-4 { justify-content: flex-start; padding-top: 70px; gap: 24px; }
+
+.shot-4 .shot-title {
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  animation-delay: 0s !important;
+}
+
+.shot-4 .benchmark-section {
+  width: 100%;
+  animation-delay: 0.5s !important;
+}
+
+.shot-4 .benchmark-section:nth-child(3) { animation-delay: 3s !important; }
+.shot-4 .benchmark-section:nth-child(4) { animation-delay: 6s !important; }
+
+.shot-4 .bench-name {
+  font-size: 14px;
+  color: var(--blue);
+  font-weight: 700;
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+.shot-4 .bench-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.shot-4 .bench-label {
+  width: 110px;
+  font-size: 13px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.shot-4 .bench-track {
+  flex: 1;
+  height: 28px;
+  background: var(--grey);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.shot-4 .bench-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 4px;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.shot.active .bench-fill { width: var(--w); }
+
+.shot-4 .bench-fill.champion {
+  box-shadow: 0 0 12px rgba(240, 180, 41, 0.4);
+}
+
+.shot-4 .summary-box {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(77, 124, 255, 0.1), rgba(0, 214, 143, 0.1));
+  border: 1px solid rgba(77, 124, 255, 0.3);
+  border-radius: 10px;
+  padding: 16px 20px;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.6;
+  animation-delay: 9s !important;
+}
+
+.shot-4 .summary-box strong {
+  color: var(--green);
+}
+
+/* ============================================
+   SHOT 5 — International Benchmarks
+   ============================================ */
+.shot-5 { justify-content: flex-start; padding-top: 70px; gap: 20px; }
+
+.shot-5 .shot-title {
+  font-size: 26px;
+  font-weight: 700;
+  animation-delay: 0s !important;
+}
+
+.shot-5 .vs-card {
+  width: 100%;
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shot-5 .vs-card:nth-child(2) { animation-delay: 0.5s !important; }
+.shot-5 .vs-card:nth-child(3) { animation-delay: 3s !important; }
+.shot-5 .vs-card:nth-child(4) { animation-delay: 6s !important; }
+
+.shot-5 .vs-bench-name {
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.shot-5 .vs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shot-5 .vs-model {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.shot-5 .vs-score {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.shot-5 .vs-result {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 6px;
+}
+
+.shot-5 .vs-result.win {
+  background: rgba(0, 214, 143, 0.2);
+  color: var(--green);
+}
+
+.shot-5 .vs-result.close {
+  background: rgba(240, 180, 41, 0.2);
+  color: var(--gold);
+}
+
+.shot-5 .bottom-text {
+  font-size: 18px;
+  text-align: center;
+  color: var(--green);
+  font-weight: 700;
+  animation-delay: 9s !important;
+}
+
+/* ============================================
+   SHOT 6 — Price Revolution
+   ============================================ */
+.shot-6 { justify-content: flex-start; padding-top: 70px; gap: 24px; }
+
+.shot-6 .shot-title {
+  font-size: 28px;
+  font-weight: 700;
+  animation-delay: 0s !important;
+}
+
+.shot-6 .price-card {
+  width: 100%;
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shot-6 .price-card:nth-child(2) { animation-delay: 0.3s !important; }
+.shot-6 .price-card:nth-child(3) { animation-delay: 1.5s !important; }
+.shot-6 .price-card:nth-child(4) { animation-delay: 2.7s !important; }
+
+.shot-6 .price-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.shot-6 .price-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.shot-6 .price-model {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.shot-6 .price-value {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.shot-6 .price-unit {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+.shot-6 .price-compare {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  animation-delay: 4s !important;
+}
+
+.shot-6 .compare-item {
+  text-align: center;
+  padding: 14px 20px;
+  background: var(--bg-card);
+  border-radius: 10px;
+  min-width: 120px;
+}
+
+.shot-6 .compare-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.shot-6 .compare-val {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.shot-6 .compare-note {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.shot-6 .bottom-text {
+  font-size: 20px;
+  text-align: center;
+  font-weight: 700;
+  animation-delay: 5.5s !important;
+}
+
+/* ============================================
+   SHOT 7 — CTA
+   ============================================ */
+.shot-7 {
+  text-align: center;
+  gap: 30px;
+  background: linear-gradient(180deg, transparent 0%, rgba(26, 58, 138, 0.3) 100%);
+}
+
+.shot-7 .logo {
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, #fff, var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation-delay: 0.2s !important;
+}
+
+.shot-7 .tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  animation-delay: 1s !important;
+}
+
+.shot-7 .tag {
+  padding: 10px 22px;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 700;
+  border: 2px solid;
+}
+
+.shot-7 .tag:nth-child(1) { border-color: var(--green); color: var(--green); }
+.shot-7 .tag:nth-child(2) { border-color: var(--gold); color: var(--gold); }
+.shot-7 .tag:nth-child(3) { border-color: var(--blue); color: var(--blue); }
+.shot-7 .tag:nth-child(4) { border-color: var(--orange); color: var(--orange); }
+
+.shot-7 .cta-text {
+  font-size: 20px;
+  color: var(--text-dim);
+  animation-delay: 3s !important;
+}
+
+.shot-7 .cta-highlight {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+  animation-delay: 4s !important;
+}
+
+/* === Glow pulse on shot-1 title === */
+.shot-1.active .title {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(240, 180, 41, 0.3)); }
+  50% { filter: drop-shadow(0 0 40px rgba(240, 180, 41, 0.6)); }
+}
+
+/* === Utility delays === */
+.d1 { animation-delay: 0.3s !important; }
+.d2 { animation-delay: 0.6s !important; }
+.d3 { animation-delay: 0.9s !important; }
+.d4 { animation-delay: 1.2s !important; }
+.d5 { animation-delay: 1.5s !important; }
+.d6 { animation-delay: 2.0s !important; }
+.d7 { animation-delay: 2.5s !important; }
+.d8 { animation-delay: 3.0s !important; }
+.d9 { animation-delay: 4.0s !important; }
+</style>
+</head>
+<body>
+
+<div id="viewport">
+  <!-- Start Screen -->
+  <div id="start-screen">
+    <h1>DeepSeek V4</h1>
+    <p>国产大模型的新王炸<br>点击开始录屏演示</p>
+    <button id="start-btn">开始演示</button>
+  </div>
+
+  <!-- Particle Canvas -->
+  <canvas id="fx-canvas"></canvas>
+
+  <!-- ====== SHOT 1 — Hook ====== -->
+  <section class="shot shot-1" id="shot-1">
+    <div class="title rs">DeepSeek V4</div>
+    <div class="subtitle-text r">1.6 万亿参数</div>
+  </section>
+
+  <!-- ====== SHOT 2 — Performance vs Price ====== -->
+  <section class="shot shot-2" id="shot-2">
+    <div class="shot-title r">性能 vs 价格</div>
+    <div class="chart">
+      <div class="bar-row r d1">
+        <span class="bar-label">GPT-5.5</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="--w: 90%; background: linear-gradient(90deg, var(--red), #ff6b6b);">
+            $10+/M
+          </div>
+        </div>
+      </div>
+      <div class="bar-row r d3">
+        <span class="bar-label">Claude Opus 4.7</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="--w: 88%; background: linear-gradient(90deg, var(--orange), #ffbe76);">
+            $15/M
+          </div>
+        </div>
+      </div>
+      <div class="bar-row r d5">
+        <span class="bar-label" style="color: var(--green); font-weight: 700;">DeepSeek V4</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="--w: 86%; background: linear-gradient(90deg, var(--green), #7bed9f); box-shadow: 0 0 20px rgba(0,214,143,0.3);">
+            $1.74/M
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="divider r d7"></div>
+    <div class="bottom-note r d8">性能逼近，价格仅 1/6</div>
+  </section>
+
+  <!-- ====== SHOT 3 — Architecture ====== -->
+  <section class="shot shot-3" id="shot-3">
+    <div class="big-number rs">1.6T</div>
+    <div class="big-label r">参数 — 最大开源模型</div>
+
+    <div class="moe-box r">
+      <div class="moe-title">MoE 架构：仅激活 49B / 1.6T</div>
+      <div class="moe-grid" id="moe-grid"></div>
+      <div class="moe-legend">
+        <span class="legend-active">激活参数</span>
+        <span class="legend-inactive">总参数</span>
+      </div>
+    </div>
+
+    <div class="context-box r">
+      <div class="context-title">100 万 token 上下文窗口</div>
+      <div class="context-bar">
+        <div class="context-fill"></div>
+      </div>
+      <div class="context-label">相当于一整本《三体》一次读完</div>
+    </div>
+  </section>
+
+  <!-- ====== SHOT 4 — Domestic Benchmarks ====== -->
+  <section class="shot shot-4" id="shot-4">
+    <div class="shot-title r">国内大模型跑分擂台</div>
+
+    <div class="benchmark-section r">
+      <div class="bench-name">SWE-Bench (代码实战)</div>
+      <div class="bench-row">
+        <span class="bench-label" style="color: var(--gold);">Kimi K2.5</span>
+        <div class="bench-track">
+          <div class="bench-fill champion" style="--w: 88%; background: var(--gold);">76.8%</div>
+        </div>
+      </div>
+      <div class="bench-row">
+        <span class="bench-label">MiniMax M2.7</span>
+        <div class="bench-track">
+          <div class="bench-fill" style="--w: 64%; background: var(--grey-light);">56.2%</div>
+        </div>
+      </div>
+      <div class="bench-row">
+        <span class="bench-label" style="color: var(--green);">DeepSeek V4</span>
+        <div class="bench-track">
+          <div class="bench-fill" style="--w: 63%; background: var(--green);">55.4%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="benchmark-section r">
+      <div class="bench-name">HumanEval (编程)</div>
+      <div class="bench-row">
+        <span class="bench-label" style="color: var(--green);">DeepSeek V4</span>
+        <div class="bench-track">
+          <div class="bench-fill champion" style="--w: 88%; background: var(--green);">76.8%</div>
+        </div>
+      </div>
+      <div class="bench-row">
+        <span class="bench-label" style="color: var(--text-dim);">V3.2 (旧版)</span>
+        <div class="bench-track">
+          <div class="bench-fill" style="--w: 72%; background: var(--grey-light);">62.8%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="benchmark-section r">
+      <div class="bench-name">数学推理</div>
+      <div class="bench-row">
+        <span class="bench-label" style="color: var(--green);">DeepSeek V4</span>
+        <div class="bench-track">
+          <div class="bench-fill champion" style="--w: 90%; background: linear-gradient(90deg, var(--green), var(--gold));">领先</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-box r">
+      V4 王牌 = <strong>最大开源</strong> + <strong>最便宜</strong> + <strong>数学最强</strong>
+    </div>
+  </section>
+
+  <!-- ====== SHOT 5 — International ====== -->
+  <section class="shot shot-5" id="shot-5">
+    <div class="shot-title r">国际擂台</div>
+
+    <div class="vs-card r">
+      <div class="vs-bench-name">BrowseComp</div>
+      <div class="vs-row">
+        <span class="vs-model" style="color: var(--green);">DeepSeek V4</span>
+        <span class="vs-score" style="color: var(--green);">83.4%</span>
+        <span class="vs-result win">胜</span>
+      </div>
+      <div class="vs-row">
+        <span class="vs-model" style="color: var(--text-dim);">Claude Opus 4.7</span>
+        <span class="vs-score" style="color: var(--text-dim);">79.3%</span>
+      </div>
+    </div>
+
+    <div class="vs-card r">
+      <div class="vs-bench-name">SWE-Bench</div>
+      <div class="vs-row">
+        <span class="vs-model" style="color: var(--gold);">GPT-5.5</span>
+        <span class="vs-score" style="color: var(--gold);">58.6%</span>
+        <span class="vs-result close">接近</span>
+      </div>
+      <div class="vs-row">
+        <span class="vs-model" style="color: var(--green);">DeepSeek V4</span>
+        <span class="vs-score" style="color: var(--green);">55.4%</span>
+      </div>
+    </div>
+
+    <div class="vs-card r">
+      <div class="vs-bench-name">数学推理</div>
+      <div class="vs-row">
+        <span class="vs-model" style="color: var(--green);">DeepSeek V4</span>
+        <span class="vs-score" style="color: var(--green);">领先</span>
+        <span class="vs-result win">胜</span>
+      </div>
+      <div class="vs-row">
+        <span class="vs-model" style="color: var(--text-dim);">GPT-5</span>
+        <span class="vs-score" style="color: var(--text-dim);">—</span>
+      </div>
+    </div>
+
+    <div class="bottom-text r">搜索和数学，世界第一梯队</div>
+  </section>
+
+  <!-- ====== SHOT 6 — Price ====== -->
+  <section class="shot shot-6" id="shot-6">
+    <div class="shot-title r">价格革命</div>
+
+    <div class="price-card r">
+      <div class="price-left">
+        <div class="price-dot" style="background: var(--green);"></div>
+        <span class="price-model">V4 Flash</span>
+      </div>
+      <div>
+        <span class="price-value" style="color: var(--green);">$0.14</span>
+        <span class="price-unit">/M tokens</span>
+      </div>
+    </div>
+
+    <div class="price-card r">
+      <div class="price-left">
+        <div class="price-dot" style="background: var(--orange);"></div>
+        <span class="price-model">GPT-5.4 Nano</span>
+      </div>
+      <div>
+        <span class="price-value" style="color: var(--orange);">$0.20</span>
+        <span class="price-unit">/M tokens</span>
+      </div>
+    </div>
+
+    <div class="price-card r">
+      <div class="price-left">
+        <div class="price-dot" style="background: var(--red);"></div>
+        <span class="price-model">Claude Haiku 4.5</span>
+      </div>
+      <div>
+        <span class="price-value" style="color: var(--red);">$1.00</span>
+        <span class="price-unit">/M tokens</span>
+      </div>
+    </div>
+
+    <div class="price-compare r">
+      <div class="compare-item">
+        <div class="compare-label">V4 Pro</div>
+        <div class="compare-val" style="color: var(--green);">$1.74</div>
+        <div class="compare-note">/M tokens</div>
+      </div>
+      <div class="compare-item">
+        <div class="compare-label">竞品 Pro</div>
+        <div class="compare-val" style="color: var(--red);">$10+</div>
+        <div class="compare-note">/M tokens</div>
+      </div>
+    </div>
+
+    <div class="bottom-text r" style="color: var(--green);">性价比天花板</div>
+  </section>
+
+  <!-- ====== SHOT 7 — CTA ====== -->
+  <section class="shot shot-7" id="shot-7">
+    <div class="logo rs">DeepSeek V4</div>
+    <div class="tags">
+      <span class="tag r d1">开源</span>
+      <span class="tag r d2">最大模型</span>
+      <span class="tag r d3">最便宜</span>
+      <span class="tag r d4">数学领先</span>
+    </div>
+    <div class="cta-text r d5">正在重新定义 AI 的性价比天花板</div>
+    <div class="cta-highlight r d6">关注我，了解更多 AI 动态</div>
+  </section>
+
+  <!-- Subtitle -->
+  <div id="subtitle"><span></span></div>
+
+  <!-- Progress Bar -->
+  <div id="progress-bar"></div>
+</div>
+
+<script>
+// === Data ===
+const TOTAL_DURATION = 97.44;
+const AUDIO_SRC = 'assets/audio/voiceover-full.mp3';
+
+const SHOT_TIMINGS = [
+  { id: 1, start: 0, end: 4.03 },
+  { id: 2, start: 4.03, end: 15.74 },
+  { id: 3, start: 15.74, end: 33.53 },
+  { id: 4, start: 33.53, end: 53.57 },
+  { id: 5, start: 53.57, end: 68.76 },
+  { id: 6, start: 68.76, end: 85.27 },
+  { id: 7, start: 85.27, end: 97.44 },
+];
+
+const SUBTITLES = [
+  { start: 0, end: 4.03, text: 'DeepSeek V4来了，这次国产AI真的追上来了。' },
+  { start: 4.03, end: 9.1, text: '之前大家总觉得国产模型差一截，要么性能不够，要么太贵。' },
+  { start: 9.1, end: 15.74, text: '但这次V4，性能逼近GPT-5.5，价格只要人家的六分之一。' },
+  { start: 15.74, end: 21.19, text: 'V4 Pro总共1.6万亿参数，是目前最大的开源模型。' },
+  { start: 21.19, end: 27.48, text: '但它用MoE架构，每次推理只激活490亿，既大又省。' },
+  { start: 27.48, end: 33.53, text: '而且它原生支持100万token上下文，一整本三体扔进去都能一次读完。' },
+  { start: 33.53, end: 34.99, text: '跟国内选手比，' },
+  { start: 34.99, end: 38.23, text: '代码实战Kimi K2.5目前最强，' },
+  { start: 38.23, end: 41.88, text: 'SWE-Bench拿了76.8%。' },
+  { start: 41.88, end: 47.9, text: '但V4也有自己的王牌：编程HumanEval从上一代62.8飙到76.8，' },
+  { start: 47.9, end: 49.94, text: '追平一线水平，' },
+  { start: 49.94, end: 53.57, text: '而且数学推理领域领先国产同侪。' },
+  { start: 53.57, end: 55.61, text: '放到国际上更亮眼。' },
+  { start: 55.61, end: 61.66, text: 'BrowseComp测试83.4%，直接超过Claude Opus 4.7。' },
+  { start: 61.66, end: 64.73, text: '数学推理连GPT-5都被超越了。' },
+  { start: 64.73, end: 68.76, text: '简单说，搜索和数学，已经站到世界第一梯队。' },
+  { start: 68.76, end: 71.04, text: '价格才是最大亮点。' },
+  { start: 71.04, end: 75.29, text: 'V4 Flash每百万token只要0.14美元，' },
+  { start: 75.29, end: 77.95, text: '比GPT-5.4 Nano还便宜，' },
+  { start: 77.95, end: 80.62, text: '比Claude Haiku便宜7倍。' },
+  { start: 80.62, end: 85.27, text: 'Pro版也只要1.74美元，竞品都是十美元起步。' },
+  { start: 85.27, end: 89.54, text: '开源、最大、最便宜，数学推理领先。' },
+  { start: 89.54, end: 94.2, text: 'DeepSeek V4正在重新定义AI的性价比天花板。' },
+  { start: 94.2, end: 97.44, text: '关注我，第一时间解读最新AI动态。' },
+];
+
+// === DOM ===
+const viewport = document.getElementById('viewport');
+const startScreen = document.getElementById('start-screen');
+const startBtn = document.getElementById('start-btn');
+const progressBar = document.getElementById('progress-bar');
+const subtitleEl = document.getElementById('subtitle');
+const subtitleText = subtitleEl.querySelector('span');
+const fxCanvas = document.getElementById('fx-canvas');
+const fxCtx = fxCanvas.getContext('2d');
+
+// === State ===
+let audio = null;
+let isPlaying = false;
+let currentShotIndex = -1;
+let animFrameId = null;
+
+// === Particle System ===
+let particles = [];
+
+function initCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = viewport.getBoundingClientRect();
+  fxCanvas.width = rect.width * dpr;
+  fxCanvas.height = rect.height * dpr;
+  fxCtx.scale(dpr, dpr);
+  fxCanvas.style.width = rect.width + 'px';
+  fxCanvas.style.height = rect.height + 'px';
+}
+
+function burstParticles() {
+  const rect = viewport.getBoundingClientRect();
+  const cx = rect.width / 2;
+  const cy = rect.height / 2 - 40;
+
+  for (let i = 0; i < 100; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 8 + 2;
+    particles.push({
+      x: cx,
+      y: cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 2,
+      life: 1,
+      decay: Math.random() * 0.015 + 0.005,
+      size: Math.random() * 4 + 1.5,
+      hue: 35 + Math.random() * 25,
+    });
+  }
+}
+
+function updateParticles() {
+  const rect = viewport.getBoundingClientRect();
+  fxCtx.clearRect(0, 0, rect.width, rect.height);
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.08;
+    p.vx *= 0.99;
+    p.life -= p.decay;
+
+    if (p.life <= 0) {
+      particles.splice(i, 1);
+      continue;
+    }
+
+    fxCtx.globalAlpha = p.life;
+    fxCtx.fillStyle = `hsl(${p.hue}, 90%, ${55 + p.life * 20}%)`;
+    fxCtx.shadowColor = `hsl(${p.hue}, 90%, 60%)`;
+    fxCtx.shadowBlur = 8;
+    fxCtx.beginPath();
+    fxCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+    fxCtx.fill();
+  }
+
+  fxCtx.globalAlpha = 1;
+  fxCtx.shadowBlur = 0;
+
+  if (particles.length > 0) {
+    requestAnimationFrame(updateParticles);
+  }
+}
+
+// === MoE Grid ===
+function buildMoeGrid() {
+  const grid = document.getElementById('moe-grid');
+  const total = 32;
+  const active = 3; // ~49B/1.6T ≈ 3% → show 3 active out of 32
+
+  for (let i = 0; i < total; i++) {
+    const node = document.createElement('div');
+    node.className = 'moe-node' + (i < active ? ' active' : '');
+    grid.appendChild(node);
+  }
+}
+
+// === Timeline ===
+function activateShot(index) {
+  if (index === currentShotIndex) return;
+
+  // Deactivate all
+  document.querySelectorAll('.shot.active').forEach(el => {
+    el.classList.remove('active');
+    // Reset animations by cloning
+    const clone = el.cloneNode(true);
+    el.parentNode.replaceChild(clone, el);
+  });
+
+  currentShotIndex = index;
+
+  // Activate new shot
+  const shotEl = document.getElementById(`shot-${index + 1}`);
+  if (shotEl) {
+    shotEl.classList.add('active');
+  }
+
+  // Particle effect for Shot 1
+  if (index === 0) {
+    setTimeout(burstParticles, 200);
+    setTimeout(updateParticles, 250);
+  }
+}
+
+function updateSubtitle(time) {
+  const seg = SUBTITLES.find(s => time >= s.start && time < s.end);
+  if (seg) {
+    subtitleText.textContent = seg.text;
+    subtitleEl.style.opacity = '1';
+  } else {
+    subtitleEl.style.opacity = '0';
+  }
+}
+
+function tick() {
+  if (!isPlaying) return;
+
+  const t = audio.currentTime;
+
+  // Progress
+  progressBar.style.width = `${(t / TOTAL_DURATION) * 100}%`;
+
+  // Shot
+  const shotIndex = SHOT_TIMINGS.findIndex(s => t >= s.start && t < s.end);
+  if (shotIndex !== -1) {
+    activateShot(shotIndex);
+  }
+
+  // Subtitle
+  updateSubtitle(t);
+
+  // End check
+  if (t >= TOTAL_DURATION || audio.ended) {
+    isPlaying = false;
+    subtitleEl.style.opacity = '0';
+    return;
+  }
+
+  animFrameId = requestAnimationFrame(tick);
+}
+
+// === Init ===
+function start() {
+  startScreen.style.opacity = '0';
+  startScreen.style.transition = 'opacity 0.5s';
+  setTimeout(() => { startScreen.style.display = 'none'; }, 500);
+
+  initCanvas();
+
+  audio = new Audio(AUDIO_SRC);
+  audio.play().then(() => {
+    isPlaying = true;
+    tick();
+  }).catch(err => {
+    console.warn('Audio playback failed, using timer fallback:', err);
+    const fakeStart = performance.now();
+    audio = {
+      get currentTime() { return (performance.now() - fakeStart) / 1000; },
+      get ended() { return this.currentTime >= TOTAL_DURATION; },
+      pause() {},
+      play() { return Promise.resolve(); }
+    };
+    isPlaying = true;
+    tick();
+  });
+}
+
+startBtn.addEventListener('click', start);
+
+// Click viewport to pause/resume
+viewport.addEventListener('click', (e) => {
+  if (startScreen.style.display !== 'none') return;
+  if (e.target === startBtn) return;
+
+  if (isPlaying) {
+    isPlaying = false;
+    if (audio && audio.pause) audio.pause();
+  } else {
+    isPlaying = true;
+    if (audio && audio.play) audio.play();
+    tick();
+  }
+});
+
+// Build MoE grid
+buildMoeGrid();
+
+// Resize handler
+window.addEventListener('resize', () => {
+  if (isPlaying) initCanvas();
+});
+</script>
+
+</body>
+</html>

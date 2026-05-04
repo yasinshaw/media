@@ -1,0 +1,170 @@
+{
+  "total_segments": 18,
+  "speaker": "zh_male_liufei_uranus_bigtts",
+  "total_duration_seconds": 60.67,
+  "mode": "full",
+  "segments": [
+    {
+      "index": 1,
+      "shot": 1,
+      "sub_index": 1,
+      "text": "一个AI Agent，自己拆任务、找素材、剪视频，全程没人插手。",
+      "start": 0.0,
+      "end": 5.55,
+      "duration_seconds": 5.55
+    },
+    {
+      "index": 2,
+      "shot": 2,
+      "sub_index": 1,
+      "text": "多Agent协作听起来很酷，但实际用起来一塌糊涂。",
+      "start": 5.55,
+      "end": 9.88,
+      "duration_seconds": 4.33
+    },
+    {
+      "index": 3,
+      "shot": 2,
+      "sub_index": 2,
+      "text": "主Agent串行调度子Agent，谁先谁后全靠它判断。",
+      "start": 9.88,
+      "end": 14.56,
+      "duration_seconds": 4.68
+    },
+    {
+      "index": 4,
+      "shot": 2,
+      "sub_index": 3,
+      "text": "任务一复杂，主Agent自己就成瓶颈了，子Agent崩了整个流程就卡死。",
+      "start": 14.56,
+      "end": 20.8,
+      "duration_seconds": 6.24
+    },
+    {
+      "index": 5,
+      "shot": 3,
+      "sub_index": 1,
+      "text": "Hermes的思路完全不一样：把任务扔上看板，让Agent自己去抢。",
+      "start": 20.8,
+      "end": 26.7,
+      "duration_seconds": 5.89
+    },
+    {
+      "index": 6,
+      "shot": 3,
+      "sub_index": 2,
+      "text": "底层SQLite加原子事务，",
+      "start": 26.7,
+      "end": 29.12,
+      "duration_seconds": 2.43
+    },
+    {
+      "index": 7,
+      "shot": 3,
+      "sub_index": 3,
+      "text": "多个Agent同时抢同一个任务，",
+      "start": 29.12,
+      "end": 31.9,
+      "duration_seconds": 2.77
+    },
+    {
+      "index": 8,
+      "shot": 3,
+      "sub_index": 4,
+      "text": "只有一个能拿到，",
+      "start": 31.9,
+      "end": 33.28,
+      "duration_seconds": 1.39
+    },
+    {
+      "index": 9,
+      "shot": 3,
+      "sub_index": 5,
+      "text": "不会重复执行。",
+      "start": 33.28,
+      "end": 34.5,
+      "duration_seconds": 1.21
+    },
+    {
+      "index": 10,
+      "shot": 4,
+      "sub_index": 1,
+      "text": "更厉害的是依赖引擎。",
+      "start": 34.5,
+      "end": 36.23,
+      "duration_seconds": 1.73
+    },
+    {
+      "index": 11,
+      "shot": 4,
+      "sub_index": 2,
+      "text": "上游任务完成，下游自动从待办提到就绪。",
+      "start": 36.23,
+      "end": 39.52,
+      "duration_seconds": 3.29
+    },
+    {
+      "index": 12,
+      "shot": 4,
+      "sub_index": 3,
+      "text": "Worker之间交接走结构化的summary和metadata，不用翻聊天记录。",
+      "start": 39.52,
+      "end": 46.46,
+      "duration_seconds": 6.93
+    },
+    {
+      "index": 13,
+      "shot": 4,
+      "sub_index": 4,
+      "text": "Agent挂了？",
+      "start": 46.46,
+      "end": 47.84,
+      "duration_seconds": 1.39
+    },
+    {
+      "index": 14,
+      "shot": 4,
+      "sub_index": 5,
+      "text": "自动释放回队列。",
+      "start": 47.84,
+      "end": 49.23,
+      "duration_seconds": 1.39
+    },
+    {
+      "index": 15,
+      "shot": 4,
+      "sub_index": 6,
+      "text": "连续失败三次？",
+      "start": 49.23,
+      "end": 50.44,
+      "duration_seconds": 1.21
+    },
+    {
+      "index": 16,
+      "shot": 4,
+      "sub_index": 7,
+      "text": "自动熔断，自动通知你。",
+      "start": 50.44,
+      "end": 52.35,
+      "duration_seconds": 1.91
+    },
+    {
+      "index": 17,
+      "shot": 5,
+      "sub_index": 1,
+      "text": "扇出并行、流水线、投票仲裁、人工介入，多种协作模式全都有。",
+      "start": 52.35,
+      "end": 57.38,
+      "duration_seconds": 5.03
+    },
+    {
+      "index": 18,
+      "shot": 5,
+      "sub_index": 2,
+      "text": "MIT开源免费，想试试的话，评论区见。",
+      "start": 57.38,
+      "end": 60.67,
+      "duration_seconds": 3.29
+    }
+  ]
+}

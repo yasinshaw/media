@@ -1,0 +1,118 @@
+{
+  "generated_at": "2026-05-04T08:56:05+08:00",
+  "topic": "Pixelle-Video — 阿里巴巴开源 AI 全自动短视频引擎",
+  "english_keywords": [
+    "ComfyUI workflow node graph, video editing timeline, AI video generation, digital avatar, short video production"
+  ],
+  "limits": {
+    "max_reference": 50,
+    "max_stock": 30,
+    "max_total_mb": 200
+  },
+  "stats": {
+    "reference_count": 5,
+    "stock_count": 0,
+    "total_size_mb": 5.51,
+    "tavily_count": 2,
+    "article_count": 3,
+    "pixabay_count": 0,
+    "skipped": 5
+  },
+  "items": [
+    {
+      "id": "tavily-006",
+      "type": "image",
+      "category": "reference",
+      "source": "tavily",
+      "source_url": "https://comfyui-wiki.com/cover/images/wan2.1.jpg",
+      "page_url": "",
+      "page_title": "",
+      "license": "external -- research-reference only",
+      "width": 1008,
+      "height": 741,
+      "size_bytes": 36513,
+      "local_path": "research/reference/tavily-006.jpg"
+    },
+    {
+      "id": "tavily-007",
+      "type": "image",
+      "category": "reference",
+      "source": "tavily",
+      "source_url": "https://comfyui-wiki.com/workflows/video/wan2.1/native/wan2.1_t2v.webp",
+      "page_url": "",
+      "page_title": "",
+      "license": "external -- research-reference only",
+      "width": 832,
+      "height": 480,
+      "size_bytes": 2508880,
+      "local_path": "research/reference/tavily-007.webp"
+    },
+    {
+      "id": "article-comfyui-wiki.com-001",
+      "type": "image",
+      "category": "reference",
+      "source": "article",
+      "source_url": "https://comfyui-wiki.com/_next/static/media/workflow_template.28190182.jpg",
+      "page_url": "https://comfyui-wiki.com/en/tutorial/advanced/video/wan2.1/wan2-1-video-model",
+      "page_title": "Wan2.1 ComfyUI Workflow - Complete Guide | ComfyUI Wiki",
+      "alt": "Wan2.1 Workflow Template",
+      "license": "external -- research-reference only",
+      "width": 2000,
+      "height": 1082,
+      "size_bytes": 221929,
+      "local_path": "research/reference/article-comfyui-wiki.com-001.jpg"
+    },
+    {
+      "id": "article-comfyui-wiki.com-002",
+      "type": "image",
+      "category": "reference",
+      "source": "article",
+      "source_url": "https://comfyui-wiki.com/workflows/video/wan2.1/native/wan2.1_t2v.webp",
+      "page_url": "https://comfyui-wiki.com/en/tutorial/advanced/video/wan2.1/wan2-1-video-model",
+      "page_title": "Wan2.1 ComfyUI Workflow - Complete Guide | ComfyUI Wiki",
+      "alt": "Wan2.1 Text-to-Video Workflow",
+      "license": "external -- research-reference only",
+      "width": 832,
+      "height": 480,
+      "size_bytes": 2508880,
+      "local_path": "research/reference/article-comfyui-wiki.com-002.webp"
+    },
+    {
+      "id": "article-comfyui-wiki.com-003",
+      "type": "image",
+      "category": "reference",
+      "source": "article",
+      "source_url": "https://comfyui-wiki.com/_next/static/media/wan2.1_t2v_flow_diagram.962ade12.jpg",
+      "page_url": "https://comfyui-wiki.com/en/tutorial/advanced/video/wan2.1/wan2-1-video-model",
+      "page_title": "Wan2.1 ComfyUI Workflow - Complete Guide | ComfyUI Wiki",
+      "alt": "ComfyUI Wan2.1 Workflow Steps",
+      "license": "external -- research-reference only",
+      "width": 3000,
+      "height": 1549,
+      "size_bytes": 503230,
+      "local_path": "research/reference/article-comfyui-wiki.com-003.jpg"
+    }
+  ],
+  "skipped": [
+    {
+      "url": "https://camo.githubusercontent.com/391d675f77823287173c46613b03a80c2e6eb508a7ea9e271824dc276b0346e5/68747470733a2f2f696d672e736869656c64732e696f2f62616467652ff09f8ea520e8a786e9a291e69599e7a88b2d454134433839",
+      "reason": "unreadable image"
+    },
+    {
+      "url": "https://camo.githubusercontent.com/8cedf650583a1e59c21291c78a6d4d4373b2a15f3212d6f302a3412a1591c3e9/68747470733a2f2f696d672e736869656c64732e696f2f62616467652ff09f93a62056696e646f7773e58c852d353043383738",
+      "reason": "download failed"
+    },
+    {
+      "url": "https://camo.githubusercontent.com/bcac8e05ccbc6472e48b58211b45ecd8305da31b2c9c1e723da59b712c431c95/68747470733a2f2f696d672e736869656c64732e696f2f62616467652ff09f939820e4bdbfe794a8e69687e6a1a32d344139304532",
+      "reason": "unreadable image"
+    },
+    {
+      "url": "https://camo.githubusercontent.com/9341c4599c9669a3bb3a92d91a1b4fd7b10a3b5d65796d28a016c7e2374e70f3/68747470733a2f2f6170692e737461722d686973746f72792e636f6d2f7376673f7265706f733d414944432d41492f506978656c6c652d566964656f26747970653d44617465",
+      "reason": "unreadable image"
+    },
+    {
+      "url": "https://camo.githubusercontent.com/93cb0b5f2320c2e027921c4ac2dc2e0b6864d825dbfd4980b23532a2710bf72a/68747470733a2f2f696d672e736869656c64732e696f2f62616467652ff09f8ea520566964656f2532305475746f7269616c2d454134433839",
+      "reason": "unreadable image"
+    }
+  ]
+}

@@ -54,9 +54,14 @@ description: Publish videos to Douyin by reading script metadata and auto-fillin
 
 基于脚本内容生成发布参数：
 
-#### 标题 (title)
-- 直接使用脚本的 `# 视频标题`
-- 如果超过30字，截断并添加 "…"（抖音标题限制）
+#### 标题 (title) — 提供 3 个选项
+基于脚本的 `# 视频标题` 生成 3 个不同风格的标题选项：
+
+1. **原标题** — 直接使用脚本的 `# 视频标题`（如超过30字，截断并添加 "…"）
+2. **优化版** — 在原标题基础上优化，增加吸引力（如加入数字、对比、悬念等元素）
+3. **爆款版** — 使用抖音爆款标题技巧（如疑问句、感叹号、痛点词、热门梗）
+
+每个标题必须控制在30字以内（抖音标题限制）。
 
 #### 话题标签 (tags)
 基于以下来源生成 3-5 个话题：
@@ -78,7 +83,7 @@ description: Publish videos to Douyin by reading script metadata and auto-fillin
 
 ### Step 5: 展示发布方案（需要确认）
 
-向用户展示完整的发布方案：
+向用户展示完整的发布方案，标题提供 3 个选项供选择：
 
 ```markdown
 ## 📋 抖音发布方案
@@ -89,19 +94,27 @@ description: Publish videos to Douyin by reading script metadata and auto-fillin
 
 ### 📦 发布参数
 
+#### 发布标题（选一个）
+1. **{title-original}** — 原标题
+2. **{title-optimized}** — 优化版（{优化说明}）
+3. **{title-viral}** — 爆款版（{优化说明}）
+
+#### 话题标签
+{tags}
+
+#### 其他参数
+
 | 参数 | 值 |
 |------|-----|
 | **视频文件** | `{video-path}` |
-| **发布标题** | `{publish-title}` |
-| **话题标签** | {tags} |
 | **封面图片** | {cover-path 或 "自动生成"} |
 | **发布方式** | 立即发布 / 定时发布 {schedule} |
 
 ### 确认发布？
 
 回复以下选项：
-- "确认" / "发布" — 执行发布
-- "标题: xxx" — 修改标题
+- "1" / "2" / "3" — 选择对应标题并发布
+- "标题: xxx" — 自定义标题
 - "话题: xxx" — 修改话题（逗号分隔）
 - "定时: YYYY-MM-DD HH:MM" — 设置定时发布
 - "取消" — 取消发布
