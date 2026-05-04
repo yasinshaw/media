@@ -23,6 +23,17 @@ export { SplitScreen } from './SplitScreen'
 export { CTA } from './CTA'
 export { Demo } from './Demo'
 
+// === Animations ===
+export { useFadeIn, useScaleIn, useSlideIn } from './animations'
+export { useStagger, useNumberRoll, useTextReveal } from './animations'
+export { useFloat, usePulse, useRotate } from './animations'
+
+// === Backgrounds ===
+export { FloatingOrbs, GradientFlow, GridPattern, ParticleField } from './backgrounds'
+
+// === Transitions ===
+export { Transition } from './transitions'
+
 // === Audio ===
 export { BGMAudio, type BGMAudioConfig, type VoiceoverSegment } from './BGMAudio'
 export { SFXLayer, type SFXConfig } from './SFXLayer'
