@@ -168,6 +168,35 @@ When provided, renders as the first absolute-positioned layer (behind all conten
 - SFXLayer, BGMAudio
 - Composition timing/duration calculation
 
+## Section 5: Skill Updates
+
+### remotion-video Skill
+
+Add a new section "Reusable Animation Hooks" before the existing "ANIMATION LIBRARY" section. The hooks library is the **preferred way** to add animations — use hooks first, fall back to inline patterns only when the hook doesn't cover the need.
+
+Key additions:
+- Import from `../../../components/animations` instead of writing inline animation functions
+- Reference `useSlideIn`, `useStagger`, `useNumberRoll`, `useTextReveal`, `useFloat`, `usePulse`, `useRotate` in the Animation Distribution Strategy table
+- Add background components (`FloatingOrbs`, `GradientFlow`, `GridPattern`, `ParticleField`) to the "Background Style Variations" table
+- Update composition template to show `Transition` wrapper usage alongside existing `TransitionSeries`
+
+The existing inline animation patterns (fadeSlideUp, scaleIn, etc.) remain as reference — they are the underlying implementations the hooks wrap. No removal needed.
+
+### video-review Skill
+
+Add new review checks to Section 7.5 "Visual Richness":
+
+| Check | Requirement |
+|-------|-------------|
+| **Animation hooks used** | Shots should prefer hooks from `components/animations/` over inline `interpolate`/`spring` for common patterns (slide, scale, stagger) |
+| **Background atmosphere** | At least 2 shots should have a background component (`FloatingOrbs`, `GradientFlow`, etc.) or `backgroundLayer` prop |
+| **Number data animated** | Shots displaying numbers/prices/percentages should use `useNumberRoll` instead of static text |
+| **Stagger on lists** | Timeline/Hub shots with 3+ items should use `useStagger` instead of manual per-item fade |
+
+Add to auto-fix rules:
+- Replace manual per-item `interpolate` fade with `useStagger` when pattern detected
+- Replace static number display with `useNumberRoll` in data shots
+
 ## Dependencies
 
 - `@remotion/motion` — new dependency for element-level animations
