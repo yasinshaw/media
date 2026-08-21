@@ -1,3 +1,5 @@
+
+
 # Media Toolkit
 
 AI-powered short video production pipeline — from idea to published video, driven by [Claude Code](https://claude.ai/code) skills.
@@ -174,7 +176,7 @@ AI 生成多平台封面：
 - **动画**: Spring 预设、`interpolate`、打字机效果、关键词高亮
 - **转场**: `TransitionSeries`（淡入淡出、滑动、擦除、翻转、时钟擦除）
 - **音频**: 逐镜头配音、背景音乐、音效
-- **AI 背景**: 火山引擎 API 生成电影感镜头背景
+- **AI 背景**: 可配置 OpenAI 兼容接口生成电影感镜头背景
 - **视觉效果**: 光线泄露、动态模糊、星芒放射、噪点纹理、Lottie、动态图表
 
 输出: 镜头组件 + 组合 + Remotion Studio 预览
